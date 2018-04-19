@@ -14,7 +14,6 @@ import '../Ownable.sol';
 /// @notice Contract is responsible for collecting, refunding, allocating tokens during different stages of Crowdsale.
 contract Crowdsale is Ownable {
 
-
     using SafeMath for uint256;
 
     enum State {Unknown, Initializing, BeforeCrowdsale, InCrowdsale, Success, Finalized, Refunding}
@@ -105,6 +104,11 @@ contract Crowdsale is Ownable {
     /// @notice update signer
     function removeSigner(address _signer) public onlyOwner {
         signers[_signer] = false;
+    }
+
+    /// @notice update whitelisting address
+    function updateWhitelist(address _address, bool _status) public onlyOwner {
+        whitelisted[_address] = _status;
     }
 
     /// @notice allows to do signed contributions

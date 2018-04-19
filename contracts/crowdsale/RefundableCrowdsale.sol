@@ -52,8 +52,8 @@ contract RefundableCrowdsale is HardCappedCrowdsale {
         State state = super.getState();
 
         if (state == State.Success) {
-            if (tokensSold >= softCap) {
-                return State.Success;
+            if (tokensSold < softCap) {
+                return State.Refunding;
             }
         }
 

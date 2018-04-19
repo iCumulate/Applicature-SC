@@ -48,6 +48,8 @@ contract MintableToken is StandardToken, Ownable {
         if (totalSupply_ == maxSupply) {
             allowedMinting = false;
         }
+
+        Transfer(address(0), _holder, _tokens);
     }
 
     /// @notice update allowedMinting flat

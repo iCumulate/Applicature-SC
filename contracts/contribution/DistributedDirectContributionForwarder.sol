@@ -41,6 +41,12 @@ contract DistributedDirectContributionForwarder is ContributionForwarder {
         require(totalProportion == proportionAbsMax);
     }
 
+    /// @notice Check whether contract is initialised
+    /// @return true if initialized
+    function isInitialized() public constant returns (bool) {
+        return true;
+    }
+
     function internalForward() internal {
         uint256 transferred;
 

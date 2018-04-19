@@ -1,11 +1,13 @@
 pragma solidity ^0.4.18;
 
+import '../Ownable.sol';
+
 
 /// @title PricingStrategy
 /// @author Applicature
 /// @notice Contract is responsible for calculating tokens amount depending on different criterias
 /// @dev Base class
-contract PricingStrategy {
+contract PricingStrategy is Ownable {
 
     function isInitialized() public constant returns (bool);
 

@@ -9,7 +9,10 @@ import '../PausableToken.sol';
 /// @author Applicature
 /// @notice helper mixed to other contracts to pause/ un pause contract
 /// @dev Base class
-contract Erc20PausableToken is PausableToken, StandardToken {
+contract Erc20PausableToken is StandardToken, PausableToken {
+
+    function Erc20PausableToken(bool _paused) public PausableToken(_paused) {}
+
     function transfer(address _to, uint256 _tokens) public isPaused(false) returns (bool) {
         super.transfer(_to, _tokens);
     }
