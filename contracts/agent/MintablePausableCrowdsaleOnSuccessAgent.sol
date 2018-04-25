@@ -3,7 +3,7 @@ pragma solidity ^0.4.18;
 
 import './CrowdsaleAgent.sol';
 import '../crowdsale/Crowdsale.sol';
-import '../token/MintableToken.sol';
+import '../token/MintableBurnableToken.sol';
 import '../token/PausableToken.sol';
 
 
@@ -16,14 +16,14 @@ contract MintableCrowdsaleOnSuccessAgent is CrowdsaleAgent {
 
 
     Crowdsale public crowdsale;
-    MintableToken public mintableToken;
+    MintableBurnableToken public mintableToken;
     PausableToken public pausableToken;
 
     bool public _isInitialized;
 
     function MintableCrowdsaleOnSuccessAgent(
         Crowdsale _crowdsale,
-        MintableToken _mintableToken,
+        MintableBurnableToken _mintableToken,
         PausableToken _pausableToken
     ) public CrowdsaleAgent(_crowdsale)
     {
@@ -68,5 +68,14 @@ contract MintableCrowdsaleOnSuccessAgent is CrowdsaleAgent {
             pausableToken.unpause();
         }
     }
+
+    /// @notice Takes actions on refund
+    function onRefund(address _contributor, uint256 _tokens) public onlyCrowdsale() returns (uint256 burned) {
+        _tokens = _tokens;
+        if (crowdsale.getState() == Crowdsale.State.Refunding) {
+            burned = mintableToken.burn(_contributor);
+        }
+    }
+
 }
 

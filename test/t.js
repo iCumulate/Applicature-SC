@@ -58,7 +58,7 @@ async function deploy() {
         icoTill + 3600 * 2
     ], 18);
 
-    const ico = await ICO.new(allocator.address, contributionForwarder.address, pricingStrategy.address);
+    const ico = await ICO.new(allocator.address, contributionForwarder.address, pricingStrategy.address, bountyAddress);
 
     const agent = await MintableCrowdsaleOnSuccessAgent.new(ico.address, token.address, token.address);
 

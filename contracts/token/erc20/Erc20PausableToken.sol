@@ -14,10 +14,10 @@ contract Erc20PausableToken is StandardToken, PausableToken {
     function Erc20PausableToken(bool _paused) public PausableToken(_paused) {}
 
     function transfer(address _to, uint256 _tokens) public isPaused(false) returns (bool) {
-        super.transfer(_to, _tokens);
+        return super.transfer(_to, _tokens);
     }
 
     function transferFrom(address _holder, address _to, uint256 _tokens) public isPaused(false) returns (bool) {
-        super.transferFrom(_holder, _to, _tokens);
+        return super.transferFrom(_holder, _to, _tokens);
     }
 }

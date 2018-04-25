@@ -118,17 +118,18 @@ contract RefundableCrowdsale is HardCappedCrowdsale {
     function internalRefund(address _holder) internal {
         require(block.timestamp > endDate);
         require(tokensSold < softCap);
+        require(crowdsaleAgent != address(0));
 
         uint256 value = contributorsWei[_holder];
 
         require(value > 0);
 
         contributorsWei[_holder] = 0;
+        uint256 burnedTokens = crowdsaleAgent.onRefund(_holder, 0);
 
         _holder.transfer(value);
 
-        // @TODO: burn tokens
-        Refund(_holder, value, 0);
+        Refund(_holder, value, burnedTokens);
     }
 }
 

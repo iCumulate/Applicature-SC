@@ -23,7 +23,7 @@ contract Referral is Ownable {
         address _allocator,
         address _ico
     ) public {
-        require(_allocator != address(0) && ico != address(0));
+        require(_allocator != address(0) && _ico != address(0));
         allocator = MintableTokenAllocator(_allocator);
         ico = ICO(_ico);
     }
@@ -47,7 +47,7 @@ contract Referral is Ownable {
         bytes32 _s
     ) public {
         address recoveredAddress = ico.verify(_v, _r, _s);
-        require(ico.signers(recoveredAddress));
+        require(ico.isSucceed() && ico.signers(recoveredAddress));
 
         _amount = _amount.mul(10 ** DECIMALS);
         require(

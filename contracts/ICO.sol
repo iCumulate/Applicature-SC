@@ -13,10 +13,11 @@ contract ICO is RefundableCrowdsale {
     uint256 public constant PRE_ICO_TIER = 0;
 
     uint256 public bonusAmount = uint256(400500000).mul(10 ** 18);
+
     bool public isBonusIncreased;
 
     mapping(address => uint256) public contributorBonuses;
-event Debug(string n, uint256 v);
+
     function ICO(
         MintableTokenAllocator _allocator,
         DistributedDirectContributionForwarder _contributionForwarder,
@@ -36,6 +37,10 @@ event Debug(string n, uint256 v);
         )
     {
         pricingStrategyImpl = TokenDateBonusTiersPricingStrategy(_pricingStrategy);
+    }
+
+    function isSucceed() public view returns (bool) {
+        return uint256(currentState) == uint256(State.Success);
     }
 
     function updateState() public {

@@ -4,10 +4,10 @@ pragma solidity ^0.4.18;
 import './MintableToken.sol';
 
 
-/// @title Burnable
+/// @title MintableBurnableToken
 /// @author Applicature
 /// @notice helper mixed to other contracts to burn tokens
-/// @dev Base class
+/// @dev implementation
 contract MintableBurnableToken is MintableToken {
 
     mapping (address => bool) public burnAgents;
@@ -29,9 +29,10 @@ contract MintableBurnableToken is MintableToken {
         _allowedMinting
     ) {}
 
-    function burn(address _holder) public constant onlyBurnAgents() returns (uint256 balance) {
+    function burn(address _holder) public onlyBurnAgents() returns (uint256 balance) {
         balance = balances[_holder];
         balances[_holder] = 0;
-        Transfer(address(0), _holder, _tokens);
+        Burn(_holder, balance);
+        Transfer(_holder, address(0), balance);
     }
 }
