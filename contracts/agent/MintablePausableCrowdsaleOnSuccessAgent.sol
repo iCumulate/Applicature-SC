@@ -2,27 +2,25 @@ pragma solidity ^0.4.18;
 
 
 import './CrowdsaleAgent.sol';
-import '../crowdsale/Crowdsale.sol';
 import '../token/MintableBurnableToken.sol';
 import '../token/PausableToken.sol';
 
 
-/// @title MintableCrowdsaleOnSuccessAgent
+/// @title MintablePausableCrowdsaleOnSuccessAgent
 /// @author Applicature
 /// @notice Contract which takes actions on state change and contribution
 /// un-pause tokens and disable minting on Crowdsale success
 /// @dev implementation
-contract MintableCrowdsaleOnSuccessAgent is CrowdsaleAgent {
+contract MintablePausableCrowdsaleOnSuccessAgent is CrowdsaleAgent {
 
 
-    Crowdsale public crowdsale;
     MintableBurnableToken public mintableToken;
     PausableToken public pausableToken;
 
     bool public _isInitialized;
 
-    function MintableCrowdsaleOnSuccessAgent(
-        Crowdsale _crowdsale,
+    function MintablePausableCrowdsaleOnSuccessAgent(
+        CSale _crowdsale,
         MintableBurnableToken _mintableToken,
         PausableToken _pausableToken
     ) public CrowdsaleAgent(_crowdsale)
@@ -62,8 +60,8 @@ contract MintableCrowdsaleOnSuccessAgent is CrowdsaleAgent {
     /// @notice Takes actions on state change,
     /// un-pause tokens and disable minting on Crowdsale success
     /// @param _state Crowdsale.State
-    function onStateChange(Crowdsale.State _state) public onlyCrowdsale() {
-        if (_state == Crowdsale.State.Success) {
+    function onStateChange(CSale.State _state) public onlyCrowdsale() {
+        if (_state == CSale.State.Success) {
             mintableToken.disableMinting();
             pausableToken.unpause();
         }
@@ -72,7 +70,7 @@ contract MintableCrowdsaleOnSuccessAgent is CrowdsaleAgent {
     /// @notice Takes actions on refund
     function onRefund(address _contributor, uint256 _tokens) public onlyCrowdsale() returns (uint256 burned) {
         _tokens = _tokens;
-        if (crowdsale.getState() == Crowdsale.State.Refunding) {
+        if (crowdsale.getState() == CSale.State.Refunding) {
             burned = mintableToken.burn(_contributor);
         }
     }

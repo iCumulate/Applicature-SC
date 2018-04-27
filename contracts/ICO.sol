@@ -18,6 +18,8 @@ contract ICO is RefundableCrowdsale {
 
     mapping(address => uint256) public contributorBonuses;
 
+    mapping(uint256 => uint256) public tierCollectedTokens;
+
     function ICO(
         MintableTokenAllocator _allocator,
         DistributedDirectContributionForwarder _contributionForwarder,
@@ -43,18 +45,29 @@ contract ICO is RefundableCrowdsale {
         return uint256(currentState) == uint256(State.Success);
     }
 
+    function isSoftCapMet() public view returns (bool) {
+        return tokensSold >= softCap;
+    }
+
     function updateState() public {
-        (startDate, endDate) = pricingStrategyImpl.getActualDates(tokensSold);
+        (startDate, endDate) = pricingStrategyImpl.getActualDates(getTierSoldTokens());
         super.updateState();
     }
 
     function claimBonuses() public {
-        updateState();
-        State state = getState();
-        if (state == State.Success && contributorBonuses[msg.sender] > 0) {
+        if (isSoftCapMet() && contributorBonuses[msg.sender] > 0) {
             allocator.allocate(msg.sender, contributorBonuses[msg.sender]);
             contributorBonuses[msg.sender] = 0;
         }
+    }
+
+    function getTierSoldTokens() public view returns (uint256) {
+        uint256 tierIndex = pricingStrategyImpl.getTierIndex(0);
+        if (tierIndex < pricingStrategyImpl.getTiersLength()) {
+            return tierCollectedTokens[tierIndex];
+        }
+
+        return 0;
     }
 
     function updateBonusesAmount() internal {
@@ -81,6 +94,33 @@ contract ICO is RefundableCrowdsale {
         }
     }
 
+    function updateTierSoldTokens(uint256 _tokens) internal {
+        uint256 tierIndex = pricingStrategyImpl.getTierIndex(0);
+        require(tierIndex < pricingStrategyImpl.getTiersLength());
+
+        uint256 tokenInWei;
+        uint256 maxTokensCollected;
+        uint256 bonusPercents;
+        uint256 minInvestInWei;
+        uint256 startTime;
+        uint256 endTime;
+        (
+            tokenInWei,
+            maxTokensCollected,
+            bonusPercents,
+            minInvestInWei,
+            startTime,
+            endTime
+        ) = pricingStrategyImpl.tiers(tierIndex);
+
+        if (tierCollectedTokens[tierIndex].add(_tokens) > maxTokensCollected) {
+            tierCollectedTokens[tierIndex.add(1)] = _tokens.add(tierCollectedTokens[tierIndex]).sub(maxTokensCollected);
+            tierCollectedTokens[tierIndex] = maxTokensCollected;
+        } else {
+            tierCollectedTokens[tierIndex] = tierCollectedTokens[tierIndex].add(_tokens);
+        }
+    }
+
     function internalContribution(address _contributor, uint256 _wei) internal {
         updateState();
         updateBonusesAmount();
@@ -94,7 +134,7 @@ contract ICO is RefundableCrowdsale {
         uint256 bonus;
 
         (tokens, tokensExcludingBonus, bonus) = pricingStrategy.getTokens(
-        _contributor, tokensAvailable, tokensSold, _wei, collectedWei);
+        _contributor, tokensAvailable, getTierSoldTokens(), _wei, collectedWei);
 
         require(
             tokensExcludingBonus > 0 &&
@@ -103,11 +143,12 @@ contract ICO is RefundableCrowdsale {
         );
 
         tokensSold = tokensSold.add(tokensExcludingBonus);
+        updateTierSoldTokens(tokensExcludingBonus);
 
         allocator.allocate(_contributor, tokensExcludingBonus);
 
         // transfer only if softcap is reached
-        if (tokensSold >= softCap) {
+        if (isSoftCapMet()) {
             if (msg.value > 0) {
                 contributionForwarder.forward.value(msg.value)();
             }

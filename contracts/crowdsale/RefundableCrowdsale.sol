@@ -15,7 +15,6 @@ import './HardCappedCrowdsale.sol';
 /// with hard and soft limits
 contract RefundableCrowdsale is HardCappedCrowdsale {
 
-
     using SafeMath for uint256;
 
     uint256 public softCap;

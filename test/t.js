@@ -1,3 +1,12 @@
+/*
+    Tests:
+    - deploy contract & check if the params  are equal
+    - check burn
+        - only burners
+        - balance should be 0
+        - should return amount of burned tokens
+*/
+
 var
     ICUToken = artifacts.require("./ICUToken.sol"),
     ICO = artifacts.require("./tests/TestICO.sol"),
@@ -25,173 +34,136 @@ var abi = require('ethereumjs-abi'),
 async function deploy() {
     const token = await ICUToken.new();
     const allocator = await MintableTokenAllocator.new(token.address);
-    const contributionForwarder = await DistributedDirectContributionForwarder.new(100, [etherHolder, etherHolderApplicature], [99, 1]);
-    const pricingStrategy = await TokenDateBonusTiersPricingStrategy.new([
-        //preICO
-        new BigNumber('25000000000000').valueOf(),//price
-        new BigNumber('10000000').mul(precision).valueOf(),//max
-        30,//bonus
-        new BigNumber('0.2').mul(precision).valueOf(),//minInvest
-        icoTill + 3600,//start
-        icoTill + 3600 * 2,
 
-        //ICO
-        new BigNumber('25000000000000').valueOf(),//price
-        new BigNumber('4000000').mul(precision).valueOf(),//max
-        15,//bonus
-        new BigNumber('0.2').mul(precision).valueOf(),//minInvest
-        icoTill + 3600,//start
-        icoTill + 3600 * 2,
-
-        new BigNumber('25000000000000').valueOf(),//price
-        new BigNumber('8000000').mul(precision).valueOf(),//max
-        6,//bonus
-        new BigNumber('0.2').mul(precision).valueOf(),//minInvest
-        icoTill + 3600,//start
-        icoTill + 3600 * 2,
-
-        new BigNumber('25000000000000').valueOf(),//price
-        new BigNumber('1500000').mul(precision).valueOf(),//max
-        3,//bonus
-        new BigNumber('0.2').mul(precision).valueOf(),//minInvest
-        icoTill + 3600,//start
-        icoTill + 3600 * 2
-    ], 18);
-
-    const ico = await ICO.new(allocator.address, contributionForwarder.address, pricingStrategy.address, bountyAddress);
-
-    const agent = await MintableCrowdsaleOnSuccessAgent.new(ico.address, token.address, token.address);
-
-
-    return {token, ico, pricingStrategy, allocator, contributionForwarder, agent};
-}
-
-function makeTransactionKYC(instance, sign, address, value) {
-    'use strict';
-    var h = abi.soliditySHA3(['address', 'address'], [new BN(instance.address.substr(2), 16), new BN(address.substr(2), 16)]),
-        sig = web3.eth.sign(sign, h.toString('hex')).slice(2),
-        r = `0x${sig.slice(0, 64)}`,
-        s = `0x${sig.slice(64, 128)}`,
-        v = web3.toDecimal(sig.slice(128, 130)) + 27;
-
-    var data = abi.simpleEncode('contribute(uint8,bytes32,bytes32)', v, r, s);
-
-    return instance.sendTransaction({value: value, from: address, data: data.toString('hex')});
+    return {token, allocator};
 }
 
 contract('Token', function (accounts) {
 
-    it("deploy", async function () {
-        const {token, ico, pricingStrategy, allocator, contributionForwarder, agent} = await deploy();
+    it("deploy contract & check if the params are equal", async function () {
+        const {token, allocator} = await deploy();
 
-        let currentState = await ico.getState()//Initializing
-        assert.equal(currentState, 1, "state doesn't match");
+        await Utils.checkState({token}, {
+            token: {
+                paused: true,
+                pauseAgents: [
+                    {[accounts[0]]: true},
+                    {[accounts[1]]: false},
+                ],
+                decimals: 18,
+                name: 'iCumulate',
+                symbol: 'ICU',
+                standard: 'ERC20 0.1',
+                maxSupply: new BigNumber('4700000000').mul(precision).valueOf(),
+                allowedMinting: true,
+                mintingAgents: [
+                    {[accounts[0]]: true},
+                    {[accounts[1]]: false},
+                ],
+                stateChangeAgents: [
+                    {[accounts[0]]: false},
+                    {[accounts[1]]: false},
+                ],
+                totalSupply: new BigNumber('0').mul(precision).valueOf(),
+                burnAgents: [
+                    {[accounts[0]]: false},
+                    {[accounts[1]]: false},
+                ],
+            }
+        });
 
-        let isBonusIncreased = await ico.isBonusIncreased.call()
-        assert.equal(isBonusIncreased, false, "isBonusIncreased doesn't match");
+    });
 
-        let ethHolderBalance = await Utils.getEtherBalance(etherHolder).valueOf();
-        let acc1Balance = await Utils.getEtherBalance(accounts[1]).valueOf();
-        let acc2Balance = await Utils.getEtherBalance(accounts[2]).valueOf();
+    it("check burn", async function () {
+        const {token, allocator} = await deploy();
 
         await token.updateMintingAgent(allocator.address, true);
-        await ico.updateWhitelist(accounts[1], true);
-        await ico.setCrowdsaleAgent(agent.address);
-        await allocator.addCrowdsales(ico.address);
+        await allocator.addCrowdsales(accounts[0]);
+        await allocator.allocate(accounts[3], 100);
 
-        currentState = await ico.getState()//BeforeCrowdsale
-        assert.equal(currentState, 2, "state doesn't match");
-
-        await pricingStrategy.updateDates(0, icoSince, icoTill);
-        await ico.updateState();
-
-        currentState = await ico.getState()//InCrowdsale
-        assert.equal(currentState, 3, "state doesn't match");
-
-        isBonusIncreased = await ico.isBonusIncreased.call()
-        assert.equal(isBonusIncreased, false, "isBonusIncreased doesn't match");
-
-        await ico.sendTransaction({value: new BigNumber('1').mul(precision).valueOf(), from: accounts[1]})
-            .then(Utils.receiptShouldSucceed);
-
-        await makeTransactionKYC(ico, bountyAddress, accounts[2], new BigNumber('2').mul(precision))
+        await token.burn(accounts[3], {from: accounts[1]})
             .then(Utils.receiptShouldFailed)
             .catch(Utils.catchReceiptShouldFailed);
 
-        await ico.addSigner(signAddress);
-
-        await makeTransactionKYC(ico, signAddress, accounts[2], new BigNumber('2').mul(precision))
-            .then(Utils.receiptShouldSucceed);
-
-        isBonusIncreased = await ico.isBonusIncreased.call()
-        assert.equal(isBonusIncreased, false, "isBonusIncreased doesn't match");
-
-        await pricingStrategy.updateDates(0, icoSince - 3600 * 2, icoSince - 3600);
-        await ico.updateState();
-
-        currentState = await ico.getState()//BeforeCrowdsale
-        assert.equal(currentState, 2, "state doesn't match");
-
-        await pricingStrategy.updateDates(1, icoSince, icoTill);
-        await ico.updateState();
-
-        currentState = await ico.getState()//InCrowdsale
-        assert.equal(currentState, 3, "state doesn't match");
-
-        let bonuses = await ico.bonusAmount.call()
-        assert.equal(bonuses, new BigNumber('400500000').sub('12000').sub('24000').mul(precision).valueOf(), "bonuses doesn't match");
-
-        await ico.sendTransaction({value: new BigNumber('0.19').mul(precision).valueOf(), from: accounts[1]})
+        await token.updateBurnAgent(accounts[1], true, {from: accounts[4]})
             .then(Utils.receiptShouldFailed)
             .catch(Utils.catchReceiptShouldFailed);
+        await token.updateBurnAgent(accounts[1], true, {from: accounts[0]});
 
-        await ico.sendTransaction({value: new BigNumber('0.2').mul(precision).valueOf(), from: accounts[1]})
-            .then(Utils.receiptShouldSucceed);
+        await Utils.checkState({token}, {
+            token: {
+                paused: true,
+                pauseAgents: [
+                    {[accounts[0]]: true},
+                    {[accounts[1]]: false},
+                ],
+                decimals: 18,
+                name: 'iCumulate',
+                symbol: 'ICU',
+                standard: 'ERC20 0.1',
+                maxSupply: new BigNumber('4700000000').mul(precision).valueOf(),
+                allowedMinting: true,
+                mintingAgents: [
+                    {[accounts[0]]: true},
+                    {[accounts[1]]: false},
+                    {[allocator.address]: true},
+                ],
+                stateChangeAgents: [
+                    {[accounts[0]]: false},
+                    {[accounts[1]]: false},
+                ],
+                totalSupply: new BigNumber('100').valueOf(),
+                burnAgents: [
+                    {[accounts[0]]: false},
+                    {[accounts[1]]: true},
+                ],
+                balanceOf: [
+                    {[accounts[0]]: new BigNumber('0').mul(precision).valueOf()},
+                    {[accounts[1]]: new BigNumber('0').mul(precision).valueOf()},
+                    {[accounts[3]]: new BigNumber('100').valueOf()},
+                ],
+            }
+        });
 
-        bonuses = await ico.bonusAmount.call()
-        //preico hard cap - 10000000
-        //sold - 40000 + 80000 = 120000
-        //bonuses 12000 + 24000 + 1200
-        assert.equal(bonuses, new BigNumber('400500000').sub('12000').sub('1200').sub('24000').add('10000000').sub('120000').mul(precision).valueOf(), "bonuses doesn't match");
+        let burnedAmount = await token.burn.call(accounts[3], {from: accounts[1]})
+        assert.equal(burnedAmount, 100, "burnedAmount doesn't match");
 
-        await pricingStrategy.updateDates(1, icoSince - 3600 * 2, icoSince - 3600);
-        await pricingStrategy.updateDates(2, icoSince - 3600 * 2, icoSince - 3600);
-        await pricingStrategy.updateDates(3, icoSince - 3600 * 2, icoSince - 3600);
-        await ico.updateState();
+        await token.burn(accounts[3], {from: accounts[1]});
 
-        currentState = await ico.getState()//Refunding
-        assert.equal(currentState, 6, "state doesn't match");
-
-        await Utils.balanceShouldEqualTo(token, accounts[1], new BigNumber("48000").mul(precision).valueOf());
-        await Utils.balanceShouldEqualTo(token, accounts[2], new BigNumber("80000").mul(precision).valueOf());
-
-        await ico.claimBonuses({from:accounts[1]});
-        await ico.claimBonuses({from:accounts[2]});
-
-        await Utils.balanceShouldEqualTo(token, accounts[1], new BigNumber("48000").mul(precision).valueOf());
-        await Utils.balanceShouldEqualTo(token, accounts[2], new BigNumber("80000").mul(precision).valueOf());
-
-
-        let acc10Balance = await Utils.getEtherBalance(accounts[1]).valueOf();
-        let acc20Balance = await Utils.getEtherBalance(accounts[2]).valueOf();
-
-        await ico.refund({from:accounts[1]});
-        await ico.refund({from:accounts[2]});
-
-        console.log('acc1 balance before transactions -', new BigNumber(acc1Balance).valueOf());
-        console.log('              after transactions -', new BigNumber(acc10Balance).valueOf());
-        console.log('              after refunddddddd -', new BigNumber(await Utils.getEtherBalance(accounts[1])).valueOf());
-        console.log('                     differencee -', new BigNumber(new BigNumber(await Utils.getEtherBalance(accounts[1]))).sub(acc10Balance).div(precision).valueOf());
-        console.log('                     should be   -', new BigNumber('1').add('0.2').valueOf());
-
-        console.log('acc2 balance before transactions -', new BigNumber(acc2Balance).valueOf());
-        console.log('              after transactions -', new BigNumber(acc20Balance).valueOf());
-        console.log('              after refunddddddd -', new BigNumber(await Utils.getEtherBalance(accounts[2])).valueOf());
-        console.log('                     differencee -', new BigNumber(new BigNumber(await Utils.getEtherBalance(accounts[2]))).sub(acc20Balance).div(precision).valueOf());
-        console.log('                     should be   -', new BigNumber('2').valueOf());
-
-        await Utils.balanceShouldEqualTo(token, accounts[1], new BigNumber("0").mul(precision).valueOf());
-        await Utils.balanceShouldEqualTo(token, accounts[2], new BigNumber("0").mul(precision).valueOf());
+        await Utils.checkState({token}, {
+            token: {
+                paused: true,
+                pauseAgents: [
+                    {[accounts[0]]: true},
+                    {[accounts[1]]: false},
+                ],
+                decimals: 18,
+                name: 'iCumulate',
+                symbol: 'ICU',
+                standard: 'ERC20 0.1',
+                maxSupply: new BigNumber('4700000000').mul(precision).valueOf(),
+                allowedMinting: true,
+                mintingAgents: [
+                    {[accounts[0]]: true},
+                    {[accounts[1]]: false},
+                    {[allocator.address]: true},
+                ],
+                stateChangeAgents: [
+                    {[accounts[0]]: false},
+                    {[accounts[1]]: false},
+                ],
+                totalSupply: new BigNumber('100').valueOf(),
+                burnAgents: [
+                    {[accounts[0]]: false},
+                    {[accounts[1]]: true},
+                ],
+                balanceOf: [
+                    {[accounts[0]]: new BigNumber('0').mul(precision).valueOf()},
+                    {[accounts[1]]: new BigNumber('0').mul(precision).valueOf()},
+                    {[accounts[3]]: new BigNumber('0').valueOf()},
+                ],
+            }
+        });
 
     });
 });

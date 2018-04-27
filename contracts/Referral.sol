@@ -47,7 +47,7 @@ contract Referral is Ownable {
         bytes32 _s
     ) public {
         address recoveredAddress = ico.verify(_v, _r, _s);
-        require(ico.isSucceed() && ico.signers(recoveredAddress));
+        require(ico.isSoftCapMet() && ico.signers(recoveredAddress));
 
         _amount = _amount.mul(10 ** DECIMALS);
         require(

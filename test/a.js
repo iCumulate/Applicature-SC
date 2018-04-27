@@ -4,7 +4,7 @@ var
     MintableTokenAllocator = artifacts.require("./allocator/MintableTokenAllocator.sol"),
     DistributedDirectContributionForwarder = artifacts.require("./contribution/DistributedDirectContributionForwarder.sol"),
     TokenDateBonusTiersPricingStrategy = artifacts.require("./pricing/TokenDateBonusTiersPricingStrategy.sol"),
-    MintableCrowdsaleOnSuccessAgent = artifacts.require("./agent/MintableCrowdsaleOnSuccessAgent.sol"),
+    MintablePausableCrowdsaleOnSuccessAgent = artifacts.require("./agent/MintablePausableCrowdsaleOnSuccessAgent.sol"),
     ICUAllocation = artifacts.require("./ICUAllocation.sol"),
     PeriodicTokenVesting = artifacts.require("./PeriodicTokenVesting.sol"),
 
@@ -63,12 +63,13 @@ async function deploy() {
 
     const ico = await ICO.new(allocator.address, contributionForwarder.address, pricingStrategy.address);
 
-    const agent = await MintableCrowdsaleOnSuccessAgent.new(ico.address, token.address, token.address);
+    const agent = await MintablePausableCrowdsaleOnSuccessAgent.new(ico.address, token.address, token.address);
 
     const allocation = await ICUAllocation.new(bountyAddress);
 
     return {token, ico, pricingStrategy, allocator, contributionForwarder, agent, allocation};
 }
+
 contract('Allocation', function (accounts) {
 
     it("check that METHODS could be called only by owner | setICOEndTime | createVesting | allocateVesting | revokeVesting", async function () {

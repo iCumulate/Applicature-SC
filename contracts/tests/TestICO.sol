@@ -25,4 +25,12 @@ contract TestICO is ICO {
         tokensSold = _value;
     }
 
+    function testChangeState(Crowdsale.State _value) public {
+        currentState = _value;
+    }
+
+    function testUpdateTierSoldTokens(uint256 _tokens) public {
+        super.updateTierSoldTokens(_tokens);
+    }
+
 }

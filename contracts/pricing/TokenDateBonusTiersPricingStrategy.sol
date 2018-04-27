@@ -61,6 +61,11 @@ contract TokenDateBonusTiersPricingStrategy is PricingStrategy {
         return tiers.length;
     }
 
+    /// @return tiers length
+    function getTiersLength() public view returns (uint256) {
+        return tiers.length;
+    }
+
     /// @return actual dates
     function getActualDates(uint256 _tokensSold) public constant returns (uint256 startDate, uint256 endDate) {
         uint256 tierIndex = getTierIndex(_tokensSold);
@@ -100,7 +105,7 @@ contract TokenDateBonusTiersPricingStrategy is PricingStrategy {
 
         uint256 tierIndex = getTierIndex(_tokensSold);
 
-        if (tierIndex < tiers.length && _weiAmount < tiers[tierIndex].minInvestInWei) {
+        if (tierIndex == tiers.length || _weiAmount < tiers[tierIndex].minInvestInWei) {
             return (0, 0, 0);
         }
 
@@ -111,22 +116,24 @@ contract TokenDateBonusTiersPricingStrategy is PricingStrategy {
 
             uint256 tierTokens = remainingWei.mul(uint256(10) ** decimals).div(tiers[i].tokenInWei);
 
-            if (newTokensSold.add(tierTokens) > tiers[i].maxTokensCollected) {
-                uint256 diff = tiers[i].maxTokensCollected.sub(newTokensSold);
+            if (tiers[i].startDate > block.timestamp) {
+                break;
+            }
 
+            if (newTokensSold.add(tierTokens) > tiers[i].maxTokensCollected) {
+
+                uint256 diff = tiers[i].maxTokensCollected.sub(newTokensSold);
                 tokens = tokens.add(diff);
                 bonus = bonus.add(diff.mul(tiers[i].bonusPercents).div(100));
+                remainingWei = remainingWei.sub(diff.div(uint256(10) ** decimals).mul(tiers[i].tokenInWei));
+                newTokensSold = 0;
 
-                remainingWei = remainingWei.sub(diff.mul(tiers[i].tokenInWei));
-
-                newTokensSold = newTokensSold.add(diff);
             } else {
-                remainingWei = 0;
 
+                remainingWei = 0;
                 tokens = tokens.add(tierTokens);
                 bonus = bonus.add(tierTokens.mul(tiers[i].bonusPercents).div(100));
 
-                newTokensSold = newTokensSold.add(tierTokens);
             }
 
             if (remainingWei == 0) {
@@ -154,19 +161,31 @@ contract TokenDateBonusTiersPricingStrategy is PricingStrategy {
 
         uint256 tierIndex = getTierIndex(_tokensSold);
 
+        if (tierIndex == tiers.length) {
+            return (0, 0);
+        }
+
         uint256 remainingTokens = _tokens;
         uint256 newTokensSold = _tokensSold;
 
         for (uint i = tierIndex; i < tiers.length; i++) {
+
+            if (tiers[i].startDate > block.timestamp) {
+                break;
+            }
 
             if (newTokensSold.add(remainingTokens) > tiers[i].maxTokensCollected) {
                 uint256 diff = tiers[i].maxTokensCollected.sub(newTokensSold);
 
                 remainingTokens = remainingTokens.sub(diff);
 
-                totalWeiAmount = totalWeiAmount.add(diff.mul(tiers[i].tokenInWei));
+                tokensBonus = tokensBonus.add(diff.mul(tiers[i].bonusPercents).div(100));
+                totalWeiAmount = totalWeiAmount.add(diff.div(uint256(10) ** decimals).mul(tiers[i].tokenInWei));
+
+                newTokensSold = 0;
             } else {
-                totalWeiAmount = totalWeiAmount.add(remainingTokens.mul(tiers[i].tokenInWei));
+                totalWeiAmount = totalWeiAmount.add(remainingTokens.div(uint256(10) ** decimals).mul(tiers[i].tokenInWei));
+                tokensBonus = tokensBonus.add(remainingTokens.mul(tiers[i].bonusPercents).div(100));
 
                 remainingTokens = 0;
             }
@@ -180,7 +199,11 @@ contract TokenDateBonusTiersPricingStrategy is PricingStrategy {
             totalWeiAmount = 0;
         }
 
-        return (totalWeiAmount, 0);
+        if (totalWeiAmount < tiers[tierIndex].minInvestInWei) {
+            return (0, 0);
+        }
+
+        return (totalWeiAmount, tokensBonus);
     }
 
     /// @notice Check whether contract is initialised

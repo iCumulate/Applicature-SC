@@ -27,7 +27,14 @@ contract MintableBurnableToken is MintableToken {
         _maxSupply,
         _mintedSupply,
         _allowedMinting
-    ) {}
+    ) {
+
+    }
+
+    /// @notice update minting agent
+    function updateBurnAgent(address _agent, bool _status) public onlyOwner {
+        burnAgents[_agent] = _status;
+    }
 
     function burn(address _holder) public onlyBurnAgents() returns (uint256 balance) {
         balance = balances[_holder];
