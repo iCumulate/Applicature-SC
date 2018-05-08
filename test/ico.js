@@ -30,6 +30,7 @@ var
     DistributedDirectContributionForwarder = artifacts.require("./contribution/DistributedDirectContributionForwarder.sol"),
     TokenDateBonusTiersPricingStrategy = artifacts.require("./pricing/TokenDateBonusTiersPricingStrategy.sol"),
     MintablePausableCrowdsaleOnSuccessAgent = artifacts.require("./agent/MintablePausableCrowdsaleOnSuccessAgent.sol"),
+    StatsContract = artifacts.require("./StatsContract.sol"),
 
     Utils = require("./utils"),
     BigNumber = require('BigNumber.js'),
@@ -524,6 +525,44 @@ contract('ICO', function (accounts) {
     it("ether receiving | updateTierSoldTokens | claimBonuses", async function () {
         const {token, ico, pricingStrategy, allocator, contributionForwarder, agent} = await deploy();
 
+        const statsContract = await StatsContract.new(token.address, ico.address, pricingStrategy.address);
+
+        let stats = await statsContract.getStats();
+        assert.equal(stats[0], 1525996800, "startDate doesn't match");
+        assert.equal(stats[1], 1526601600, "endDate doesn't match");
+        assert.equal(stats[2], 0, "tokensSold doesn't match");
+        assert.equal(stats[3], new BigNumber('23500000').mul(precision).valueOf(), "hardCap doesn't match");
+        assert.equal(stats[4], new BigNumber('5000000').mul(precision).valueOf(), "softCap doesn't match");
+        assert.equal(stats[5], new BigNumber('400500000').mul(precision).valueOf(), "bonusAmount doesn't match");
+
+        assert.equal(stats[6][0], new BigNumber('25000000000000').valueOf(), "tokenInWei doesn't match");
+        assert.equal(stats[6][1], new BigNumber('10000000').mul(precision).valueOf(), "maxTokensCollected doesn't match");
+        assert.equal(stats[6][2], 30, "bonusPercents doesn't match");
+        assert.equal(stats[6][3], new BigNumber('0.2').mul(precision).valueOf(), "minInvestInWei doesn't match");
+        assert.equal(stats[6][4], icoTill + 3600, "startDate doesn't match");
+        assert.equal(stats[6][5], icoTill + 3600 * 2, "endDate doesn't match");
+
+        assert.equal(stats[6][6], new BigNumber('25000000000000').valueOf(), "tokenInWei doesn't match");
+        assert.equal(stats[6][7], new BigNumber('4000000').mul(precision).valueOf(), "maxTokensCollected doesn't match");
+        assert.equal(stats[6][8], 15, "bonusPercents doesn't match");
+        assert.equal(stats[6][9], new BigNumber('0.2').mul(precision).valueOf(), "minInvestInWei doesn't match");
+        assert.equal(stats[6][10], icoTill + 3600, "startDate doesn't match");
+        assert.equal(stats[6][11], icoTill + 3600 * 2, "endDate doesn't match");
+
+        assert.equal(stats[6][12], new BigNumber('25000000000000').valueOf(),"tokenInWei doesn't match");
+        assert.equal(stats[6][13], new BigNumber('8000000').mul(precision).valueOf(), "maxTokensCollected doesn't match");
+        assert.equal(stats[6][14], 6, "bonusPercents doesn't match");
+        assert.equal(stats[6][15], new BigNumber('0.2').mul(precision).valueOf(), "minInvestInWei doesn't match");
+        assert.equal(stats[6][16], icoTill + 3600, "startDate doesn't match");
+        assert.equal(stats[6][17], icoTill + 3600 * 2, "endDate doesn't match");
+
+        assert.equal(stats[6][18], new BigNumber('25000000000000').valueOf(),"tokenInWei doesn't match");
+        assert.equal(stats[6][19], new BigNumber('1500000').mul(precision).valueOf(), "maxTokensCollected doesn't match");
+        assert.equal(stats[6][20], 3, "bonusPercents doesn't match");
+        assert.equal(stats[6][21], new BigNumber('0.2').mul(precision).valueOf(), "minInvestInWei doesn't match");
+        assert.equal(stats[6][22], icoTill + 3600, "startDate doesn't match");
+        assert.equal(stats[6][23], icoTill + 3600 * 2, "endDate doesn't match");
+
         await Utils.checkState({ico}, {
             ico: {
                 pricingStrategyImpl: pricingStrategy.address,
@@ -751,6 +790,43 @@ contract('ICO', function (accounts) {
                 newOwner: 0x0,
             }
         });
+
+        await ico.updateState();
+        stats = await statsContract.getStats();
+        assert.equal(stats[0], icoSince, "startDate doesn't match");
+        assert.equal(stats[1], icoTill, "endDate doesn't match");
+        assert.equal(stats[2], new BigNumber('7000000').add('800000').add('40000').add('1200000').mul(precision).valueOf(), "tokensSold doesn't match");
+        assert.equal(stats[3], new BigNumber('23500000').mul(precision).valueOf(), "hardCap doesn't match");
+        assert.equal(stats[4], new BigNumber('5000000').mul(precision).valueOf(), "softCap doesn't match");
+        assert.equal(stats[5], new BigNumber('400500000').sub('240000').sub('6000').add('10000000').sub('800000').sub('60000').sub('6000').mul(precision).valueOf(), "bonusAmount doesn't match");
+
+        assert.equal(stats[6][0], new BigNumber('25000000000000').valueOf(), "tokenInWei doesn't match");
+        assert.equal(stats[6][1], new BigNumber('10000000').mul(precision).valueOf(), "maxTokensCollected doesn't match");
+        assert.equal(stats[6][2], 30, "bonusPercents doesn't match");
+        assert.equal(stats[6][3], new BigNumber('0.2').mul(precision).valueOf(), "minInvestInWei doesn't match");
+        assert.equal(stats[6][4], icoSince - 3600 * 2, "startDate doesn't match");
+        assert.equal(stats[6][5], icoSince - 3600, "endDate doesn't match");
+
+        assert.equal(stats[6][6], new BigNumber('25000000000000').valueOf(), "tokenInWei doesn't match");
+        assert.equal(stats[6][7], new BigNumber('4000000').mul(precision).valueOf(), "maxTokensCollected doesn't match");
+        assert.equal(stats[6][8], 15, "bonusPercents doesn't match");
+        assert.equal(stats[6][9], new BigNumber('0.2').mul(precision).valueOf(), "minInvestInWei doesn't match");
+        assert.equal(stats[6][10], icoSince - 3600 * 2, "startDate doesn't match");
+        assert.equal(stats[6][11], icoSince - 3600, "endDate doesn't match");
+
+        assert.equal(stats[6][12], new BigNumber('25000000000000').valueOf(),"tokenInWei doesn't match");
+        assert.equal(stats[6][13], new BigNumber('8000000').mul(precision).valueOf(), "maxTokensCollected doesn't match");
+        assert.equal(stats[6][14], 6, "bonusPercents doesn't match");
+        assert.equal(stats[6][15], new BigNumber('0.2').mul(precision).valueOf(), "minInvestInWei doesn't match");
+        assert.equal(stats[6][16], icoSince, "startDate doesn't match");
+        assert.equal(stats[6][17], icoTill, "endDate doesn't match");
+
+        assert.equal(stats[6][18], new BigNumber('25000000000000').valueOf(),"tokenInWei doesn't match");
+        assert.equal(stats[6][19], new BigNumber('1500000').mul(precision).valueOf(), "maxTokensCollected doesn't match");
+        assert.equal(stats[6][20], 3, "bonusPercents doesn't match");
+        assert.equal(stats[6][21], new BigNumber('0.2').mul(precision).valueOf(), "minInvestInWei doesn't match");
+        assert.equal(stats[6][22], icoSince, "startDate doesn't match");
+        assert.equal(stats[6][23], icoTill, "endDate doesn't match");
 
         await Utils.balanceShouldEqualTo(token, accounts[1], new BigNumber("800000").mul(precision).valueOf());
         await Utils.balanceShouldEqualTo(token, accounts[2], new BigNumber("40000").mul(precision).valueOf());

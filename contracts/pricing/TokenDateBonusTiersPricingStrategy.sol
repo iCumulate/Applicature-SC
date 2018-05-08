@@ -220,5 +220,17 @@ contract TokenDateBonusTiersPricingStrategy is PricingStrategy {
             tier.endDate = _end;
         }
     }
+
+    function getArrayOfTiers() public view returns (uint256[24] tiersData) {
+        uint256 j = 0;
+        for (uint256 i = 0; i < tiers.length; i++) {
+            tiersData[j++] = uint256(tiers[i].tokenInWei);
+            tiersData[j++] = uint256(tiers[i].maxTokensCollected);
+            tiersData[j++] = uint256(tiers[i].bonusPercents);
+            tiersData[j++] = uint256(tiers[i].minInvestInWei);
+            tiersData[j++] = uint256(tiers[i].startDate);
+            tiersData[j++] = uint256(tiers[i].endDate);
+        }
+    }
 }
 
