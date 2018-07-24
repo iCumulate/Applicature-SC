@@ -1,4 +1,4 @@
-pragma solidity ^0.4.18;
+pragma solidity ^0.4.23;
 
 import './ContributionForwarder.sol';
 
@@ -9,6 +9,7 @@ import './ContributionForwarder.sol';
 contract DistributedDirectContributionForwarder is ContributionForwarder {
     Receiver[] public receivers;
     uint256 public proportionAbsMax;
+    bool public isInitialized_;
 
     struct Receiver {
         address receiver;
@@ -17,11 +18,7 @@ contract DistributedDirectContributionForwarder is ContributionForwarder {
     }
 
     // @TODO: should we use uint256 [] for receivers & proportions?
-    function DistributedDirectContributionForwarder(
-        uint256 _proportionAbsMax, address[] _receivers, uint256[] _proportions
-    )
-    public
-    {
+    constructor(uint256 _proportionAbsMax, address[] _receivers, uint256[] _proportions) public {
         proportionAbsMax = _proportionAbsMax;
 
         require(_receivers.length == _proportions.length);
@@ -39,12 +36,13 @@ contract DistributedDirectContributionForwarder is ContributionForwarder {
         }
 
         require(totalProportion == proportionAbsMax);
+        isInitialized_ = true;
     }
 
     /// @notice Check whether contract is initialised
     /// @return true if initialized
     function isInitialized() public constant returns (bool) {
-        return true;
+        return isInitialized_;
     }
 
     function internalForward() internal {
@@ -63,7 +61,7 @@ contract DistributedDirectContributionForwarder is ContributionForwarder {
 
             receiver.receiver.transfer(value);
 
-            ContributionForwarded(receiver.receiver, value);
+            emit ContributionForwarded(receiver.receiver, value);
         }
 
         weiForwarded = weiForwarded.add(transferred);

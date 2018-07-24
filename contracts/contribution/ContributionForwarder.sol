@@ -1,7 +1,7 @@
-pragma solidity ^0.4.18;
+pragma solidity ^0.4.23;
 
 
-import './../../node_modules/zeppelin-solidity/contracts/math/SafeMath.sol';
+import 'openzeppelin-solidity/contracts/math/SafeMath.sol';
 
 
 /// @title ContributionForwarder
@@ -9,7 +9,6 @@ import './../../node_modules/zeppelin-solidity/contracts/math/SafeMath.sol';
 /// @notice Contract is responsible for distributing collected ethers, that are received from CrowdSale.
 /// @dev Base class
 contract ContributionForwarder {
-
 
     using SafeMath for uint256;
 

@@ -1,9 +1,9 @@
-pragma solidity ^0.4.18;
+pragma solidity ^0.4.23;
 
 
-import './../../node_modules/zeppelin-solidity/contracts/math/SafeMath.sol';
+import 'openzeppelin-solidity/contracts/math/SafeMath.sol';
 import './TokenAllocator.sol';
-import '../token/MintableToken.sol';
+import '../token/erc20/MintableToken.sol';
 
 
 /// @title MintableTokenAllocator
@@ -12,12 +12,11 @@ import '../token/MintableToken.sol';
 /// @dev implementation
 contract MintableTokenAllocator is TokenAllocator {
 
-
     using SafeMath for uint256;
 
     MintableToken public token;
 
-    function MintableTokenAllocator(MintableToken _token) public {
+    constructor(MintableToken _token) public {
         require(address(0) != address(_token));
         token = _token;
     }

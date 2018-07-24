@@ -1,6 +1,5 @@
 pragma solidity ^0.4.18;
 
-
 import './ContributionForwarder.sol';
 
 
@@ -10,10 +9,9 @@ import './ContributionForwarder.sol';
 /// @dev implementation
 contract DirectContributionForwarder is ContributionForwarder {
 
-
     address public receiver;
 
-    function DirectContributionForwarder(address _receiver) public {
+    constructor(address _receiver) public {
         receiver = _receiver;
     }
 
@@ -28,7 +26,7 @@ contract DirectContributionForwarder is ContributionForwarder {
 
         weiForwarded = weiForwarded.add(msg.value);
 
-        ContributionForwarded(receiver, msg.value);
+        emit ContributionForwarded(receiver, msg.value);
     }
 
 }

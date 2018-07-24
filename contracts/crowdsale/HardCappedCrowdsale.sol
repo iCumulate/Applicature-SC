@@ -1,8 +1,8 @@
-pragma solidity ^0.4.18;
+pragma solidity ^0.4.23;
 
 
-import './../../node_modules/zeppelin-solidity/contracts/math/SafeMath.sol';
-import './Crowdsale.sol';
+import 'openzeppelin-solidity/contracts/math/SafeMath.sol';
+import './CrowdsaleMultyAgentImpl.sol';
 import '../allocator/TokenAllocator.sol';
 import '../contribution/ContributionForwarder.sol';
 import '../pricing/PricingStrategy.sol';
@@ -13,14 +13,13 @@ import '../agent/CrowdsaleAgent.sol';
 /// @author Applicature
 /// @notice Contract is responsible for collecting, refunding, allocating tokens during different stages of Crowdsale.
 /// with hard limit
-contract HardCappedCrowdsale is Crowdsale {
-
+contract HardCappedCrowdsale is CrowdsaleMultyAgentImpl {
 
     using SafeMath for uint256;
 
     uint256 public hardCap;
 
-    function HardCappedCrowdsale(
+    constructor(
         TokenAllocator _allocator,
         ContributionForwarder _contributionForwarder,
         PricingStrategy _pricingStrategy,
@@ -30,9 +29,7 @@ contract HardCappedCrowdsale is Crowdsale {
         bool _allowSigned,
         bool _allowAnonymous,
         uint256 _hardCap
-    )
-    public
-    Crowdsale(
+    ) public CrowdsaleMultyAgentImpl(
         _allocator,
         _contributionForwarder,
         _pricingStrategy,
@@ -41,8 +38,7 @@ contract HardCappedCrowdsale is Crowdsale {
         _allowWhitelisted,
         _allowSigned,
         _allowAnonymous
-    )
-    {
+    ) {
         hardCap = _hardCap;
     }
 
@@ -51,12 +47,19 @@ contract HardCappedCrowdsale is Crowdsale {
         State state = super.getState();
 
         if (state == State.InCrowdsale) {
-            if (tokensSold == hardCap) {
+            if (isHardCapAchieved(0)) {
                 return State.Success;
             }
         }
 
         return state;
+    }
+
+    function isHardCapAchieved(uint256 _value) public view returns (bool) {
+        if (hardCap <= tokensSold.add(_value)) {
+            return true;
+        }
+        return false;
     }
 
     function internalContribution(address _contributor, uint256 _wei) internal {
@@ -70,10 +73,12 @@ contract HardCappedCrowdsale is Crowdsale {
         uint256 bonus;
 
         (tokens, tokensExcludingBonus, bonus) = pricingStrategy.getTokens(
-            _contributor, tokensAvailable, tokensSold, msg.value, collectedWei);
+            _contributor, tokensAvailable, tokensSold, _wei, collectedWei);
 
-        require(tokens < tokensAvailable);
-        require(hardCap > tokensSold.add(tokens));
+        require(
+            tokens != 0
+            && false == isHardCapAchieved(tokens.sub(1))//sub(1) to allow last contribution
+        );
 
         tokensSold = tokensSold.add(tokens);
 
@@ -82,8 +87,8 @@ contract HardCappedCrowdsale is Crowdsale {
         if (msg.value > 0) {
             contributionForwarder.forward.value(msg.value)();
         }
-
-        Contribution(_contributor, _wei, tokensExcludingBonus, bonus);
+        crowdsaleAgent.onContribution(_contributor, _wei, tokensExcludingBonus, bonus);
+        emit Contribution(_contributor, _wei, tokensExcludingBonus, bonus);
     }
 }
 

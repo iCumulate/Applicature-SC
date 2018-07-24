@@ -1,4 +1,4 @@
-pragma solidity ^0.4.23;
+pragma solidity ^0.4.18;
 
 
 import './Agent.sol';
@@ -9,21 +9,26 @@ import '../crowdsale/Crowdsale.sol';
 /// @author Applicature
 /// @notice Contract which takes actions on state change and contribution
 /// @dev Base class
-contract CrowdsaleAgent is Agent {
+contract CrowdsaleMultipleAgent is Agent {
 
 
-    Crowdsale public crowdsale;
+//    Crowdsale public crowdsales;
+    mapping(address => bool) public crowdsales;
     bool public _isInitialized;
 
     modifier onlyCrowdsale() {
-        require(msg.sender == address(crowdsale));
+        require(crowdsales[msg.sender] == true);
         _;
     }
 
-    constructor(Crowdsale _crowdsale) public {
-        crowdsale = _crowdsale;
+    constructor(Crowdsale[] _crowdsales) public {
 
-        if (address(0) != address(_crowdsale)) {
+        for (uint256 i = 0; i < _crowdsales.length; i++) {
+            require(_crowdsales[i] != address(0));
+            crowdsales[_crowdsales[i]] = true;
+        }
+
+        if (_crowdsales.length > 0) {
             _isInitialized = true;
         } else {
             _isInitialized = false;

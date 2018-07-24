@@ -1,8 +1,9 @@
-pragma solidity 0.4.19;
+pragma solidity ^0.4.24;
 
 import "./PeriodicTokenVesting.sol";
-import "zeppelin-solidity/contracts/token/ERC20/ERC20Basic.sol";
+import "openzeppelin-solidity/contracts/token/ERC20/ERC20Basic.sol";
 import {MintableTokenAllocator as Allocator} from './allocator/MintableTokenAllocator.sol';
+import {ICUToken as Token} from './ICUToken.sol';
 
 
 contract ICUAllocation is Ownable {
@@ -28,9 +29,7 @@ contract ICUAllocation is Ownable {
 
     event VestingRevoked(address _vesting);
 
-    function ICUAllocation(
-        address _bountyAddress
-    ) public {
+    constructor(address _bountyAddress) public {
         require(_bountyAddress != address(0));
         bountyAddress = _bountyAddress;
     }
@@ -41,7 +40,7 @@ contract ICUAllocation is Ownable {
 
     function allocateBounty(Allocator _allocator) public onlyOwner {
         if (bountyAddress != address(0)) {
-            _allocator.allocate(bountyAddress, uint256(47000000000000000000000000));
+            _allocator.allocate(bountyAddress, 47000000e18);
             bountyAddress = address(0);
         }
     }
@@ -53,19 +52,27 @@ contract ICUAllocation is Ownable {
     ) public onlyOwner {
         require(_amount > 0);
         _allocator.allocate(address(_vesting), _amount);
+        Token token = Token(address(_allocator.token()));
+        token.log(_vesting.beneficiary(), _amount, icoEndTime);
     }
 
     function createVesting(
-        address _beneficiary, uint256 _start, uint256 _cliff, uint256 _duration, uint256 _periods, bool _revocable
+        address _beneficiary,
+        uint256 _start,
+        uint256 _cliff,
+        uint256 _duration,
+        uint256 _periods,
+        bool _revocable,
+        address _unreleasedHolder
     ) public onlyOwner returns (PeriodicTokenVesting) {
         require(icoEndTime > 0 && icoEndTime.add(uint256(1 years).div(2)) > _start);
         PeriodicTokenVesting vesting = new PeriodicTokenVesting(
-            _beneficiary, _start, _cliff, _duration, _periods, _revocable
+            _beneficiary, _start, _cliff, _duration, _periods, _revocable, _unreleasedHolder
         );
 
         vestings.push(vesting);
 
-        VestingCreated(vesting, _beneficiary, _start, _cliff, _duration, _periods, _revocable);
+        emit VestingCreated(vesting, _beneficiary, _start, _cliff, _duration, _periods, _revocable);
 
         return vesting;
     }
@@ -73,6 +80,6 @@ contract ICUAllocation is Ownable {
     function revokeVesting(PeriodicTokenVesting _vesting, ERC20Basic token) public onlyOwner() {
         _vesting.revoke(token);
 
-        VestingRevoked(_vesting);
+        emit VestingRevoked(_vesting);
     }
 }

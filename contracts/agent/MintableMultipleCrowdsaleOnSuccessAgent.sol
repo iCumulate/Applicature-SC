@@ -1,30 +1,25 @@
-pragma solidity ^0.4.23;
+pragma solidity ^0.4.18;
 
 
-import './CrowdsaleAgent.sol';
+import './CrowdsaleMultipleAgent.sol';
 import '../crowdsale/Crowdsale.sol';
 import '../token/erc20/MintableToken.sol';
 
 
-/// @title MintableCrowdsaleOnSuccessAgent
+/// @title MintableMultipleCrowdsaleOnSuccessAgent
 /// @author Applicature
 /// @notice Contract which takes actions on state change and contribution
 /// un-pause tokens and disable minting on Crowdsale success
 /// @dev implementation
-contract MintableCrowdsaleOnSuccessAgent is CrowdsaleAgent {
+contract MintableMultipleCrowdsaleOnSuccessAgent is CrowdsaleMultipleAgent {
 
-    Crowdsale public crowdsale;
     MintableToken public token;
     bool public _isInitialized;
 
-    constructor(Crowdsale _crowdsale, MintableToken _token)
-    public CrowdsaleAgent(_crowdsale)
-    {
-        crowdsale = _crowdsale;
+    constructor(Crowdsale[] _crowdsales, MintableToken _token) public CrowdsaleMultipleAgent(_crowdsales) {
         token = _token;
 
-        if (address(0) != address(_token) &&
-        address(0) != address(_crowdsale)) {
+        if (address(0) != address(_token)) {
             _isInitialized = true;
         } else {
             _isInitialized = false;
@@ -44,16 +39,20 @@ contract MintableCrowdsaleOnSuccessAgent is CrowdsaleAgent {
         _weiAmount = _weiAmount;
         _tokens = _tokens;
         _bonus = _bonus;
-        // TODO: add impl
     }
 
     /// @notice Takes actions on state change,
     /// un-pause tokens and disable minting on Crowdsale success
     /// @param _state Crowdsale.State
     function onStateChange(Crowdsale.State _state) public onlyCrowdsale() {
-        if (_state == Crowdsale.State.Success) {
+        if (_state == Crowdsale.State.Success || _state == Crowdsale.State.Finalized) {
             token.disableMinting();
         }
+    }
+
+    function onRefund(address _contributor, uint256 _tokens) public onlyCrowdsale() returns (uint256 burned) {
+        _contributor = _contributor;
+        _tokens = _tokens;
     }
 }
 
