@@ -90,11 +90,17 @@ contract('Allocation', function (accounts) {
             allocation
         } = await deploy();
 
+        await token.updateStateChangeAgent(accounts[0], true);
+        await token.setUnlockTime(icoSince);
+        await token.setIsSoftCapAchieved();
+
         await allocation.setICOEndTime(yearAgo, {from: accounts[0]})
             .then(Utils.receiptShouldSucceed);
         await allocation.setICOEndTime(yearAgo, {from: accounts[1]})
             .then(Utils.receiptShouldFailed)
             .catch(Utils.catchReceiptShouldFailed);
+        await allocation.setICOEndTime(icoTill, {from: accounts[0]})
+            .then(Utils.receiptShouldSucceed);
         await allocation.createVesting(accounts[0], icoTill, 0, 31556926, 3, true, applicatureHolder, {from: accounts[1]})
             .then(Utils.receiptShouldFailed)
             .catch(Utils.catchReceiptShouldFailed);
@@ -110,7 +116,7 @@ contract('Allocation', function (accounts) {
 
         await token.updateMintingAgent(allocator.address, true);
         await allocator.addCrowdsales(allocation.address);
-        await token.updateLockupAgent(allocator.address, true);
+        await token.updateLockupAgent(allocation.address, true);
         // await token.unpause();
         await allocation.allocateVesting(vesting.address, allocator.address, 28, {from: accounts[1]})
             .then(Utils.receiptShouldFailed)
@@ -118,21 +124,22 @@ contract('Allocation', function (accounts) {
         await allocation.allocateVesting(vesting.address, allocator.address, 0, {from: accounts[0]})
             .then(Utils.receiptShouldFailed)
             .catch(Utils.catchReceiptShouldFailed);
+
         await allocation.allocateVesting(vesting.address, allocator.address, 1000, {from: accounts[0]})
+            .then(Utils.receiptShouldSucceed)
 
         assert.equal(new BigNumber(await vesting.vestedAmount.call(token.address)), 0, 'vestedAmount is not equal')
-
 
         assert.equal(await vesting.revoked.call(token.address), false, 'revoked is not equal')
         await allocation.revokeVesting(vesting.address, token.address, {from: accounts[1]})
             .then(Utils.receiptShouldFailed)
             .catch(Utils.catchReceiptShouldFailed);
         assert.equal(await vesting.revoked.call(token.address), false, 'revoked is not equal')
-        await allocation.revokeVesting(vesting.address, token.address, {from: accounts[0]});
+
+        await allocation.revokeVesting(vesting.address, token.address, {from: accounts[0]})
         assert.equal(await vesting.revoked.call(token.address), true, 'revoked is not equal')
 
-
-        await  allocation.createVesting(accounts[2], parseInt(new Date().getTime() / 1000) - 1, 0, 60, 2, true, applicatureHolder)
+        await allocation.createVesting(accounts[2], parseInt(new Date().getTime() / 1000) - 1, 0, 60, 2, true, applicatureHolder)
             .then(Utils.receiptShouldSucceed)
 
         vesting = await PeriodicTokenVesting.at(await allocation.vestings.call(1));

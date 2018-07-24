@@ -17,7 +17,7 @@ contract ICUToken is OpenZeppelinERC20, MintableBurnableToken, TimeLockedToken, 
     OpenZeppelinERC20(0, "iCumulate", 18, "ICU", false)
     MintableBurnableToken(4700000000e18, 0, true)
     TimeLockedToken(_unlockTokensTime)
-    LockupContract(uint256(1 years).div(2), 0, 0) {
+    LockupContract(uint256(365 days).div(2), 0, 0) {
 
     }
 
