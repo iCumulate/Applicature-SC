@@ -19,7 +19,7 @@ contract ICUCrowdsale is RefundableCrowdsale {
     uint256 public usdCollected;
 
     mapping(address => uint256) public contributorBonuses;
-event Debug(string n, uint256 v);
+
     constructor(
         MintableTokenAllocator _allocator,
         DistributedDirectContributionForwarder _contributionForwarder,
@@ -86,7 +86,8 @@ event Debug(string n, uint256 v);
         uint256 bonus;
 
         (tokens, tokensExcludingBonus, bonus) = pricingStrategy.getTokens(
-            _contributor, tokensAvailable, tokensSold, _wei, collectedWei);
+            _contributor, tokensAvailable, tokensSold, _wei, collectedWei
+        );
 
         require(tokens > 0);
 
@@ -110,7 +111,7 @@ event Debug(string n, uint256 v);
 
         if (bonusAmount > 0) {
             if (bonusAmount >= bonus) {
-                bonusAmount = bonusAmount.sub(bonus);
+                bonusAmount -= bonus;
             } else {
                 bonus = bonusAmount;
                 bonusAmount = 0;

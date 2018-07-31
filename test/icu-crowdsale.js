@@ -229,23 +229,23 @@ contract('ICUCrowdsale', function (accounts) {
                 await strategy.updateDates(1, icoTill + 1600, icoTill + 2600);
 
                 await crowdsale.updateWhitelist(accounts[1], true);
-                // await crowdsale.sendTransaction({value: new BigNumber('1').mul(precision).valueOf(), from: accounts[1]})
-                //     .then(Utils.receiptShouldFailed)
-                //     .catch(Utils.catchReceiptShouldFailed);
-console.log('1');
+                await crowdsale.sendTransaction({value: new BigNumber('1').mul(precision).valueOf(), from: accounts[1]})
+                    .then(Utils.receiptShouldFailed)
+                    .catch(Utils.catchReceiptShouldFailed);
+
                 await strategy.updateDates(0, icoSince, icoTill);
                 await strategy.updateDates(1, icoTill + 1600, icoTill + 2600);
-console.log('1.5');
+
                 await crowdsale.sendTransaction({value: new BigNumber('20').mul(precision).valueOf(), from: accounts[1]})
-                    .then(Utils.receiptShouldFailed);
-                    // .then(Utils.receiptShouldSucceed);
-console.log('2');
+                    // .then(Utils.receiptShouldFailed);
+                    .then(Utils.receiptShouldSucceed);
+
                 await strategy.updateDates(0, icoSince - 2600, icoSince - 1600);
                 await strategy.updateDates(1, icoSince, icoTill);
 
                 await crowdsale.sendTransaction({value: new BigNumber('1').mul(precision).valueOf(), from: accounts[1]})
                     .then(Utils.receiptShouldSucceed);
-                console.log('3');
+
                 tierData = await strategy.tiers.call(0);
                 await assert.equal(tierData[2], new BigNumber('800000').mul(precision).valueOf(), "soldTierTokens is not equal");
                 await assert.equal(tierData[3], new BigNumber('240000').mul(precision).valueOf(), "bonusTierTokens is not equal");
@@ -274,8 +274,8 @@ console.log('2');
                         bonusAmount: new BigNumber('400500000')
                             .sub('240000')
                             .sub('6000')
-                            .add('1000000000')
-                            .sub('800000')
+                            // .add('1000000000')
+                            // .sub('800000')
                             .mul(precision).valueOf(),
                         contributorBonuses: [
                             {[accounts[0]]: 0},
@@ -332,8 +332,10 @@ console.log('2');
 
                 await strategy.updateDates(0, icoSince - 8600, icoSince - 7600);
                 await strategy.updateDates(1, icoSince - 6600, icoSince - 5600);
+                await token.updateBurnAgent(agent.address, true);
 
                 await crowdsale.refund({from: accounts[1]})
+                    // .then(Utils.receiptShouldFailed);
                     .then(Utils.receiptShouldSucceed);
 
                 await Utils.checkState({crowdsale, token}, {
@@ -357,8 +359,8 @@ console.log('2');
                         bonusAmount: new BigNumber('400500000')
                             .sub('240000')
                             .sub('6000')
-                            .add('1000000000')
-                            .sub('800000')
+                            // .add('1000000000')
+                            // .sub('800000')
                             .mul(precision).valueOf(),
                         contributorBonuses: [
                             {[accounts[0]]: 0},
@@ -405,7 +407,7 @@ console.log('2');
                     }
                 });
             })
-/*
+
             it('check bonuses', async function () {
                 await Utils.checkState({crowdsale}, {
                     crowdsale: {
@@ -497,8 +499,8 @@ console.log('2');
                         bonusAmount: new BigNumber('400500000')
                             .sub('240000')
                             .sub('6000')
-                            .add('1000000000')
-                            .sub('800000')
+                            // .add('1000000000')
+                            // .sub('800000')
                             .mul(precision).valueOf(),
                         contributorBonuses: [
                             {[accounts[0]]: 0},
@@ -590,8 +592,8 @@ console.log('2');
                         bonusAmount: new BigNumber('400500000')
                             .sub('240000')
                             .sub('6000')
-                            .add('1000000000')
-                            .sub('800000')
+                            // .add('1000000000')
+                            // .sub('800000')
                             .mul(precision).valueOf(),
                         contributorBonuses: [
                             {[accounts[0]]: 0},
@@ -639,6 +641,6 @@ console.log('2');
                 });
 
             })
-*/
+
         })
 });

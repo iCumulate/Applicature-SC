@@ -139,17 +139,12 @@ contract TokenDateCappedTiersPricingStrategy is PricingStrategy, USDExchange {
 
     /// @return tokens based on sold tokens and wei amount
     function getTokens(
-        address _contributor,
+        address,
         uint256 _tokensAvailable,
-        uint256 _tokensSold,
+        uint256,
         uint256 _weiAmount,
-        uint256 _collectedWei
+        uint256
     ) public view returns (uint256 tokens, uint256 tokensExcludingBonus, uint256 bonus) {
-        // disable compilation warnings because of unused variables
-        _contributor = _contributor;
-        _collectedWei = _collectedWei;
-        _tokensSold = _tokensSold;
-
         if (_weiAmount == 0) {
             return (0, 0, 0);
         }
@@ -164,13 +159,11 @@ contract TokenDateCappedTiersPricingStrategy is PricingStrategy, USDExchange {
 
     /// @return weis based on sold and required tokens
     function getWeis(
-        uint256 _collectedWei,
-        uint256 _tokensSold,
+        uint256,
+        uint256,
         uint256 _tokens
     ) public view returns (uint256 totalWeiAmount, uint256 tokensBonus) {
         // disable compilation warnings because of unused variables
-        _collectedWei = _collectedWei;
-        _tokensSold = _tokensSold;
         if (_tokens == 0) {
             return (0, 0);
         }

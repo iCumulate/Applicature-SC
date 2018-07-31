@@ -55,9 +55,9 @@ contract Stats {
         uint256[26] tiersData
     ) {
         uint256[14] memory tiers = pricing.getArrayOfTiers();
-
+        uint256 tierElements = tiers.length.div(2);
         uint256 j = 0;
-        for (uint256 i = 0; i < tiers.length; i.add(7)) {
+        for (uint256 i = 0; i <= tierElements; i += tierElements) {
             tiersData[j++] = uint256(1e23).div(tiers[i]);// tokenInUSD;
             tiersData[j++] = 0;// tokenInWei;
             tiersData[j++] = uint256(tiers[i.add(1)]);// maxTokensCollected;
