@@ -36,13 +36,12 @@ contract ICUAgent is MintableCrowdsaleOnSuccessAgent {
     }
 
     function onStateChange(Crowdsale.State _state) public onlyCrowdsale() {
-        ICUToken icuToken = ICUToken(token);
         if (
             icuToken.isSoftCapAchieved() == false
             && (_state == Crowdsale.State.Success || _state == Crowdsale.State.Finalized)
             && crowdsale.isSoftCapAchieved(0)
         ) {
-            icuToken.setIsSoftCapAchieved();
+            ICUToken(token).setIsSoftCapAchieved();
         }
 
         if (_state > Crowdsale.State.InCrowdsale && burnStatus == false) {
