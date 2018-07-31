@@ -19,7 +19,7 @@ contract ICUCrowdsale is RefundableCrowdsale {
     uint256 public usdCollected;
 
     mapping(address => uint256) public contributorBonuses;
-
+event Debug(string n, uint256 v);
     constructor(
         MintableTokenAllocator _allocator,
         DistributedDirectContributionForwarder _contributionForwarder,
@@ -73,6 +73,9 @@ contract ICUCrowdsale is RefundableCrowdsale {
         updateState();
 
         require(currentState == State.InCrowdsale);
+
+        uint256 usdAmount = pricingStrategy.getUSDAmount(_wei);
+
         require(!isHardCapAchieved(usdAmount.sub(1)));
 
         uint256 tokensAvailable = allocator.tokensAvailable();
@@ -90,8 +93,6 @@ contract ICUCrowdsale is RefundableCrowdsale {
         tokensSold = tokensSold.add(tokens);
 
         allocator.allocate(_contributor, tokensExcludingBonus);
-
-        uint256 usdAmount = pricingStrategy.getUSDAmount(_wei);
 
         if (isSoftCapAchieved(0)) {
             if (msg.value > 0) {

@@ -94,6 +94,11 @@ contract CrowdsaleImpl is Crowdsale, Ownable {
         externalContributionAgents[_contributor] = false;
     }
 
+    /// @notice update whitelisting address
+    function updateWhitelist(address _address, bool _status) public onlyOwner {
+        whitelisted[_address] = _status;
+    }
+
     /// @notice update signer
     function addSigner(address _signer) public onlyOwner {
         signers[_signer] = true;

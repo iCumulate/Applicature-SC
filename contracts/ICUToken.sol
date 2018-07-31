@@ -3,7 +3,7 @@ pragma solidity 0.4.24;
 import './token/erc20/openzeppelin/OpenZeppelinERC20.sol';
 import './token/erc20/MintableBurnableToken.sol';
 import './token/erc20/TimeLockedToken.sol';
-import './AllocationLockupContract.sol';
+import './LockupContract.sol';
 import './ICUCrowdsale.sol';
 
 

@@ -2,7 +2,7 @@ pragma solidity ^0.4.23;
 
 
 import 'openzeppelin-solidity/contracts/math/SafeMath.sol';
-import './CrowdsaleMultyAgentImpl.sol';
+import './CrowdsaleImpl.sol';
 import '../allocator/TokenAllocator.sol';
 import '../contribution/ContributionForwarder.sol';
 import '../pricing/PricingStrategy.sol';
@@ -13,7 +13,7 @@ import '../agent/CrowdsaleAgent.sol';
 /// @author Applicature
 /// @notice Contract is responsible for collecting, refunding, allocating tokens during different stages of Crowdsale.
 /// with hard limit
-contract HardCappedCrowdsale is CrowdsaleMultyAgentImpl {
+contract HardCappedCrowdsale is CrowdsaleImpl {
 
     using SafeMath for uint256;
 
@@ -29,7 +29,7 @@ contract HardCappedCrowdsale is CrowdsaleMultyAgentImpl {
         bool _allowSigned,
         bool _allowAnonymous,
         uint256 _hardCap
-    ) public CrowdsaleMultyAgentImpl(
+    ) public CrowdsaleImpl(
         _allocator,
         _contributionForwarder,
         _pricingStrategy,

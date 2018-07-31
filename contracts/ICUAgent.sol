@@ -36,12 +36,13 @@ contract ICUAgent is MintableCrowdsaleOnSuccessAgent {
     }
 
     function onStateChange(Crowdsale.State _state) public onlyCrowdsale() {
+        ICUToken icuToken = ICUToken(token);
         if (
             icuToken.isSoftCapAchieved() == false
             && (_state == Crowdsale.State.Success || _state == Crowdsale.State.Finalized)
             && crowdsale.isSoftCapAchieved(0)
         ) {
-            ICUToken(token).setIsSoftCapAchieved();
+            icuToken.setIsSoftCapAchieved();
         }
 
         if (_state > Crowdsale.State.InCrowdsale && burnStatus == false) {
@@ -49,7 +50,7 @@ contract ICUAgent is MintableCrowdsaleOnSuccessAgent {
 
             burnStatus = true;
 
-            ICUToken(token).burnUnsoldTokens(unsoldTokensAmount);
+            icuToken.burnUnsoldTokens(unsoldTokensAmount);
         }
 
     }

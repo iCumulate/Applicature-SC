@@ -12,6 +12,8 @@ contract ICUAllocation is Ownable {
     using SafeERC20 for ERC20Basic;
     using SafeMath for uint256;
 
+    uint256 public constant BOUNTY_TOKENS = 47000000e18;
+
     uint256 public icoEndTime;
 
     address[] public vestings;
@@ -41,7 +43,7 @@ contract ICUAllocation is Ownable {
 
     function allocateBounty(Allocator _allocator, Crowdsale _crowdsale) public onlyOwner {
         if (bountyAddress != address(0) && icoEndTime > block.timestamp && _crowdsale.isSoftCapAchieved(0)) {
-            _allocator.allocate(bountyAddress, 47000000e18);
+            _allocator.allocate(bountyAddress, BOUNTY_TOKENS);
             bountyAddress = address(0);
         }
     }
@@ -66,7 +68,7 @@ contract ICUAllocation is Ownable {
         bool _revocable,
         address _unreleasedHolder
     ) public onlyOwner returns (PeriodicTokenVesting) {
-        require(icoEndTime > 0 && icoEndTime.add(uint256(1 years).div(2)) > _start);
+        require(icoEndTime > 0 && icoEndTime.add(uint256(365 days).div(2)) > _start);
         PeriodicTokenVesting vesting = new PeriodicTokenVesting(
             _beneficiary, _start, _cliff, _duration, _periods, _revocable, _unreleasedHolder
         );
