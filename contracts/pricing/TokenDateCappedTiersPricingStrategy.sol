@@ -129,7 +129,7 @@ contract TokenDateCappedTiersPricingStrategy is PricingStrategy, USDExchange {
             return (0, 0, 0);
         }
 
-        bonus = calculateBonusAmount(tierIndex, usdAmount);
+        bonus = calculateBonusAmount(tierIndex, tokensExcludingBonus);
         tokens = tokensExcludingBonus.add(bonus);
 
         if (tokens > _tokensAvailable) {
@@ -193,20 +193,20 @@ contract TokenDateCappedTiersPricingStrategy is PricingStrategy, USDExchange {
     }
 
     function calculateBonusAmount(uint256 _tierIndex, uint256 _tokens) public view returns (uint256 bonus) {
-        uint256 length = tiers[_tierIndex].capsData.length;
+        uint256 length = tiers[_tierIndex].capsData.length.div(2);
 
         uint256 remainingTokens = _tokens;
         uint256 newSoldTokens = tiers[_tierIndex].soldTierTokens;
 
-        for (uint256 i = 0; i < length; i.mul(2)) {
-            if (newSoldTokens.add(remainingTokens) <= tiers[_tierIndex].capsData[i]) {
-                bonus += remainingTokens.mul(tiers[_tierIndex].capsData[i.add(1)]).div(100);
+        for (uint256 i = 0; i < length; i++) {
+            if (newSoldTokens.add(remainingTokens) <= tiers[_tierIndex].capsData[i.mul(2)]) {
+                bonus += remainingTokens.mul(tiers[_tierIndex].capsData[i.mul(2).add(1)]).div(100);
                 break;
             } else {
-                uint256 diff = tiers[_tierIndex].capsData[i].sub(newSoldTokens);
+                uint256 diff = tiers[_tierIndex].capsData[i.mul(2)].sub(newSoldTokens);
                 remainingTokens -= diff;
                 newSoldTokens += diff;
-                bonus += diff.mul(tiers[_tierIndex].capsData[i.add(1)]).div(100);
+                bonus += diff.mul(tiers[_tierIndex].capsData[i.mul(2).add(1)]).div(100);
             }
         }
     }

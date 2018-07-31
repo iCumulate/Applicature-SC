@@ -174,7 +174,7 @@ contract('ICUCrowdsale', function (accounts) {
                         softCap: new BigNumber('5000000').mul(usdPrecision).valueOf(),
                         hardCap: new BigNumber('23500000').mul(usdPrecision).valueOf(),
                         usdCollected: new BigNumber('0').mul(usdPrecision).valueOf(),
-                        isBonusIncreased: false,
+                        // isBonusIncreased: false,
                         maxSaleSupply: new BigNumber('2350000000').mul(precision).valueOf(),
                         bonusAmount: new BigNumber('400500000').mul(precision).valueOf(),
                         contributorBonuses: [
@@ -268,7 +268,7 @@ contract('ICUCrowdsale', function (accounts) {
                         softCap: new BigNumber('5000000').mul(usdPrecision).valueOf(),
                         hardCap: new BigNumber('23500000').mul(usdPrecision).valueOf(),
                         usdCollected: new BigNumber('21').mul('400').mul(usdPrecision).valueOf(),
-                        isBonusIncreased: true,
+                        // isBonusIncreased: true,
                         maxSaleSupply: new BigNumber('2350000000').mul(precision).valueOf(),
                         bonusAmount: new BigNumber('400500000')
                             .sub('240000')
@@ -351,7 +351,7 @@ contract('ICUCrowdsale', function (accounts) {
                         softCap: new BigNumber('5000000').mul(usdPrecision).valueOf(),
                         hardCap: new BigNumber('23500000').mul(usdPrecision).valueOf(),
                         usdCollected: new BigNumber('21').mul('400').mul(usdPrecision).valueOf(),
-                        isBonusIncreased: true,
+                        // isBonusIncreased: true,
                         maxSaleSupply: new BigNumber('2350000000').mul(precision).valueOf(),
                         bonusAmount: new BigNumber('400500000')
                             .sub('240000')
@@ -411,7 +411,7 @@ contract('ICUCrowdsale', function (accounts) {
                         softCap: new BigNumber('5000000').mul(usdPrecision).valueOf(),
                         hardCap: new BigNumber('23500000').mul(usdPrecision).valueOf(),
                         usdCollected: new BigNumber('0').mul(usdPrecision).valueOf(),
-                        isBonusIncreased: false,
+                        // isBonusIncreased: false,
                         maxSaleSupply: new BigNumber('2350000000').mul(precision).valueOf(),
                         bonusAmount: new BigNumber('400500000').mul(precision).valueOf(),
                         contributorBonuses: [
@@ -491,7 +491,7 @@ contract('ICUCrowdsale', function (accounts) {
                         softCap: new BigNumber('5000000').mul(usdPrecision).valueOf(),
                         hardCap: new BigNumber('23500000').mul(usdPrecision).valueOf(),
                         usdCollected: new BigNumber('21').mul('400').mul(usdPrecision).valueOf(),
-                        isBonusIncreased: true,
+                        // isBonusIncreased: true,
                         maxSaleSupply: new BigNumber('2350000000').mul(precision).valueOf(),
                         bonusAmount: new BigNumber('400500000')
                             .sub('240000')
@@ -584,7 +584,7 @@ contract('ICUCrowdsale', function (accounts) {
                         softCap: new BigNumber('5000000').mul(usdPrecision).valueOf(),
                         hardCap: new BigNumber('23500000').mul(usdPrecision).valueOf(),
                         usdCollected: new BigNumber('5000000').mul(usdPrecision).valueOf(),
-                        isBonusIncreased: true,
+                        // isBonusIncreased: true,
                         maxSaleSupply: new BigNumber('2350000000').mul(precision).valueOf(),
                         bonusAmount: new BigNumber('400500000')
                             .sub('240000')

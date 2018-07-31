@@ -262,6 +262,7 @@ contract('ICUStrategy', function (accounts) {
                 new BigNumber('22500').mul(precision).valueOf(),
                 0
             );
+
             //900000000
             //1000000 * 15/100 = 150000 | 150000
             //800000000 * 6/100 = 48000000 | 48000000
@@ -340,7 +341,7 @@ contract('ICUStrategy', function (accounts) {
 
         describe('check methods', async function () {
 
-            it('updateTierTokens', async function () {
+            it('updateTierState', async function () {
                 //checked with contribution
             });
 
@@ -355,7 +356,7 @@ contract('ICUStrategy', function (accounts) {
                 assert.equal(await strategy.agent.call(), accounts[5], "agent is not equal");
             });
 
-            it('getArrayOfUSTiers | updateTierTokens', async function () {
+            it('getArrayOfUSTiers | updateTierState', async function () {
                 let usTiersData = await strategy.getArrayOfTiers.call();
 
                 assert.equal(usTiersData[0], new BigNumber('0.01').mul(usdPrecision).valueOf(), "tokenInUSD is not equal");
@@ -369,16 +370,16 @@ contract('ICUStrategy', function (accounts) {
                 await strategy.setCrowdsaleAgent(accounts[5], {from: accounts[0]})
                     .then(Utils.receiptShouldSucceed);
 
-                await strategy.updateTierTokens(0, 56, 28, {from: accounts[0]})
+                await strategy.updateTierState(0, 56, 28, {from: accounts[0]})
                     .then(Utils.receiptShouldFailed)
                     .catch(Utils.catchReceiptShouldFailed);
-                await strategy.updateTierTokens(28, 56, 28, {from: accounts[5]})
+                await strategy.updateTierState(28, 56, 28, {from: accounts[5]})
                     .then(Utils.receiptShouldFailed)
                     .catch(Utils.catchReceiptShouldFailed);
-                await strategy.updateTierTokens(0, 0, 28, {from: accounts[5]})
+                await strategy.updateTierState(0, 0, 28, {from: accounts[5]})
                     .then(Utils.receiptShouldFailed)
                     .catch(Utils.catchReceiptShouldFailed);
-                await strategy.updateTierTokens(0, 56, 28, {from: accounts[5]})
+                await strategy.updateTierState(0, 56, 28, {from: accounts[5]})
                     .then(Utils.receiptShouldSucceed);
 
                 usTiersData = await strategy.getArrayOfTiers.call();
