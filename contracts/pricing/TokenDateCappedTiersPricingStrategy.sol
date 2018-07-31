@@ -24,6 +24,7 @@ contract TokenDateCappedTiersPricingStrategy is PricingStrategy, USDExchange {
         uint256 minInvestInUSD;
         uint256 startDate;
         uint256 endDate;
+        bool unsoldProcessed;
         uint256[] capsData;
     }
 
@@ -55,6 +56,7 @@ contract TokenDateCappedTiersPricingStrategy is PricingStrategy, USDExchange {
                     _tiers[i * 6 + 3],//minInvestInUSD
                     _tiers[i * 6 + 4],//startDate
                     _tiers[i * 6 + 5],//endDate
+                    false,
                     capsData//capsData
                 )
             );
@@ -105,6 +107,36 @@ contract TokenDateCappedTiersPricingStrategy is PricingStrategy, USDExchange {
         }
     }
 
+    function getTokensWithoutMinInvest(uint256 _weiAmount, uint256 _tokensAvailable) public view returns (
+        uint256 tokens,
+        uint256 tokensExcludingBonus,
+        uint256 bonus
+    ) {
+        if (_weiAmount == 0) {
+            return (0, 0, 0);
+        }
+
+        uint256 tierIndex = getTierIndex();
+        if (tierIndex == tiers.length) {
+            return (0, 0, 0);
+        }
+
+        uint256 usdAmount = _weiAmount.mul(etherPriceInUSD).div(1e18);
+
+        tokensExcludingBonus = usdAmount.mul(1e18).div(getTokensInUSD(tierIndex));
+
+        if (tiers[tierIndex].maxTokensCollected < tiers[tierIndex].soldTierTokens.add(tokensExcludingBonus)) {
+            return (0, 0, 0);
+        }
+
+        bonus = calculateBonusAmount(tierIndex, usdAmount);
+        tokens = tokensExcludingBonus.add(bonus);
+
+        if (tokens > _tokensAvailable) {
+            return (0, 0, 0);
+        }
+    }
+
     /// @return tokens based on sold tokens and wei amount
     function getTokens(
         address _contributor,
@@ -123,26 +155,11 @@ contract TokenDateCappedTiersPricingStrategy is PricingStrategy, USDExchange {
         }
 
         uint256 tierIndex = getTierIndex();
-
-        uint256 usdAmount = _weiAmount.mul(etherPriceInUSD).div(1e18);
-        if (tierIndex < tiers.length && usdAmount < tiers[tierIndex].minInvestInUSD) {
-            return (0, 0, 0);
-        }
-        if (tierIndex == tiers.length) {
-            return (0, 0, 0);
-        }
-        tokensExcludingBonus = usdAmount.mul(1e18).div(getTokensInUSD(tierIndex));
-        if (tiers[tierIndex].maxTokensCollected < tiers[tierIndex].soldTierTokens.add(tokensExcludingBonus)) {
+        if (tierIndex == tiers.length || _weiAmount.mul(etherPriceInUSD).div(1e18) < tiers[tierIndex].minInvestInUSD) {
             return (0, 0, 0);
         }
 
-        bonus = calculateBonusAmount(tierIndex, tokensExcludingBonus);
-
-        tokens = tokensExcludingBonus.add(bonus);
-
-        if (tokens > _tokensAvailable) {
-            return (0, 0, 0);
-        }
+        return getTokensWithoutMinInvest(_weiAmount, _tokensAvailable);
     }
 
     /// @return weis based on sold and required tokens

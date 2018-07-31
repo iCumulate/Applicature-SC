@@ -15,7 +15,7 @@ contract ICUStrategyTest is ICUStrategy {
 
     function updateSoldTokens(uint256 _tierId, uint256 _sold) public {
         Tier storage tier = tiers[_tierId];
-        tier.collectedUSD = _sold;
+        tier.soldTierTokens = _sold;
     }
 
 }
