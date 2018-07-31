@@ -100,7 +100,7 @@ module.exports = function (deployer, network, accounts) {
         return deployer.deploy(Stats, token.address, allocator.address, crowdsale.address, strategy.address);
     }).then(async () => {
         stats = await Stats.deployed();
-        return deployer.deploy(ICUReferral, allocator.address, crowdsale.address, true);
+        return deployer.deploy(ICUReferral, allocator.address, crowdsale.address);
     }).then(async () => {
         referral = await ICUReferral.deployed();
         return deployer.deploy(ICUAllocation, bounty);

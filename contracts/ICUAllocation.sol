@@ -2,6 +2,7 @@ pragma solidity ^0.4.24;
 
 import "./PeriodicTokenVesting.sol";
 import "openzeppelin-solidity/contracts/token/ERC20/ERC20Basic.sol";
+import {ICUCrowdsale as Crowdsale} from './ICUCrowdsale.sol';
 import {MintableTokenAllocator as Allocator} from './allocator/MintableTokenAllocator.sol';
 import {ICUToken as Token} from './ICUToken.sol';
 
@@ -38,8 +39,8 @@ contract ICUAllocation is Ownable {
         icoEndTime = _icoEndTime;
     }
 
-    function allocateBounty(Allocator _allocator) public onlyOwner {
-        if (bountyAddress != address(0)) {
+    function allocateBounty(Allocator _allocator, Crowdsale _crowdsale) public onlyOwner {
+        if (bountyAddress != address(0) && icoEndTime > block.timestamp && _crowdsale.isSoftCapAchieved(0)) {
             _allocator.allocate(bountyAddress, 47000000e18);
             bountyAddress = address(0);
         }
@@ -53,7 +54,7 @@ contract ICUAllocation is Ownable {
         require(_amount > 0);
         _allocator.allocate(address(_vesting), _amount);
         Token token = Token(address(_allocator.token()));
-        token.log(_vesting.beneficiary(), _amount, icoEndTime);
+        token.log(_vesting.beneficiary(), _amount, icoEndTime.add(uint256(365 days).div(2)));
     }
 
     function createVesting(

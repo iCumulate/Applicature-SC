@@ -23,10 +23,10 @@ contract ICUStrategy is USDDateCappedTiersPricingStrategy {
         uint256 j = 0;
         for (uint256 i = 0; i < tiers.length; i++) {
             tiersData[j++] = uint256(tiers[i].tokenInUSD);
-            tiersData[j++] = uint256(tiers[i].maxTokensCollected);
+            tiersData[j++] = uint256(tiers[i].maxCollectedUSD);
             tiersData[j++] = uint256(tiers[i].soldTierTokens);
             tiersData[j++] = uint256(tiers[i].discountPercents);
-            tiersData[j++] = uint256(tiers[i].minInvestInUSD);
+            tiersData[j++] = uint256(tiers[i].minInvestInWei);
             tiersData[j++] = uint256(tiers[i].startDate);
             tiersData[j++] = uint256(tiers[i].endDate);
         }
@@ -56,7 +56,7 @@ contract ICUStrategy is USDDateCappedTiersPricingStrategy {
         Tier storage tier = tiers[_tierId];
         tier.tokenInUSD = _price;
         tier.discountPercents = _discount;
-        tier.minInvestInUSD = _minInvest;
+        tier.minInvestInWei = _minInvest;
         tier.startDate = _start;
         tier.endDate = _end;
         tier.capsData = _capsData;
@@ -66,40 +66,29 @@ contract ICUStrategy is USDDateCappedTiersPricingStrategy {
         agent = _crowdsaleAgent;
     }
 
-    function updateTierTokens(uint256 _tierId, uint256 _soldTokens, uint256 _bonusTokens) public {
+    function updateTierState(uint256 _tierId, uint256 _soldTokens, uint256 _bonusTokens) public {
         require(
             msg.sender == address(agent) &&
             _tierId < tiers.length &&
             _soldTokens > 0
         );
+
         Tier storage tier = tiers[_tierId];
+
+        if (_tierId > 0 && !tiers[_tierId.sub(1)].unsoldProcessed) {
+            Tier storage prevTier = tiers[_tierId.sub(1)];
+            prevTier.unsoldProcessed = true;
+            tier.maxCollectedUSD += prevTier.maxCollectedUSD.sub(prevTier.collectedUSD);
+            tier.capsData[0] += prevTier.maxCollectedUSD.sub(prevTier.collectedUSD);
+        }
+
         tier.soldTierTokens = tier.soldTierTokens.add(_soldTokens);
         tier.bonusTierTokens = tier.bonusTierTokens.add(_bonusTokens);
+        tier.collectedUSD += getUSDAmountByTokens(_tierId, _soldTokens);
     }
 
-    function getUnsoldTokensAmount(uint256 _tierId) public view returns (uint256) {
-        return tiers[_tierId].maxTokensCollected.sub(tiers[_tierId].soldTierTokens);
-    }
-
-    function getTokensWithoutRestrictions(uint256 _weiAmount) public view returns (
-        uint256 tokens,
-        uint256 tokensExcludingBonus,
-        uint256 bonus
-    ) {
-        if (_weiAmount == 0) {
-            return (0, 0, 0);
-        }
-
-        uint256 tierIndex = getTierIndex();
-        if (tierIndex == tiers.length) {
-            return (0, 0, 0);
-        }
-
-        uint256 usdAmount = _weiAmount.mul(etherPriceInUSD).div(1e18);
-
-        tokensExcludingBonus = usdAmount.mul(1e18).div(getTokensInUSD(tierIndex));
-        bonus = calculateBonusAmount(tierIndex, tokensExcludingBonus);
-        tokens = tokensExcludingBonus.add(bonus);
+    function getTierUnsoldTokens(uint256 _tierId) public view returns (uint256) {
+        return getTokensAmountByUSD(_tierId, tiers[_tierId].maxCollectedUSD.sub(tiers[_tierId].collectedUSD));
     }
 
 }

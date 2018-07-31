@@ -109,6 +109,7 @@ contract RefundableCrowdsale is HardCappedCrowdsale {
     }
 
     function internalRefund(address _holder) internal {
+        updateState();
         require(block.timestamp > endDate);
         require(!isSoftCapAchieved(0));
         require(crowdsaleAgent != address(0));

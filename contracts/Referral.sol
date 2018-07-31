@@ -61,9 +61,7 @@ contract Referral is Ownable {
         if (true == sentOnce) {
             require(claimed[_address] == false);
             claimed[_address] = true;
-
         }
-        _amount = _amount.mul(10 ** DECIMALS);
         require(
             _address == msg.sender &&
             _amount > 0 &&

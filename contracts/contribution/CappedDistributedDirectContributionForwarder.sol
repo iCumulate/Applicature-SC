@@ -57,10 +57,10 @@ contract CappedDistributedDirectContributionForwarder is DistributedDirectContri
         weiCollected += msg.value;
         capCollected += _capAmount;
 
-        processForward(msg.value, _capAmount);
+        processForwardInternal(msg.value, _capAmount);
     }
 
-    function processForward(uint256 _totalValue, uint256 _capAmount) internal {
+    function processForwardInternal(uint256 _totalValue, uint256 _capAmount) internal {
         if (
             caps[currentCap].total > 0 &&
             caps[currentCap].total < caps[currentCap].collected.add(_capAmount)
@@ -78,8 +78,8 @@ contract CappedDistributedDirectContributionForwarder is DistributedDirectContri
 
             currentCap++;
 
-            processForward(_totalValue.sub(diffValue), _capAmount.sub(diffAmount));
-            return;
+            _totalValue = _totalValue.sub(diffValue);
+            _capAmount = _capAmount.sub(diffAmount);
         }
 
         caps[currentCap].collected = caps[currentCap].collected.add(_capAmount);

@@ -11,7 +11,6 @@ import '../crowdsale/Crowdsale.sol';
 /// @dev Base class
 contract CrowdsaleAgent is Agent {
 
-
     Crowdsale public crowdsale;
     bool public _isInitialized;
 

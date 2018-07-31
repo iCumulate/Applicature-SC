@@ -18,10 +18,7 @@ contract TimeLockedTest is TimeLocked {
     function shouldBeUnLocked() public isTimeLocked(msg.sender, false) returns (bool) {
         return true;
     }
-    function updateExcludedAddress(address _address, bool _status) public {
-    _address= _address;
-    _status= _status;
-    }
+    function updateExcludedAddress(address, bool) public {}
 
 }
 

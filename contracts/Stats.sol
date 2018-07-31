@@ -28,20 +28,16 @@ contract Stats {
     }
 
     function getTokens(
-        uint256 _type,
+        uint256,
         uint256 _weiAmount
     ) public view returns (uint256 tokens, uint256 tokensExcludingBonus, uint256 bonus) {
-        _type = _type;
-
         return pricing.getTokens(address(0), allocator.tokensAvailable(), 0, _weiAmount, 0);
     }
 
     function getWeis(
-        uint256 _type,
+        uint256,
         uint256 _tokenAmount
     ) public view returns (uint256 totalWeiAmount, uint256 tokensBonus) {
-        _type = _type;
-
         return pricing.getWeis(0, 0, _tokenAmount);
     }
 
@@ -55,33 +51,29 @@ contract Stats {
         currencyContr = getCurrencyContrData(_userType, _ethPerCurrency);
     }
 
-    function getTiersData(uint256 _type) public view returns (
+    function getTiersData(uint256) public view returns (
         uint256[26] tiersData
     ) {
-        _type = _type;
         uint256[14] memory tiers = pricing.getArrayOfTiers();
-        uint256 length = tiers.length / 7;
 
         uint256 j = 0;
-        for (uint256 i = 0; i < length; i++) {
-            tiersData[j++] = uint256(1e23).div(tiers[i.mul(7)]);// tokenInUSD;
+        for (uint256 i = 0; i < tiers.length; i.add(7)) {
+            tiersData[j++] = uint256(1e23).div(tiers[i]);// tokenInUSD;
             tiersData[j++] = 0;// tokenInWei;
-            tiersData[j++] = uint256(tiers[i.mul(7).add(1)]);// maxTokensCollected;
-            tiersData[j++] = uint256(tiers[i.mul(7).add(2)]);// soldTierTokens;
+            tiersData[j++] = uint256(tiers[i.add(1)]);// maxTokensCollected;
+            tiersData[j++] = uint256(tiers[i.add(2)]);// soldTierTokens;
             tiersData[j++] = 0;// discountPercents;
             tiersData[j++] = 0;// bonusPercents;
-            tiersData[j++] = uint256(tiers[i.mul(7).add(4)]);// minInvestInUSD;
+            tiersData[j++] = uint256(tiers[i.add(4)]);// minInvestInUSD;
             tiersData[j++] = 0;// minInvestInWei;
             tiersData[j++] = 0;// maxInvestInUSD;
             tiersData[j++] = 0;// maxInvestInWei;
-            tiersData[j++] = uint256(tiers[i.mul(7).add(5)]);// startDate;
-            tiersData[j++] = uint256(tiers[i.mul(7).add(6)]);// endDate;
-            tiersData[j++] = 0;
+            tiersData[j++] = uint256(tiers[i.add(5)]);// startDate;
+            tiersData[j++] = uint256(tiers[i.add(6)]);// endDate;
+            tiersData[j++] = 1;
         }
-        if (_type != 0) {
-            tiersData[12] = 1;
-            tiersData[25] = 2;
-        }
+
+        tiersData[25] = 2;
     }
 
     function getStatsData(uint256 _type) public view returns (
@@ -104,8 +96,9 @@ contract Stats {
         _type = _type;
         uint256 j = 0;
         for (uint256 i = 0; i < _ethPerCurrency.length; i++) {
-            (currencyContr[j++], currencyContr[j++], currencyContr[j++]) = pricing.getTokensWithoutRestrictions(
-                _ethPerCurrency[i]
+            (currencyContr[j++], currencyContr[j++], currencyContr[j++]) = pricing.getTokensWithoutMinInvest(
+                _ethPerCurrency[i],
+                allocator.tokensAvailable()
             );
         }
     }

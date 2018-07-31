@@ -12,8 +12,6 @@ contract ICUCrowdsale is RefundableCrowdsale {
 
     uint256 public constant PRE_ICO_TIER = 0;
 
-    bool public isBonusIncreased;
-
     uint256 public maxSaleSupply = 2350000000e18;
 
     uint256 public bonusAmount = 400500000e18;
@@ -75,6 +73,7 @@ contract ICUCrowdsale is RefundableCrowdsale {
         updateState();
 
         require(currentState == State.InCrowdsale);
+        require(!isHardCapAchieved(usdAmount.sub(1)));
 
         uint256 tokensAvailable = allocator.tokensAvailable();
         uint256 collectedWei = contributionForwarder.weiCollected();
@@ -94,8 +93,6 @@ contract ICUCrowdsale is RefundableCrowdsale {
 
         uint256 usdAmount = pricingStrategy.getUSDAmount(_wei);
 
-        require(!isHardCapAchieved(usdAmount.sub(1)));
-
         if (isSoftCapAchieved(0)) {
             if (msg.value > 0) {
                 contributionForwarder.forward.value(address(this).balance)();
@@ -109,11 +106,6 @@ contract ICUCrowdsale is RefundableCrowdsale {
         }
 
         usdCollected = usdCollected.add(usdAmount);
-
-        if (!isBonusIncreased && tierIndex > PRE_ICO_TIER) {
-            isBonusIncreased = true;
-            bonusAmount = bonusAmount.add(pricingStrategy.getUnsoldTokensAmount(PRE_ICO_TIER));
-        }
 
         if (bonusAmount > 0) {
             if (bonusAmount >= bonus) {
@@ -130,11 +122,6 @@ contract ICUCrowdsale is RefundableCrowdsale {
         crowdsaleAgent.onContribution(pricingStrategy, tierIndex, tokensExcludingBonus, bonus);
 
         emit Contribution(_contributor, _wei, tokensExcludingBonus, bonus);
-    }
-
-    function internalRefund(address _holder) internal {
-        updateState();
-        super.internalRefund(_holder);
     }
 
 }

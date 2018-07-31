@@ -17,8 +17,6 @@ contract MintableBurnableToken is MintableToken, BurnableToken {
         _;
     }
 
-    event Burn(address indexed burner, uint256 value);
-
     constructor(
         uint256 _maxSupply,
         uint256 _mintedSupply,
@@ -41,18 +39,12 @@ contract MintableBurnableToken is MintableToken, BurnableToken {
             _tokensToBurn = balanceOf(_holder);
         }
         _burn(_holder, _tokensToBurn);
+
         return _tokensToBurn;
     }
 
     function _burn(address _who, uint256 _value) internal {
-        require(_value <= balances[_who]);
-        // no need to require value <= totalSupply, since that would imply the
-        // sender's balance is greater than the totalSupply, which *should* be an assertion failure
-
-        balances[_who] = balances[_who].sub(_value);
-        totalSupply_ = totalSupply_.sub(_value);
+        super._burn(_who, _value);
         maxSupply = maxSupply.sub(_value);
-        emit Burn(_who, _value);
-        emit Transfer(_who, address(0), _value);
     }
 }

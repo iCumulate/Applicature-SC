@@ -11,8 +11,6 @@ import '../crowdsale/Crowdsale.sol';
 /// @dev Base class
 contract CrowdsaleMultipleAgent is Agent {
 
-
-//    Crowdsale public crowdsales;
     mapping(address => bool) public crowdsales;
     bool public _isInitialized;
 

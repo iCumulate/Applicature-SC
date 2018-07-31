@@ -17,7 +17,7 @@ contract ICUToken is OpenZeppelinERC20, MintableBurnableToken, TimeLockedToken, 
     OpenZeppelinERC20(0, "iCumulate", 18, "ICU", false)
     MintableBurnableToken(4700000000e18, 0, true)
     TimeLockedToken(_unlockTokensTime)
-    LockupContract(uint256(365 days).div(2), 0, 0) {
+    LockupContract(730 days, 0, 0) {
 
     }
 
@@ -50,6 +50,17 @@ contract ICUToken is OpenZeppelinERC20, MintableBurnableToken, TimeLockedToken, 
         }
 
         return isTransferAllowedInternal(_address, _value, block.timestamp, balanceOf(_address));
+    }
+
+    function burnUnsoldTokens(uint256 _tokensToBurn) public onlyBurnAgents() returns (uint256) {
+        require(totalSupply_.add(_tokensToBurn) <= maxSupply);
+
+        maxSupply = maxSupply.sub(_tokensToBurn);
+
+        emit Burn(address(0), _tokensToBurn);
+        emit Transfer(address(0), address(0), _tokensToBurn);
+
+        return _tokensToBurn;
     }
 
 }
