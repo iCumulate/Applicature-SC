@@ -84,7 +84,6 @@ contract Stats {
         stats[1] = token.totalSupply();
         stats[2] = crowdsale.maxSaleSupply();
         stats[3] = crowdsale.tokensSold();
-//        crowdsale.updateState();
         stats[4] = uint256(crowdsale.currentState());
         stats[5] = pricing.getTierIndex();
         stats[6] = pricing.getMinEtherInvest(stats[5]);

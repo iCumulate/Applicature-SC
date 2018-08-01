@@ -8,8 +8,6 @@ import './ICUStrategy.sol';
 
 contract ICUCrowdsale is RefundableCrowdsale {
 
-    ICUStrategy public pricingStrategy;
-
     uint256 public constant PRE_ICO_TIER = 0;
 
     uint256 public maxSaleSupply = 2350000000e18;
@@ -37,13 +35,10 @@ contract ICUCrowdsale is RefundableCrowdsale {
         false,
         5000000e5, //softCap
         23500000e5//hardCap
-    ) {
-        pricingStrategy = _pricingStrategy;
-        contributionForwarder = _contributionForwarder;
-    }
+    ) {}
 
     function updateState() public {
-        (startDate, endDate) = pricingStrategy.getActualDates();
+        (startDate, endDate) = ICUStrategy(pricingStrategy).getActualDates();
         super.updateState();
     }
 
@@ -74,18 +69,20 @@ contract ICUCrowdsale is RefundableCrowdsale {
 
         require(currentState == State.InCrowdsale);
 
-        uint256 usdAmount = pricingStrategy.getUSDAmount(_wei);
+        ICUStrategy pricing = ICUStrategy(pricingStrategy);
+
+        uint256 usdAmount = pricing.getUSDAmount(_wei);
 
         require(!isHardCapAchieved(usdAmount.sub(1)));
 
         uint256 tokensAvailable = allocator.tokensAvailable();
         uint256 collectedWei = contributionForwarder.weiCollected();
-        uint256 tierIndex = pricingStrategy.getTierIndex();
+        uint256 tierIndex = pricing.getTierIndex();
         uint256 tokens;
         uint256 tokensExcludingBonus;
         uint256 bonus;
 
-        (tokens, tokensExcludingBonus, bonus) = pricingStrategy.getTokens(
+        (tokens, tokensExcludingBonus, bonus) = pricing.getTokens(
             _contributor, tokensAvailable, tokensSold, _wei, collectedWei
         );
 
@@ -121,7 +118,7 @@ contract ICUCrowdsale is RefundableCrowdsale {
             bonus = 0;
         }
 
-        crowdsaleAgent.onContribution(pricingStrategy, tierIndex, tokensExcludingBonus, bonus);
+        crowdsaleAgent.onContribution(pricing, tierIndex, tokensExcludingBonus, bonus);
 
         emit Contribution(_contributor, _wei, tokensExcludingBonus, bonus);
     }

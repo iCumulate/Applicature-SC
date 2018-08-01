@@ -23,6 +23,8 @@ contract ICUAllocation is Ownable {
 
     address public treasuryAddress;
 
+    bool public isBountySent;
+
     event VestingCreated(
         address _vesting,
         address _beneficiary,
@@ -46,11 +48,10 @@ contract ICUAllocation is Ownable {
     }
 
     function allocateBounty(Allocator _allocator, Crowdsale _crowdsale) public onlyOwner {
-        require(bountyAddress != address(0) && icoEndTime < block.timestamp && _crowdsale.isSoftCapAchieved(0));
+        require(!isBountySent && icoEndTime < block.timestamp && _crowdsale.isSoftCapAchieved(0));
 
+        isBountySent = true;
         _allocator.allocate(bountyAddress, BOUNTY_TOKENS);
-        bountyAddress = address(0);
-
     }
 
     function allocateTreasury(Allocator _allocator) public onlyOwner {
