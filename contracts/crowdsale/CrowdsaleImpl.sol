@@ -43,9 +43,7 @@ contract CrowdsaleImpl is Crowdsale, Ownable {
         bool _allowWhitelisted,
         bool _allowSigned,
         bool _allowAnonymous
-    )
-    public
-    {
+    ) public {
         allocator = _allocator;
         contributionForwarder = _contributionForwarder;
         pricingStrategy = _pricingStrategy;

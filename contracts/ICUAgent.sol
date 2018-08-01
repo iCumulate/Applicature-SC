@@ -9,8 +9,6 @@ import './ICUToken.sol';
 
 contract ICUAgent is MintableCrowdsaleOnSuccessAgent {
 
-    uint256 public constant FINAL_ROUND = 1;
-
     ICUStrategy public strategy;
     ICUCrowdsale public crowdsale;
 
@@ -46,7 +44,7 @@ contract ICUAgent is MintableCrowdsaleOnSuccessAgent {
         }
 
         if (_state > Crowdsale.State.InCrowdsale && burnStatus == false) {
-            uint256 unsoldTokensAmount = strategy.getTierUnsoldTokens(FINAL_ROUND);
+            uint256 unsoldTokensAmount = strategy.getUnsoldTokens();
 
             burnStatus = true;
 

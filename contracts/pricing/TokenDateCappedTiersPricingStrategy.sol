@@ -5,7 +5,7 @@ import './PricingStrategy.sol';
 import './USDExchange.sol';
 
 
-/// @title USDDateTiersPricingStrategy
+/// @title TokenDateCappedTiersPricingStrategy
 /// @author Applicature
 /// @notice Contract is responsible for calculating tokens amount depending on price in USD
 /// @dev implementation

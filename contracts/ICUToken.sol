@@ -53,12 +53,11 @@ contract ICUToken is OpenZeppelinERC20, MintableBurnableToken, TimeLockedToken, 
     }
 
     function burnUnsoldTokens(uint256 _tokensToBurn) public onlyBurnAgents() returns (uint256) {
-        require(totalSupply_.add(_tokensToBurn) <= maxSupply);
+        require(maxSupply.sub(_tokensToBurn) >= totalSupply_);
 
         maxSupply = maxSupply.sub(_tokensToBurn);
 
         emit Burn(address(0), _tokensToBurn);
-        emit Transfer(address(0), address(0), _tokensToBurn);
 
         return _tokensToBurn;
     }
