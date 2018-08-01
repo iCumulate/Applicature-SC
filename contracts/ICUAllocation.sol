@@ -13,12 +13,15 @@ contract ICUAllocation is Ownable {
     using SafeMath for uint256;
 
     uint256 public constant BOUNTY_TOKENS = 47000000e18;
+    uint256 public constant MAX_TREASURY_TOKENS = 2350000000e18;
 
     uint256 public icoEndTime;
 
     address[] public vestings;
 
     address public bountyAddress;
+
+    address public treasuryAddress;
 
     event VestingCreated(
         address _vesting,
@@ -32,9 +35,10 @@ contract ICUAllocation is Ownable {
 
     event VestingRevoked(address _vesting);
 
-    constructor(address _bountyAddress) public {
-        require(_bountyAddress != address(0));
+    constructor(address _bountyAddress, address _treasuryAddress) public {
+        require(_bountyAddress != address(0) && _treasuryAddress != address(0));
         bountyAddress = _bountyAddress;
+        treasuryAddress = _treasuryAddress;
     }
 
     function setICOEndTime(uint256 _icoEndTime) public onlyOwner {
@@ -42,10 +46,16 @@ contract ICUAllocation is Ownable {
     }
 
     function allocateBounty(Allocator _allocator, Crowdsale _crowdsale) public onlyOwner {
-        if (bountyAddress != address(0) && icoEndTime < block.timestamp && _crowdsale.isSoftCapAchieved(0)) {
-            _allocator.allocate(bountyAddress, BOUNTY_TOKENS);
-            bountyAddress = address(0);
-        }
+        require(bountyAddress != address(0) && icoEndTime < block.timestamp && _crowdsale.isSoftCapAchieved(0));
+
+        _allocator.allocate(bountyAddress, BOUNTY_TOKENS);
+        bountyAddress = address(0);
+
+    }
+
+    function allocateTreasury(Allocator _allocator) public onlyOwner {
+        require(icoEndTime < block.timestamp && MAX_TREASURY_TOKENS >= _allocator.tokensAvailable());
+        _allocator.allocate(treasuryAddress, _allocator.tokensAvailable());
     }
 
     function allocateVesting(
@@ -68,7 +78,7 @@ contract ICUAllocation is Ownable {
         bool _revocable,
         address _unreleasedHolder
     ) public onlyOwner returns (PeriodicTokenVesting) {
-        require(icoEndTime > 0 && icoEndTime.add(uint256(365 days).div(2)) < _start);
+        require(icoEndTime > 0);
         PeriodicTokenVesting vesting = new PeriodicTokenVesting(
             _beneficiary, _start, _cliff, _duration, _periods, _revocable, _unreleasedHolder
         );

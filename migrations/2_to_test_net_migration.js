@@ -18,6 +18,7 @@ module.exports = function (deployer, network, accounts) {
         etherHolder = "0xb75037df93E6BBbbB80B0E5528acaA34511B1cD0".toLowerCase(),
         applicatureHolder = "0xb75037df93E6BBbbB80B0E5528acaA34511B1cD0".toLowerCase(),
         bounty = "0xb75037df93E6BBbbB80B0E5528acaA34511B1cD0".toLowerCase(),
+        treasuryAddress = "0xb75037df93E6BBbbB80B0E5528acaA34511B1cD0".toLowerCase(),
         token,
         strategy,
         contributionForwarder,
@@ -103,7 +104,7 @@ module.exports = function (deployer, network, accounts) {
         return deployer.deploy(ICUReferral, allocator.address, crowdsale.address);
     }).then(async () => {
         referral = await ICUReferral.deployed();
-        return deployer.deploy(ICUAllocation, bounty);
+        return deployer.deploy(ICUAllocation, bounty, treasuryAddress);
     }).then(async () => {
         allocation = await ICUAllocation.deployed();
     }).then(async () => {

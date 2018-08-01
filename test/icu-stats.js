@@ -123,6 +123,7 @@ contract('StatsContract', function (accounts) {
 
         await strategy.updateDates(0, icoSince - 2600, icoSince - 1600);
         await strategy.updateDates(1, icoSince, icoTill);
+        await crowdsale.updateState();
 
         let statsData = await stats.getStats.call(1, [
             new BigNumber('1').mul(precision),
