@@ -99,7 +99,7 @@ contract('Allocation', function (accounts) {
         await allocation.setICOEndTime(yearAgo, {from: accounts[1]})
             .then(Utils.receiptShouldFailed)
             .catch(Utils.catchReceiptShouldFailed);
-        await allocation.setICOEndTime(icoTill, {from: accounts[0]})
+        await allocation.setICOEndTime(yearAgo - 31556926, {from: accounts[0]})
             .then(Utils.receiptShouldSucceed);
         await allocation.createVesting(accounts[0], icoTill, 0, 31556926, 3, true, applicatureHolder, {from: accounts[1]})
             .then(Utils.receiptShouldFailed)
@@ -196,17 +196,29 @@ contract('Allocation', function (accounts) {
 
         Utils.balanceShouldEqualTo(token, bountyAddress, 0);
 
-        await allocation.allocateBounty(allocator.address, {from: accounts[1]})
+        await allocation.allocateBounty(allocator.address, crowdsale.address, {from: accounts[1]})
             .then(Utils.receiptShouldFailed)
             .catch(Utils.catchReceiptShouldFailed);
 
-        await allocation.allocateBounty(allocator.address)
-            .then(Utils.receiptShouldSucceed);
+        await allocation.allocateBounty(allocator.address, crowdsale.address)
+            .then(Utils.receiptShouldFailed)
+            .catch(Utils.catchReceiptShouldFailed);
+
+        await allocation.setICOEndTime(icoSince);
+
+        await allocation.allocateBounty(allocator.address, crowdsale.address)
+            .then(Utils.receiptShouldFailed)
+            .catch(Utils.catchReceiptShouldFailed);
+
+        await crowdsale.updateUsdCollected(new BigNumber('5000000').mul(usdPrecision).valueOf());
+
+        await allocation.allocateBounty(allocator.address, crowdsale.address)
+            .then(Utils.receiptShouldSucceed)
 
         Utils.balanceShouldEqualTo(token, bountyAddress, new BigNumber('47000000').mul(precision).valueOf());
 
-        await allocation.allocateBounty(allocator.address);
-        await allocation.allocateBounty(allocator.address);
+        await allocation.allocateBounty(allocator.address, crowdsale.address);
+        await allocation.allocateBounty(allocator.address, crowdsale.address);
 
         Utils.balanceShouldEqualTo(token, bountyAddress, new BigNumber('47000000').mul(precision).valueOf());
 

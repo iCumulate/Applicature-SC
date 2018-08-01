@@ -9,7 +9,7 @@ import './ICUToken.sol';
 
 contract ICUAgent is MintableCrowdsaleOnSuccessAgent {
 
-    uint256 public constant FINAL_ROUND = 3;
+    uint256 public constant FINAL_ROUND = 1;
 
     ICUStrategy public strategy;
     ICUCrowdsale public crowdsale;
