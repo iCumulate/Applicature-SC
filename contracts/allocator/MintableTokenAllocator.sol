@@ -45,6 +45,5 @@ contract MintableTokenAllocator is TokenAllocator {
     function internalAllocate(address _holder, uint256 _tokens) internal {
         token.mint(_holder, _tokens);
     }
-
 }
 

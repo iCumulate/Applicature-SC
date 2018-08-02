@@ -39,11 +39,14 @@ contract TokenDateCappedTiersPricingStrategy is PricingStrategy, USDExchange {
     ) public USDExchange(_etherPriceInUSD) {
         decimals = _decimals;
         trustedAddresses[msg.sender] = true;
-        require(_tiers.length % 6 == 0);
 
+        require(_tiers.length % 6 == 0);
         uint256 length = _tiers.length / 6;
+
+        require(_capsData.length % length == 0);
         uint256 lengthCaps = _capsData.length / 2;
-        uint256[] memory capsData;
+
+        uint256[] memory emptyArray;
 
         for (uint256 i = 0; i < length; i++) {
             tiers.push(
@@ -57,7 +60,7 @@ contract TokenDateCappedTiersPricingStrategy is PricingStrategy, USDExchange {
                     _tiers[i * 6 + 4],//startDate
                     _tiers[i * 6 + 5],//endDate
                     false,
-                    capsData//capsData
+                    emptyArray//capsData
                 )
             );
 
