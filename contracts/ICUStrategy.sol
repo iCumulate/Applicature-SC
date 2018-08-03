@@ -87,6 +87,10 @@ contract ICUStrategy is TokenDateCappedTiersPricingStrategy {
     }
 
     function getTierUnsoldTokens(uint256 _tierId) public view returns (uint256) {
+        if (_tierId >= tiers.length || tiers[_tierId].unsoldProcessed) {
+            return 0;
+        }
+
         return tiers[_tierId].maxTokensCollected.sub(tiers[_tierId].soldTierTokens);
     }
 

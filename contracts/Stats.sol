@@ -31,7 +31,7 @@ contract Stats {
         uint256,
         uint256 _weiAmount
     ) public view returns (uint256 tokens, uint256 tokensExcludingBonus, uint256 bonus) {
-        return pricing.getTokens(address(0), allocator.tokensAvailable(), 0, _weiAmount, 0);
+        return pricing.getTokensWithoutRestrictions(_weiAmount);
     }
 
     function getWeis(
@@ -42,7 +42,7 @@ contract Stats {
     }
 
     function getStats(uint256 _userType, uint256[7] _ethPerCurrency) public view returns (
-        uint256[7] stats,
+        uint256[8] stats,
         uint256[26] tiersData,
         uint256[21] currencyContr //tokensPerEachCurrency,
     ) {
@@ -77,7 +77,7 @@ contract Stats {
     }
 
     function getStatsData(uint256 _type) public view returns (
-        uint256[7] stats
+        uint256[8] stats
     ) {
         _type = _type;
         stats[0] = token.maxSupply();
@@ -86,7 +86,8 @@ contract Stats {
         stats[3] = crowdsale.tokensSold();
         stats[4] = uint256(crowdsale.currentState());
         stats[5] = pricing.getTierIndex();
-        stats[6] = pricing.getMinEtherInvest(stats[5]);
+        stats[6] = pricing.getTierUnsoldTokens(stats[5]);
+        stats[7] = pricing.getMinEtherInvest(stats[5]);
     }
 
     function getCurrencyContrData(uint256 _type, uint256[7] _ethPerCurrency) public view returns (
@@ -95,9 +96,8 @@ contract Stats {
         _type = _type;
         uint256 j = 0;
         for (uint256 i = 0; i < _ethPerCurrency.length; i++) {
-            (currencyContr[j++], currencyContr[j++], currencyContr[j++]) = pricing.getTokensWithoutMinInvest(
-                _ethPerCurrency[i],
-                allocator.tokensAvailable()
+            (currencyContr[j++], currencyContr[j++], currencyContr[j++]) = pricing.getTokensWithoutRestrictions(
+                _ethPerCurrency[i]
             );
         }
     }

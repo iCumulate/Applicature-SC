@@ -147,7 +147,8 @@ contract('StatsContract', function (accounts) {
         assert.equal(statsData[0][3], new BigNumber('0').mul(precision).valueOf(), "totalSaleSupply is not equal");
         assert.equal(statsData[0][4], new BigNumber('3').mul(1).valueOf(), "currentStat is not equal");
         assert.equal(statsData[0][5], new BigNumber('1').mul(1).valueOf(), "activeTier is not equal");
-        assert.equal(statsData[0][6], new BigNumber('0.2').mul(precision).valueOf(), "minEthInvest is not equal");
+        assert.equal(statsData[0][6], new BigNumber('1350000000').mul(precision).valueOf(), "minEthInvest is not equal");
+        assert.equal(statsData[0][7], new BigNumber('0.2').mul(precision).valueOf(), "minEthInvest is not equal");
 
         console.log(statsData[1], 'tiersData');
 

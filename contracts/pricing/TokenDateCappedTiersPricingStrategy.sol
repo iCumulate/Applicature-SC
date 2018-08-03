@@ -85,32 +85,29 @@ contract TokenDateCappedTiersPricingStrategy is PricingStrategy, USDExchange {
         return tiers.length;
     }
 
-    /// @return actual dates
-    function getActualDates() public view returns (uint256 startDate, uint256 endDate) {
-        uint256 tierIndex = getTierIndex();
-
-        if (tierIndex < tiers.length) {
-            startDate = tiers[tierIndex].startDate;
-            endDate = tiers[tierIndex].endDate;
-        } else {
-            for (uint256 i = 0; i < tiers.length; i++) {
-                if (
-                    block.timestamp < tiers[i].startDate
-                ) {
-                    startDate = tiers[i].startDate;
-                    endDate = tiers[i].endDate;
-                    break;
-                }
+    function getActualTierIndex() public view returns (uint256) {
+        for (uint256 i = 0; i < tiers.length; i++) {
+            if (
+                block.timestamp >= tiers[i].startDate
+                && block.timestamp < tiers[i].endDate
+                && tiers[i].maxTokensCollected > tiers[i].soldTierTokens
+                || block.timestamp < tiers[i].startDate
+            ) {
+                return i;
             }
         }
 
-        if (startDate == 0) {
-            startDate = tiers[tiers.length.sub(1)].startDate;
-            endDate = tiers[tiers.length.sub(1)].endDate;
-        }
+        return tiers.length.sub(1);
     }
 
-    function getTokensWithoutMinInvest(uint256 _weiAmount, uint256 _tokensAvailable) public view returns (
+    /// @return actual dates
+    function getActualDates() public view returns (uint256 startDate, uint256 endDate) {
+        uint256 tierIndex = getActualTierIndex();
+        startDate = tiers[tierIndex].startDate;
+        endDate = tiers[tierIndex].endDate;
+    }
+
+    function getTokensWithoutRestrictions(uint256 _weiAmount) public view returns (
         uint256 tokens,
         uint256 tokensExcludingBonus,
         uint256 bonus
@@ -119,25 +116,11 @@ contract TokenDateCappedTiersPricingStrategy is PricingStrategy, USDExchange {
             return (0, 0, 0);
         }
 
-        uint256 tierIndex = getTierIndex();
-        if (tierIndex == tiers.length) {
-            return (0, 0, 0);
-        }
+        uint256 tierIndex = getActualTierIndex();
 
-        uint256 usdAmount = _weiAmount.mul(etherPriceInUSD).div(1e18);
-
-        tokensExcludingBonus = usdAmount.mul(1e18).div(getTokensInUSD(tierIndex));
-
-        if (tiers[tierIndex].maxTokensCollected < tiers[tierIndex].soldTierTokens.add(tokensExcludingBonus)) {
-            return (0, 0, 0);
-        }
-
+        tokensExcludingBonus = _weiAmount.mul(etherPriceInUSD).div(getTokensInUSD(tierIndex));
         bonus = calculateBonusAmount(tierIndex, tokensExcludingBonus);
         tokens = tokensExcludingBonus.add(bonus);
-
-        if (tokens > _tokensAvailable) {
-            return (0, 0, 0);
-        }
     }
 
     /// @return tokens based on sold tokens and wei amount
@@ -157,7 +140,20 @@ contract TokenDateCappedTiersPricingStrategy is PricingStrategy, USDExchange {
             return (0, 0, 0);
         }
 
-        return getTokensWithoutMinInvest(_weiAmount, _tokensAvailable);
+        uint256 usdAmount = _weiAmount.mul(etherPriceInUSD).div(1e18);
+
+        tokensExcludingBonus = usdAmount.mul(1e18).div(getTokensInUSD(tierIndex));
+
+        if (tiers[tierIndex].maxTokensCollected < tiers[tierIndex].soldTierTokens.add(tokensExcludingBonus)) {
+            return (0, 0, 0);
+        }
+
+        bonus = calculateBonusAmount(tierIndex, tokensExcludingBonus);
+        tokens = tokensExcludingBonus.add(bonus);
+
+        if (tokens > _tokensAvailable) {
+            return (0, 0, 0);
+        }
     }
 
     /// @return weis based on sold and required tokens
