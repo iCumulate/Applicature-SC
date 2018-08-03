@@ -59,17 +59,6 @@ contract ICUAllocation is Ownable {
         _allocator.allocate(treasuryAddress, _allocator.tokensAvailable());
     }
 
-    function allocateVesting(
-        PeriodicTokenVesting _vesting,
-        Allocator _allocator,
-        uint256 _amount
-    ) public onlyOwner {
-        require(_amount > 0);
-        _allocator.allocate(address(_vesting), _amount);
-        Token token = Token(address(_allocator.token()));
-        token.log(_vesting.beneficiary(), _amount, icoEndTime.add(uint256(365 days).div(2)));
-    }
-
     function createVesting(
         address _beneficiary,
         uint256 _start,
