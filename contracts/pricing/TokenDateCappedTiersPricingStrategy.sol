@@ -191,6 +191,9 @@ contract TokenDateCappedTiersPricingStrategy is PricingStrategy, USDExchange {
         uint256 newSoldTokens = tiers[_tierIndex].soldTierTokens;
 
         for (uint256 i = 0; i < length; i++) {
+            if (tiers[_tierIndex].capsData[i.mul(2)] == 0) {
+                break;
+            }
             if (newSoldTokens.add(remainingTokens) <= tiers[_tierIndex].capsData[i.mul(2)]) {
                 bonus += remainingTokens.mul(tiers[_tierIndex].capsData[i.mul(2).add(1)]).div(100);
                 break;

@@ -83,6 +83,26 @@ contract('ICUStrategy', function (accounts) {
     });
 
     describe('check getTokens', async function () {
+        it('check airdrop threshhold', async function () {
+            let tokens = await strategy.getTokensWithoutRestrictions.call(
+                new BigNumber('28000').mul(precision).valueOf()
+            );
+
+            console.log(new BigNumber(tokens[0]).valueOf());
+            console.log(new BigNumber(tokens[1]).valueOf());
+            console.log(new BigNumber(tokens[2]).valueOf());
+
+            await strategy.updateDates(1, icoSince, icoTill);
+            await strategy.updateDates(0, icoTill - 3600 * 2, icoTill - 3600);
+
+            tokens = await strategy.getTokensWithoutRestrictions.call(
+                new BigNumber('28000').mul(precision).valueOf()
+            );
+
+            console.log(new BigNumber(tokens[0]).valueOf());
+            console.log(new BigNumber(tokens[1]).valueOf());
+            console.log(new BigNumber(tokens[2]).valueOf());
+        });
 
         it('zero weis  should return zero tokens', async function () {
             let tokens = await strategy.getTokens.call(accounts[0], 5000000, 0, 0, 0)
@@ -271,75 +291,116 @@ contract('ICUStrategy', function (accounts) {
             await assert.equal(new BigNumber(tokens[1]).valueOf(), new BigNumber('900000000').mul(precision).valueOf(), "tokensExcludingBonus is not equal")
             await assert.equal(new BigNumber(tokens[2]).valueOf(), new BigNumber('150000').add('48000000').add('2970000').mul(precision).valueOf(), "bonus is not equal")
         });
+
+        it('check airdrop threshhold', async function () {
+            await strategy.updateDates(0, icoSince - 28, icoSince);
+            await strategy.updateDates(1, icoSince, icoTill);
+
+            await strategy.updateSoldTokens(1, new BigNumber('400000000').sub('30000').mul(precision).valueOf());
+            let tokens = await strategy.getTokens.call(
+                accounts[0],
+                new BigNumber(100000000).mul(precision),
+                0,
+                new BigNumber('1').mul(precision).valueOf(),
+                0
+            );
+            //400 / 0.01 = 40000
+            //300 / 0.01 * 115/100 = 34500
+            //300 / 0.01 * 15/100 = 4500
+            //100 / 0.01 * 106/100 = 10600
+            //100 / 0.01 * 6/100 = 600
+            await assert.equal(new BigNumber(tokens[0]).valueOf(), new BigNumber('34500').add('10600').mul(precision).valueOf(), "tokens is not equal")
+            await assert.equal(new BigNumber(tokens[1]).valueOf(), new BigNumber('40000').mul(precision).valueOf(), "tokensExcludingBonus is not equal")
+            await assert.equal(new BigNumber(tokens[2]).valueOf(), new BigNumber('5100').mul(precision).valueOf(), "bonus is not equal")
+
+            await strategy.updateSoldTokens(1, new BigNumber('400000000').sub('1000000').mul(precision).valueOf());
+
+            tokens = await strategy.getTokens.call(
+                accounts[0],
+                new BigNumber('1350000000').mul(precision),
+                0,
+                new BigNumber('22500').mul(precision).valueOf(),
+                0
+            );
+
+            //900000000
+            //1000000 * 15/100 = 150000 | 150000
+            //800000000 * 6/100 = 48000000 | 48000000
+            //99000000 * 3/100 = 2970000 | 2970000
+            await assert.equal(new BigNumber(tokens[0]).valueOf(), new BigNumber('900000000').add('150000').add('48000000').add('2970000').mul(precision).valueOf(), "tokens is not equal")
+            await assert.equal(new BigNumber(tokens[1]).valueOf(), new BigNumber('900000000').mul(precision).valueOf(), "tokensExcludingBonus is not equal")
+            await assert.equal(new BigNumber(tokens[2]).valueOf(), new BigNumber('150000').add('48000000').add('2970000').mul(precision).valueOf(), "bonus is not equal")
+        });
+
     });
 
-        describe('check getWeis', async function () {
+    describe('check getWeis', async function () {
 
-            it('zero tokens should return zero weis', async function () {
-                let tokens = await strategy.getWeis.call(0, 0, 0)
-                await assert.equal(new BigNumber(tokens[0]).valueOf(), 0, "totalWeiAmount is not equal")
-                await assert.equal(new BigNumber(tokens[1]).valueOf(), 0, "tokensBonus is not equal")
-            });
+        it('zero tokens should return zero weis', async function () {
+            let tokens = await strategy.getWeis.call(0, 0, 0)
+            await assert.equal(new BigNumber(tokens[0]).valueOf(), 0, "totalWeiAmount is not equal")
+            await assert.equal(new BigNumber(tokens[1]).valueOf(), 0, "tokensBonus is not equal")
+        });
 
-            it('less than  min purchase', async function () {
-                let tokens = await strategy.getWeis.call(0, 0, new BigNumber('800000').mul(precision).valueOf());
-                await assert.equal(new BigNumber(tokens[0]).valueOf(), new BigNumber('20').mul(precision).valueOf(), "totalWeiAmount is not equal")
-                await assert.equal(new BigNumber(tokens[1]).valueOf(), new BigNumber('240000').mul(precision).valueOf(), "tokensBonus is not equal")
-                tokens = await strategy.getWeis.call(0, 0, new BigNumber('800000').sub('1').mul(precision).valueOf())
-                await assert.equal(new BigNumber(tokens[0]).valueOf(), new BigNumber('0').mul(precision).valueOf(), "totalWeiAmount is not equal")
-                await assert.equal(new BigNumber(tokens[1]).valueOf(), new BigNumber('0').mul(precision).valueOf(), "tokensBonus is not equal")
-            });
+        it('less than  min purchase', async function () {
+            let tokens = await strategy.getWeis.call(0, 0, new BigNumber('800000').mul(precision).valueOf());
+            await assert.equal(new BigNumber(tokens[0]).valueOf(), new BigNumber('20').mul(precision).valueOf(), "totalWeiAmount is not equal")
+            await assert.equal(new BigNumber(tokens[1]).valueOf(), new BigNumber('240000').mul(precision).valueOf(), "tokensBonus is not equal")
+            tokens = await strategy.getWeis.call(0, 0, new BigNumber('800000').sub('1').mul(precision).valueOf())
+            await assert.equal(new BigNumber(tokens[0]).valueOf(), new BigNumber('0').mul(precision).valueOf(), "totalWeiAmount is not equal")
+            await assert.equal(new BigNumber(tokens[1]).valueOf(), new BigNumber('0').mul(precision).valueOf(), "tokensBonus is not equal")
+        });
 
-            it('outdated', async function () {
-                await strategy.updateDates(0, icoTill - 28, icoTill);
-                await strategy.updateDates(1, icoTill - 28, icoTill);
-                let tokens = await strategy.getWeis.call(0, 0, new BigNumber('40000').mul(precision).valueOf())
-                await assert.equal(new BigNumber(tokens[0]).valueOf(), new BigNumber('0').mul(precision).valueOf(), "totalWeiAmount is not equal")
-                await assert.equal(new BigNumber(tokens[1]).valueOf(), new BigNumber('0').mul(precision).valueOf(), "tokensBonus is not equal")
-            });
+        it('outdated', async function () {
+            await strategy.updateDates(0, icoTill - 28, icoTill);
+            await strategy.updateDates(1, icoTill - 28, icoTill);
+            let tokens = await strategy.getWeis.call(0, 0, new BigNumber('40000').mul(precision).valueOf())
+            await assert.equal(new BigNumber(tokens[0]).valueOf(), new BigNumber('0').mul(precision).valueOf(), "totalWeiAmount is not equal")
+            await assert.equal(new BigNumber(tokens[1]).valueOf(), new BigNumber('0').mul(precision).valueOf(), "tokensBonus is not equal")
+        });
 
-            it('before sale period', async function () {
-                await strategy.updateDates(0, icoSince - 28, icoSince);
-                await strategy.updateDates(1, icoSince - 28, icoSince);
-                let tokens = await strategy.getWeis.call(0, 0, new BigNumber('40000').mul(precision).valueOf())
-                await assert.equal(new BigNumber(tokens[0]).valueOf(), new BigNumber('0').mul(precision).valueOf(), "totalWeiAmount is not equal")
-                await assert.equal(new BigNumber(tokens[1]).valueOf(), new BigNumber('0').mul(precision).valueOf(), "tokensBonus is not equal")
-            });
+        it('before sale period', async function () {
+            await strategy.updateDates(0, icoSince - 28, icoSince);
+            await strategy.updateDates(1, icoSince - 28, icoSince);
+            let tokens = await strategy.getWeis.call(0, 0, new BigNumber('40000').mul(precision).valueOf())
+            await assert.equal(new BigNumber(tokens[0]).valueOf(), new BigNumber('0').mul(precision).valueOf(), "totalWeiAmount is not equal")
+            await assert.equal(new BigNumber(tokens[1]).valueOf(), new BigNumber('0').mul(precision).valueOf(), "tokensBonus is not equal")
+        });
 
-            it('tokens less than available | maxTokensCollected', async function () {
-                await strategy.updateSoldTokens(0, new BigNumber('1000000000').sub('800000').mul(precision).valueOf());
-                let tokens = await strategy.getWeis.call(0, 0, new BigNumber('800000').mul(precision).valueOf())
-                await assert.equal(new BigNumber(tokens[0]).valueOf(), new BigNumber('20').mul(precision).valueOf(), "totalWeiAmount is not equal")
-                await assert.equal(new BigNumber(tokens[1]).valueOf(), new BigNumber('240000').mul(precision).valueOf(), "tokensBonus is not equal")
+        it('tokens less than available | maxTokensCollected', async function () {
+            await strategy.updateSoldTokens(0, new BigNumber('1000000000').sub('800000').mul(precision).valueOf());
+            let tokens = await strategy.getWeis.call(0, 0, new BigNumber('800000').mul(precision).valueOf())
+            await assert.equal(new BigNumber(tokens[0]).valueOf(), new BigNumber('20').mul(precision).valueOf(), "totalWeiAmount is not equal")
+            await assert.equal(new BigNumber(tokens[1]).valueOf(), new BigNumber('240000').mul(precision).valueOf(), "tokensBonus is not equal")
 
-                tokens = await strategy.getWeis.call(0, 0, new BigNumber('800001').mul(precision).valueOf())
-                await assert.equal(new BigNumber(tokens[0]).valueOf(), new BigNumber('0').mul(precision).valueOf(), "totalWeiAmount is not equal")
-                await assert.equal(new BigNumber(tokens[1]).valueOf(), new BigNumber('0').mul(precision).valueOf(), "tokensBonus is not equal")
-
-            });
-
-            it('success for each  tier', async function () {
-                let tokens = await strategy.getWeis.call(0, 0, new BigNumber('800000').mul(precision).valueOf())
-                await assert.equal(new BigNumber(tokens[0]).valueOf(), new BigNumber('20').mul(precision).valueOf(), "totalWeiAmount is not equal")
-                await assert.equal(new BigNumber(tokens[1]).valueOf(), new BigNumber('240000').mul(precision).valueOf(), "tokensBonus is not equal")
-
-                await strategy.updateDates(0, icoSince - 28, icoSince);
-
-                tokens = await strategy.getWeis.call(0, 0, new BigNumber('800000').mul(precision).valueOf())
-                await assert.equal(new BigNumber(tokens[0]).valueOf(), new BigNumber('0').mul(precision).valueOf(), "totalWeiAmount is not equal")
-                await assert.equal(new BigNumber(tokens[1]).valueOf(), new BigNumber('0').mul(precision).valueOf(), "tokensBonus is not equal")
-
-                await strategy.updateDates(1, icoSince, icoTill);
-
-                tokens = await strategy.getWeis.call(0, 0, new BigNumber('40000').mul(precision).valueOf())
-                await assert.equal(new BigNumber(tokens[0]).valueOf(), new BigNumber('1').mul(precision).valueOf(), "totalWeiAmount is not equal")
-                await assert.equal(new BigNumber(tokens[1]).valueOf(), new BigNumber('6000').mul(precision).valueOf(), "tokensBonus is not equal")
-
-            });
+            tokens = await strategy.getWeis.call(0, 0, new BigNumber('800001').mul(precision).valueOf())
+            await assert.equal(new BigNumber(tokens[0]).valueOf(), new BigNumber('0').mul(precision).valueOf(), "totalWeiAmount is not equal")
+            await assert.equal(new BigNumber(tokens[1]).valueOf(), new BigNumber('0').mul(precision).valueOf(), "tokensBonus is not equal")
 
         });
 
-        describe('check methods', async function () {
+        it('success for each  tier', async function () {
+            let tokens = await strategy.getWeis.call(0, 0, new BigNumber('800000').mul(precision).valueOf())
+            await assert.equal(new BigNumber(tokens[0]).valueOf(), new BigNumber('20').mul(precision).valueOf(), "totalWeiAmount is not equal")
+            await assert.equal(new BigNumber(tokens[1]).valueOf(), new BigNumber('240000').mul(precision).valueOf(), "tokensBonus is not equal")
+
+            await strategy.updateDates(0, icoSince - 28, icoSince);
+
+            tokens = await strategy.getWeis.call(0, 0, new BigNumber('800000').mul(precision).valueOf())
+            await assert.equal(new BigNumber(tokens[0]).valueOf(), new BigNumber('0').mul(precision).valueOf(), "totalWeiAmount is not equal")
+            await assert.equal(new BigNumber(tokens[1]).valueOf(), new BigNumber('0').mul(precision).valueOf(), "tokensBonus is not equal")
+
+            await strategy.updateDates(1, icoSince, icoTill);
+
+            tokens = await strategy.getWeis.call(0, 0, new BigNumber('40000').mul(precision).valueOf())
+            await assert.equal(new BigNumber(tokens[0]).valueOf(), new BigNumber('1').mul(precision).valueOf(), "totalWeiAmount is not equal")
+            await assert.equal(new BigNumber(tokens[1]).valueOf(), new BigNumber('6000').mul(precision).valueOf(), "tokensBonus is not equal")
+
+        });
+
+    });
+
+    describe('check methods', async function () {
 
             it('updateTierState', async function () {
                 //checked with contribution
