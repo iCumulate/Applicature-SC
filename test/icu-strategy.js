@@ -447,6 +447,39 @@ contract('ICUStrategy', function (accounts) {
                 assert.equal(nonUsTiersData[13], 28, "endDate is not equal");
                 assert.equal(await token.time.call(), 28, "time is not equal");
             });
+
+            it('getActualTierIndex', async function () {
+                await strategy.updateDates(0, icoTill + 3600, icoTill + 3600 * 2);
+                await strategy.updateDates(1, icoTill + 3600 * 3, icoTill + 3600 * 4);
+
+                let t = await strategy.getActualTierIndex.call();
+                assert.equal(t, 0, "getActualTierIndex is not equal");
+
+                await strategy.updateDates(0, icoSince, icoTill + 3600 * 2);
+                await strategy.updateDates(1, icoTill + 3600 * 3, icoTill + 3600 * 4);
+
+                t = await strategy.getActualTierIndex.call();
+                assert.equal(t, 0, "getActualTierIndex is not equal");
+
+                await strategy.updateDates(0, icoSince - 3600 * 2, icoSince);
+                await strategy.updateDates(1, icoTill + 3600 * 3, icoTill + 3600 * 4);
+
+                t = await strategy.getActualTierIndex.call();
+                assert.equal(t, 1, "getActualTierIndex is not equal");
+
+                await strategy.updateDates(0, icoSince - 3600 * 4, icoSince - 3600 * 3);
+                await strategy.updateDates(1, icoSince, icoTill + 3600 * 4);
+
+                t = await strategy.getActualTierIndex.call();
+                assert.equal(t, 1, "getActualTierIndex is not equal");
+
+                await strategy.updateDates(0, icoSince - 3600 * 4, icoSince - 3600 * 3);
+                await strategy.updateDates(0, icoSince - 3600 * 2, icoSince - 3600 * 1);
+
+                t = await strategy.getActualTierIndex.call();
+                assert.equal(t, 1, "getActualTierIndex is not equal");
+
+            });
         });
 
 });
