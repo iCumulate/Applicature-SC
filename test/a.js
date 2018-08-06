@@ -233,4 +233,33 @@ contract('Allocation', function (accounts) {
 
     });
 
+    it("check createVesting after 6 months", async function () {
+        const {
+            token,
+            strategy,
+            contributionForwarder,
+            allocator,
+            crowdsale,
+            agent,
+            allocation
+        } = await deploy();
+
+        await token.updateStateChangeAgent(accounts[0], true);
+        await token.setUnlockTime(icoSince);
+        await token.setIsSoftCapAchieved();
+
+        await allocation.setICOEndTime(yearAgo, {from: accounts[0]})
+            .then(Utils.receiptShouldSucceed);
+        await token.updateMintingAgent(allocator.address, true);
+        await allocator.addCrowdsales(allocation.address);
+        await token.updateLockupAgent(allocation.address, true);
+
+        await allocation.createVesting(accounts[2], parseInt(new Date().getTime() / 1000) - 61, 0, 60, 2, true, applicatureHolder, allocator.address, 100)
+            .then(Utils.receiptShouldSucceed)
+
+        let vesting = await PeriodicTokenVesting.at(await allocation.vestings.call(0));
+        assert.equal(new BigNumber(await vesting.vestedAmount.call(token.address)).valueOf(), 50, 'vestedAmount is not equal')
+
+    });
+
 });
