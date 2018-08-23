@@ -56,8 +56,7 @@ contract Referral is Ownable {
         bytes32 _r,
         bytes32 _s
     ) public {
-        address recoveredAddress = verify(msg.sender, _amount, _v, _r, _s);
-        require(true == crowdsale.signers(recoveredAddress));
+        require(true == crowdsale.signers(verify(msg.sender, _amount, _v, _r, _s)));
         if (true == sentOnce) {
             require(claimed[_address] == false);
             claimed[_address] = true;
