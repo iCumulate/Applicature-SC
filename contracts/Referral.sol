@@ -56,7 +56,7 @@ contract Referral is Ownable {
         bytes32 _r,
         bytes32 _s
     ) public {
-        address recoveredAddress = crowdsale.verify(msg.sender, _v, _r, _s);
+        address recoveredAddress = verify(msg.sender, _amount, _v, _r, _s);
         require(true == crowdsale.signers(recoveredAddress));
         if (true == sentOnce) {
             require(claimed[_address] == false);
@@ -72,5 +72,14 @@ contract Referral is Ownable {
             totalSupply = totalSupply.sub(_amount);
         }
         allocator.allocate(_address, _amount);
+    }
+
+    /// @notice check sign
+    function verify(address _sender, uint256 _amount, uint8 _v, bytes32 _r, bytes32 _s) public pure returns (address) {
+        bytes32 hash = keccak256(abi.encodePacked(_sender, _amount));
+
+        bytes memory prefix = '\x19Ethereum Signed Message:\n32';
+
+        return ecrecover(keccak256(abi.encodePacked(prefix, hash)), _v, _r, _s);
     }
 }

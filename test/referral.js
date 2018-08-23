@@ -20,9 +20,9 @@ precision = new BigNumber("1000000000000000000"),
 var abi = require('ethereumjs-abi'),
     BN = require('bn.js');
 
-async function makeTransaction(instance, sign, crowdsale, address, amount) {
+async function makeTransaction(instance, sign, address, amount) {
     'use strict';
-    var h = abi.soliditySHA3(['address', 'address'], [new BN(crowdsale.substr(2), 16), new BN(address.substr(2), 16)]),
+    var h = abi.soliditySHA3(['address', 'uint256'], [new BN(address.substr(2), 16), amount]),
         sig = web3.eth.sign(sign, h.toString('hex')).slice(2),
         r = `0x${sig.slice(0, 64)}`,
         s = `0x${sig.slice(64, 128)}`,
@@ -120,18 +120,35 @@ contract('Referral', function (accounts) {
         //     .catch(Utils.catchReceiptShouldFailed);
 console.log(signAddress);
 console.log(accounts[1]);
-        await makeTransaction(referral, signAddress,  crowdsale.address, accounts[1], new BigNumber('1000').valueOf())
+        await makeTransaction(referral, signAddress, accounts[1], new BigNumber('1000').valueOf())
             .then(Utils.receiptShouldSucceed);
             // .then(Utils.receiptShouldFailed);
        Utils.balanceShouldEqualTo(token.address, accounts[1],new BigNumber('1000').mul(precision).valueOf())
 
     })
     it("only  crowdsale signers  can run it", async function () {
-        await makeTransaction(referral, signAddress,  crowdsale.address, accounts[1], new BigNumber('1000').valueOf())
+        await makeTransaction(referral, signAddress, accounts[1], new BigNumber('1000').valueOf())
             .then(Utils.receiptShouldSucceed);
-        await makeTransaction(referral, accounts[4],  crowdsale.address, accounts[1], new BigNumber('1000').valueOf())
+        await makeTransaction(referral, accounts[4], accounts[1], new BigNumber('1000').valueOf())
             .then(Utils.receiptShouldFailed)
-            .catch(Utils.catchReceiptShouldFailed)
+            .catch(Utils.catchReceiptShouldFailed);
+
+        var h = abi.soliditySHA3(['address', 'uint256'], [new BN(accounts[1].substr(2), 16), new BigNumber('9000').valueOf()]),
+            sig = web3.eth.sign(signAddress, h.toString('hex')).slice(2),
+            r = `0x${sig.slice(0, 64)}`,
+            s = `0x${sig.slice(64, 128)}`,
+            v = web3.toDecimal(sig.slice(128, 130)) + 27;
+
+        var data = abi.simpleEncode('multivestMint(address,uint256,uint8,bytes32,bytes32)', accounts[1], new BigNumber('1000').valueOf(), v, r, s);
+
+        await referral.sendTransaction({from: accounts[1], data: data.toString('hex')})
+            .then(Utils.receiptShouldFailed)
+            .catch(Utils.catchReceiptShouldFailed);
+
+        data = abi.simpleEncode('multivestMint(address,uint256,uint8,bytes32,bytes32)', accounts[1], new BigNumber('9000').valueOf(), v, r, s);
+
+        await referral.sendTransaction({from: accounts[1], data: data.toString('hex')})
+            .then(Utils.receiptShouldSucceed);
     })
     it("if  sentOnce is  true referral can claim tokens only once", async function () {
         referral = await Referral.new(
@@ -144,17 +161,17 @@ console.log(accounts[1]);
         await token.updateMintingAgent(allocator.address, true);
         await allocator.addCrowdsales(referral.address);
         await crowdsale.addSigner(signAddress);
-        await makeTransaction(referral, signAddress,  crowdsale.address, accounts[1], new BigNumber('1000').valueOf())
+        await makeTransaction(referral, signAddress, accounts[1], new BigNumber('1000').valueOf())
             .then(Utils.receiptShouldSucceed);
-        await makeTransaction(referral, signAddress,  crowdsale.address, accounts[1], new BigNumber('1000').valueOf())
+        await makeTransaction(referral, signAddress, accounts[1], new BigNumber('1000').valueOf())
             .then(Utils.receiptShouldFailed)
             .catch(Utils.catchReceiptShouldFailed)
 
     })
     it("if  sentOnce is  false referral can claim tokens many times", async function () {
-        await makeTransaction(referral, signAddress,  crowdsale.address, accounts[1], new BigNumber('100').valueOf())
+        await makeTransaction(referral, signAddress, accounts[1], new BigNumber('100').valueOf())
             .then(Utils.receiptShouldSucceed);
-        await makeTransaction(referral, signAddress,  crowdsale.address, accounts[1], new BigNumber('100').valueOf())
+        await makeTransaction(referral, signAddress, accounts[1], new BigNumber('100').valueOf())
             .then(Utils.receiptShouldSucceed);
     })
     it("check unlimited", async function () {
@@ -168,7 +185,7 @@ console.log(accounts[1]);
         await token.updateMintingAgent(allocator.address, true);
         await allocator.addCrowdsales(referral.address);
         await crowdsale.addSigner(signAddress);
-        await makeTransaction(referral, signAddress,  crowdsale.address, accounts[1], new BigNumber('1000').valueOf())
+        await makeTransaction(referral, signAddress, accounts[1], new BigNumber('1000').valueOf())
             .then(Utils.receiptShouldSucceed);
     })
     it("tokens amount should be <= totalSupply if is limited ", async function () {
@@ -178,14 +195,13 @@ console.log(accounts[1]);
             crowdsale.address,
             true
         )
-        await makeTransaction(referral, signAddress,  crowdsale.address, accounts[1], new BigNumber('1001').mul(precision).valueOf())
+        await makeTransaction(referral, signAddress, accounts[1], new BigNumber('1001').mul(precision).valueOf())
             .then(Utils.receiptShouldFailed)
             .catch(Utils.catchReceiptShouldFailed)
     })
-    it("should fail  if  allocator is not set up (set referral in allocator)", async function () {
-    })
+    it("should fail  if  allocator is not set up (set referral in allocator)", async function () {})
     it("updates claimedBalances", async function () {
-        await makeTransaction(referral, signAddress,  crowdsale.address, accounts[1],  new BigNumber("1000000000000000000").valueOf())
+        await makeTransaction(referral, signAddress, accounts[1],  new BigNumber("1000000000000000000").valueOf())
             .then(Utils.receiptShouldSucceed);
         console.log(await referral.claimedBalances.call(accounts[1]).valueOf());
         await assert.equal(new BigNumber(await referral.claimedBalances.call(accounts[1])).valueOf(),
