@@ -36,7 +36,7 @@ contract MintableBurnableToken is MintableToken, BurnableToken {
 
     function burnByAgent(address _holder, uint256 _tokensToBurn) public onlyBurnAgents() returns (uint256) {
         if (_tokensToBurn == 0) {
-            _tokensToBurn = balanceOf(_holder);
+            _tokensToBurn = balances[_holder];
         }
         _burn(_holder, _tokensToBurn);
 

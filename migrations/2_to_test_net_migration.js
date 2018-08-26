@@ -19,6 +19,8 @@ module.exports = function (deployer, network, accounts) {
         applicatureHolder = "0xb75037df93E6BBbbB80B0E5528acaA34511B1cD0".toLowerCase(),
         bounty = "0xb75037df93E6BBbbB80B0E5528acaA34511B1cD0".toLowerCase(),
         treasuryAddress = "0xb75037df93E6BBbbB80B0E5528acaA34511B1cD0".toLowerCase(),
+        owner = "0x6DFF9C7c1a821190c9f3b34A835A01Dd58C90AF0".toLowerCase(),
+        signAddress = "0x210b43061Cf74d533F0eAcF2578FBdbbd313F00d".toLowerCase(),
         token,
         strategy,
         contributionForwarder,
@@ -68,20 +70,20 @@ module.exports = function (deployer, network, accounts) {
             1000000000 * precision,//maxTokensCollected
             0 * precision,//discountPercents
             8000 * usdPrecision,//minInvestInUSD
-            icoSince,//startDate
-            icoTill + 2592000,//endDate
+            1532908800,//startDate // 07/30/2018 @ 12:00am (UTC)
+            1533427200,//endDate //08/05/2018 @ 12:00am (UTC)
             0.01 * usdPrecision,//tokenInUSD
             1350000000 * precision,//maxTokensCollected
             0 * precision,//discountPercents
-            80 * usdPrecision,//minInvestInUSD
-            icoTill + 2592001,//startDate
-            icoTill + 5184002//endDate
+            40 * usdPrecision,//minInvestInUSD
+            1533427200,//startDate 08/05/2018 @ 12:00am (UTC)
+            1537142400//endDate 09/17/2018 @ 12:00am (UTC)
         ], [
-            1000000000 * precision, 30, 0, 0, 0, 0, 400000000 * precision, 15, 1200000000 * precision, 6, 1350000000 * precision, 3,
+            1000000000 * precision, 40, 0, 0, 0, 0, 400000000 * precision, 20, 1200000000 * precision, 10, 1350000000 * precision, 5,
         ], 400 * usdPrecision);
     }).then(async () => {
         strategy = await ICUStrategy.deployed();
-        return deployer.deploy(DistributedDirectContributionForwarder, 100, [etherHolder, applicatureHolder], [99,1]);
+        return deployer.deploy(DistributedDirectContributionForwarder, 100, [etherHolder, applicatureHolder], [99, 1]);
     }).then(async () => {
         contributionForwarder = await DistributedDirectContributionForwarder.deployed();
         return deployer.deploy(MintableTokenAllocator, token.address);
@@ -91,8 +93,8 @@ module.exports = function (deployer, network, accounts) {
             allocator.address,
             contributionForwarder.address,
             strategy.address,
-            icoSince,
-            icoTill + 5184002);
+            1532908800,
+            1537142400);
     }).then(async () => {
         crowdsale = await ICUCrowdsale.deployed();
         return deployer.deploy(ICUAgent, crowdsale.address, token.address, strategy.address);
@@ -127,7 +129,7 @@ module.exports = function (deployer, network, accounts) {
         return strategy.setCrowdsaleAgent(agent.address);
     }).then(async () => {
         console.log("allocation.setICOEndTime(icoTill + 5184002);");
-        return allocation.setICOEndTime(icoTill + 5184002);
+        return allocation.setICOEndTime(1537142400);
     }).then(async () => {
         console.log("allocator.addCrowdsales(allocation.address);");
         return allocator.addCrowdsales(allocation.address);
@@ -143,9 +145,31 @@ module.exports = function (deployer, network, accounts) {
     }).then(async () => {
         console.log("allocator.addCrowdsales(referral.address);");
         return allocator.addCrowdsales(referral.address);
+    }).then(async () => {
+        await crowdsale.addSigner(signAddress);
+        await crowdsale.addExternalContributor(signAddress)
+        await allocation.transferOwnership(owner)
+        await token.transferOwnership(owner)
+        await allocator.transferOwnership(owner)
+        await strategy.transferOwnership(owner)
+        await crowdsale.transferOwnership(owner)
+        await referral.transferOwnership(owner)
     }).then(() => {
         console.log("Finished");
-    }) .catch((err) => {
+        console.log("Token", token.address);
+        console.log("Strategy", strategy.address);
+        console.log("contributionForwarder", contributionForwarder.address);
+        console.log("Allocator", allocator.address);
+        console.log("Crowdsale", crowdsale.address);
+        console.log("Agent", agent.address);
+        console.log("Stats", stats.address);
+        console.log("Allocation", allocation.address);
+        console.log("Referral", referral.address);
+        console.log("Multivest", signAddress);
+        console.log("owner", owner);
+
+
+    }).catch((err) => {
         console.error('ERROR', err)
     });
 
