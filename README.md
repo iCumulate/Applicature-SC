@@ -37,7 +37,7 @@
 * [Referral](#Referral) contract
 * [Stats](#stats) contract
 
-## Agent
+## (#agent)
 This folder contains contracts which are base contracts for the ICUAgent.sol.
 There are a few main methods that are called when a Crowdsale contract performs some actions:
 
