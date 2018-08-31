@@ -27,16 +27,16 @@
     ├── migrations                          # Migration files (alternatively `doc`)
     ├── test                                # Automated tests
     └── README.md
-* [Agent](https://bitbucket.org/applicature/icu.contracts/src/EN-36/#agent) folder
-* [Allocator](https://bitbucket.org/applicature/icu.contracts/src/EN-36/#allocator) folder
-* [Contribution](https://bitbucket.org/applicature/icu.contracts/src/EN-36/#contribution) folder
-* [Crowdsale](https://bitbucket.org/applicature/icu.contracts/src/EN-36/#crowdsale) folder
-* [Pricing](https://bitbucket.org/applicature/icu.contracts/src/EN-36/#pricing) folder
-* [Token](https://bitbucket.org/applicature/icu.contracts/src/EN-36/#token) folder
-* [Referral](https://bitbucket.org/applicature/icu.contracts/src/EN-36/#referral) contract
-* [Stats](https://bitbucket.org/applicature/icu.contracts/src/EN-36/#stats) contract
+* [Agent](#agent) folder
+* [Allocator](#allocator) folder
+* [Contribution](#contribution) folder
+* [Crowdsale](#crowdsale) folder
+* [Pricing](#pricing) folder
+* [Token](#token) folder
+* [Referral](#Referral) contract
+* [Stats](#stats) contract
 
-## Agent
+## Agent Folder
 This folder contains contracts which are base contracts for the ICUAgent.sol.
 There are a few main methods that are called when a Crowdsale contract performs some actions:
 
@@ -49,13 +49,13 @@ There are a few main methods that are called when a Crowdsale contract performs 
     * burn unsold tokens if crowdsale has been finished
 3. onRefund method is triggering while contributor want's to refund his contributions. In our case, it performs burning contributor's tokens.
 
-## Allocator
+## Allocator Folder
 This folder contains contracts which are making tokens allocations. Only Allocator contract is allowed to call 'mint' function in the token contract to mint new tokens and only allowed contracts (Crowdsale, Referral, Allocation) can use 'allocate' method.
 
-## Contribution
+## Contribution Folder
 This folder contains contracts which are making Weis transfers to the ether holders and keep statistic information about collected/forwarded ether.
 
-## Crowdsale
+## Crowdsale Folder
 This folder contains contracts which are base contracts for the ICUCrowdsale.sol.
 Crowdsale contracts implement such main features as:
 
@@ -74,7 +74,7 @@ When someone makes a contribution:
 4. Tokens are allocating to the contributor, tokensSold and usdCollected vars increasing, in case if a soft cap is met all Weis are distributed between ether holders, if not - contributorsWei mapping is increasing.
 5. 'onContribution' function is calling and emitting 'Contribution' event.
     
-## Pricing
+## Pricing Folder
 This folder contains contracts which are base contracts for the ICUStrategy.sol.
 Pricing Strategy contracts implement such main features as:
 
@@ -84,13 +84,13 @@ Pricing Strategy contracts implement such main features as:
 4. Provides statistic for sold tokens, bonuses.
 5. Ability to update tier data (dates, prices...).
 
-## Token
+## Token Folder
 This folder contains contracts which are base contracts for the ICUToken.sol.
 ICUToken contracts implement the ERC20 token standard and based on OpenZeppelin implementation.
 Also, it has transfers lockup and burning functionalities.
 
-## Referral
+## Referral Contract
 Referral contracts give an ability to the contributor to claim his referral tokens. All calculation is made on the backed side, Referral contract just ensures that transaction was signed with an allowed address and allocates referral tokens.
 
-## Stats
+## Stats Contract
 Stats contract was designed to give needed statistics information to the backend
