@@ -27,14 +27,6 @@
     ├── migrations                          # Migration files (alternatively `doc`)
     ├── test                                # Automated tests
     └── README.md
-* [Agent](#agent) folder
-* [Allocator](#allocator) folder
-* [Contribution](#contribution) folder
-* [Crowdsale](#crowdsale) folder
-* [Pricing](#pricing) folder
-* [Token](#token) folder
-* [Referral](#Referral) contract
-* [Stats](#stats) contract
 
 ## Agent Folder
 This folder contains contracts which are base contracts for the ICUAgent.sol.
