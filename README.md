@@ -27,7 +27,7 @@
     ├── migrations                          # Migration files (alternatively `doc`)
     ├── test                                # Automated tests
     └── README.md
-
+- [Agent](#agent)
 * [Agent](#agent) folder
 * [Allocator](#allocator) folder
 * [Contribution](#contribution) folder
@@ -37,7 +37,7 @@
 * [Referral](#Referral) contract
 * [Stats](#stats) contract
 
-# Agent
+## Agent
 This folder contains contracts which are base contracts for the ICUAgent.sol.
 There are a few main methods that are called when a Crowdsale contract performs some actions:
 
