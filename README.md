@@ -42,15 +42,13 @@ This folder contains contracts which are base contracts for the ICUAgent.sol.
 There are a few main methods that are called when a Crowdsale contract performs some actions:
 
 1. onContribution method is triggering while contributor is making the contribution. In our case it is updating tier state in the ICUStrategy.sol contract:
+    * increasing amount of sold tokens and bonus tokens in a current crowdsale round(tier)
+    * when the first tier ends, all unsold tokens are going to the second tier's bonus amount
   
-  * increasing amount of sold tokens and bonus tokens in a current crowdsale round(tier)
-  * when the first tier ends, all unsold tokens are going to the second tier's bonus amount
-  
-1. onStateChange method is triggering while Crowdsale contract's state was changed(ex. from 'Initializing' to 'BeforeCrowdsale'). In our case it performs 2 actions:
-
-  * update 'isSoftCapAchieved' variable in the tokens contract if Crowdsale is finished and the soft cap is reached; It was made to avoid calls from token contract to the crowdsale contract for the checking whether soft cap was met or not while transfer tokens.  
-  * burn unsold tokens if crowdsale has been finished
-1. onRefund method is triggering while contributor want's to refund his contributions. In our case, it performs burning contributor's tokens.
+2. onStateChange method is triggering while Crowdsale contract's state was changed(ex. from 'Initializing' to 'BeforeCrowdsale'). In our case it performs 2 actions:
+    * update 'isSoftCapAchieved' variable in the tokens contract if Crowdsale is finished and the soft cap is reached; It was made to avoid calls from token contract to the crowdsale contract for the checking whether soft cap was met or not while transfer tokens.  
+    * burn unsold tokens if crowdsale has been finished
+3. onRefund method is triggering while contributor want's to refund his contributions. In our case, it performs burning contributor's tokens.
 
 ## Allocator
 This folder contains contracts which are making tokens allocations. Only Allocator contract is allowed to call 'mint' function in the token contract to mint new tokens and only allowed contracts (Crowdsale, Referral, Allocation) can use 'allocate' method.
