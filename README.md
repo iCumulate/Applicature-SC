@@ -59,6 +59,7 @@ This folder contains contracts which are making Weis transfers to the ether hold
 ## Crowdsale
 This folder contains contracts which are base contracts for the ICUCrowdsale.sol.
 Crowdsale contracts implement such main features as:
+
 1. Crowdsale management: state updating and permissions, a state can be: Unknown, Initializing, BeforeCrowdsale, InCrowdsale, Success, Finalized or Refunding.
 2. Contributions and bonuses. It can be done through several ways: whitelist, signed transaction by allowed address and external contribution.
 3. Refund functionality. It can be done by contributor or delegated address only if a crowdsale state is 'Refunding'.
@@ -67,6 +68,7 @@ Crowdsale contracts implement such main features as:
 After Crowdsale contract deployment, it has 'Initializing' state, the default state is 'Unknown'. It will be 'Initializing' until we initialize Allocator, Contribution and Pricing Strategy contracts, after that Crowdsale state can be 'BeforeCrowdsale' or 'InCrowdsale' depends on 'startDate' and 'endDate' variables.
 Date variables are updating while 'updateState' function is called and their values are getting from the appropriate tier from the Pricing strategy contract.
 When someone makes a contribution:
+
 1. 'updateState' function is called; if the state is not 'InCrowdsale' transaction will be revered.
 2. Calculations are making in USD and from Pricing Strategy we get USD amount by contributed Weis, if with this contribution we will exceed hard cap transaction will be reverted.
 3. From the Pricing strategy we get tokens and bonuses amount by contributed Weis. If tokens amount 0 - the transaction will be reverted.
@@ -76,6 +78,7 @@ When someone makes a contribution:
 ## Pricing
 This folder contains contracts which are base contracts for the ICUStrategy.sol.
 Pricing Strategy contracts implement such main features as:
+
 1. Holds info about tiers (crowdsale rounds).
 2. Performs ETH to USD exchange rate update.
 3. Calculations for tokens, bonuses, Weis.
