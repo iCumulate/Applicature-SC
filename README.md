@@ -27,15 +27,14 @@
     ├── migrations                          # Migration files (alternatively `doc`)
     ├── test                                # Automated tests
     └── README.md
-- [Agent](#agent)
-* [Agent](#agent) folder
-* [Allocator](#allocator) folder
-* [Contribution](#contribution) folder
-* [Crowdsale](#crowdsale) folder
-* [Pricing](#pricing) folder
-* [Token](#token) folder
-* [Referral](#Referral) contract
-* [Stats](#stats) contract
+* [Agent](https://bitbucket.org/applicature/icu.contracts/src/EN-36/#agent) folder
+* [Allocator](https://bitbucket.org/applicature/icu.contracts/src/EN-36/#allocator) folder
+* [Contribution](https://bitbucket.org/applicature/icu.contracts/src/EN-36/#contribution) folder
+* [Crowdsale](https://bitbucket.org/applicature/icu.contracts/src/EN-36/#crowdsale) folder
+* [Pricing](https://bitbucket.org/applicature/icu.contracts/src/EN-36/#pricing) folder
+* [Token](https://bitbucket.org/applicature/icu.contracts/src/EN-36/#token) folder
+* [Referral](https://bitbucket.org/applicature/icu.contracts/src/EN-36/#referral) contract
+* [Stats](https://bitbucket.org/applicature/icu.contracts/src/EN-36/#stats) contract
 
 ## Agent
 This folder contains contracts which are base contracts for the ICUAgent.sol.
