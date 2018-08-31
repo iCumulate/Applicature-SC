@@ -28,7 +28,7 @@
     ├── test                                # Automated tests
     └── README.md
 
-* [Agent](#agents) folder
+* [Agent](#agent) folder
 * [Allocator](#allocator) folder
 * [Contribution](#contribution) folder
 * [Crowdsale](#crowdsale) folder
@@ -37,7 +37,7 @@
 * [Referral](#Referral) contract
 * [Stats](#stats) contract
 
-## Agent Smart Contracts
+## Agent
 This folder contains contracts which are base contracts for the ICUAgent.sol.
 There are a few main methods that are called when a Crowdsale contract performs some actions:
 1. onContribution method is triggering while contributor is making the contribution. In our case it is updating tier state in the ICUStrategy.sol contract:
@@ -48,20 +48,20 @@ There are a few main methods that are called when a Crowdsale contract performs 
     * burn unsold tokens if crowdsale has been finished
 3. onRefund method is triggering while contributor want's to refund his contributions. In our case, it performs burning contributor's tokens.
 
-## Allocator Smart Contracts
+## Allocator
 This folder contains contracts which are making tokens allocations. Only Allocator contract is allowed to call 'mint' function in the token contract to mint new tokens and only allowed contracts (Crowdsale, Referral, Allocation) can use 'allocate' method.
 
-## Contribution Smart Contracts
+## Contribution
 This folder contains contracts which are making Weis transfers to the ether holders and keep statistic information about collected/forwarded ether.
 
-## Crowdsale Smart Contracts
+## Crowdsale
 This folder contains contracts which are base contracts for the ICUCrowdsale.sol.
 Crowdsale contracts implement such main features as:
 1. Crowdsale management: state updating and permissions, a state can be: Unknown, Initializing, BeforeCrowdsale, InCrowdsale, Success, Finalized or Refunding.
 2. Contributions and bonuses. It can be done through several ways: whitelist, signed transaction by allowed address and external contribution.
 3. Refund functionality. It can be done by contributor or delegated address only if a crowdsale state is 'Refunding'.
 
-### Contribution Flow
+### Contribution
 After Crowdsale contract deployment, it has 'Initializing' state, the default state is 'Unknown'. It will be 'Initializing' until we initialize Allocator, Contribution and Pricing Strategy contracts, after that Crowdsale state can be 'BeforeCrowdsale' or 'InCrowdsale' depends on 'startDate' and 'endDate' variables.
 Date variables are updating while 'updateState' function is called and their values are getting from the appropriate tier from the Pricing strategy contract.
 When someone makes a contribution:
@@ -71,7 +71,7 @@ When someone makes a contribution:
 4. Tokens are allocating to the contributor, tokensSold and usdCollected vars increasing, in case if a soft cap is met all Weis are distributed between ether holders, if not - contributorsWei mapping is increasing.
 5. 'onContribution' function is calling and emitting 'Contribution' event.
     
-## Pricing Smart Contracts
+## Pricing
 This folder contains contracts which are base contracts for the ICUStrategy.sol.
 Pricing Strategy contracts implement such main features as:
 1. Holds info about tiers (crowdsale rounds).
@@ -80,13 +80,13 @@ Pricing Strategy contracts implement such main features as:
 4. Provides statistic for sold tokens, bonuses.
 5. Ability to update tier data (dates, prices...).
 
-## Token Smart Contracts
+## Token
 This folder contains contracts which are base contracts for the ICUToken.sol.
 ICUToken contracts implement the ERC20 token standard and based on OpenZeppelin implementation.
 Also, it has transfers lockup and burning functionalities.
 
-## Referral Smart Contracts
+## Referral
 Referral contracts give an ability to the contributor to claim his referral tokens. All calculation is made on the backed side, Referral contract just ensures that transaction was signed with an allowed address and allocates referral tokens.
 
-## Stats Smart Contracts
+## Stats
 Stats contract was designed to give needed statistics information to the backend
