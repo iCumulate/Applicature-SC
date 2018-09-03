@@ -47,6 +47,10 @@ contract ICUToken is OpenZeppelinERC20, MintableBurnableToken, TimeLockedToken {
     }
 
     function isTransferAllowed(address _address, uint256 _value) public view returns (bool) {
+        if (excludedAddresses[_address] == true) {
+            return true;
+        }
+
         if (!isSoftCapAchieved && (address(crowdsale) == address(0) || false == crowdsale.isSoftCapAchieved(0))) {
             return false;
         }

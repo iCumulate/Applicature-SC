@@ -45,13 +45,6 @@ contract ICUAllocation is Ownable {
         treasuryAddress = _treasuryAddress;
     }
 
-    function isTreasuryCanBeDistribute(Allocator _allocator) public view returns (bool) {
-        return icoEndTime < block.timestamp
-            && isBountySent
-            && isTeamSent
-            && MAX_TREASURY_TOKENS >= _allocator.tokensAvailable();
-    }
-
     function setICOEndTime(uint256 _icoEndTime) public onlyOwner {
         icoEndTime = _icoEndTime;
     }
@@ -64,7 +57,11 @@ contract ICUAllocation is Ownable {
     }
 
     function allocateTreasury(Allocator _allocator) public onlyOwner {
-        require(isTreasuryCanBeDistribute(_allocator));
+        require(icoEndTime < block.timestamp, 'ICO is not ended');
+        require(isBountySent, 'Bounty is not sent');
+        require(isTeamSent, 'Team vesting is not created');
+        require(MAX_TREASURY_TOKENS >= _allocator.tokensAvailable(), 'Unsold tokens is not burned');
+
         _allocator.allocate(treasuryAddress, _allocator.tokensAvailable());
     }
 
