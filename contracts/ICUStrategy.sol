@@ -8,6 +8,8 @@ contract ICUStrategy is TokenDateCappedTiersPricingStrategy {
 
     ICUAgent public agent;
 
+    event UnsoldTokensProcessed(uint256 fromTier, uint256 toTier, uint256 tokensAmount);
+
     constructor(
         uint256[] _tiers,
         uint256[]_capsData,
@@ -17,7 +19,9 @@ contract ICUStrategy is TokenDateCappedTiersPricingStrategy {
         _capsData,
         18,
         _etherPriceInUSD
-    ) {}
+    ) {
+        require(_tiers.length == uint256(12) && _capsData.length == uint256(12));
+    }
 
     function getArrayOfTiers() public view returns (uint256[14] tiersData) {
         uint256 j = 0;
@@ -78,8 +82,12 @@ contract ICUStrategy is TokenDateCappedTiersPricingStrategy {
         if (_tierId > 0 && !tiers[_tierId.sub(1)].unsoldProcessed) {
             Tier storage prevTier = tiers[_tierId.sub(1)];
             prevTier.unsoldProcessed = true;
-            tier.maxTokensCollected += prevTier.maxTokensCollected.sub(prevTier.soldTierTokens);
-            tier.capsData[0] += prevTier.maxTokensCollected.sub(prevTier.soldTierTokens);
+
+            uint256 unsold = prevTier.maxTokensCollected.sub(prevTier.soldTierTokens);
+            tier.maxTokensCollected = tier.maxTokensCollected.add(unsold);
+            tier.capsData[0] = tier.capsData[0].add(unsold);
+
+            emit UnsoldTokensProcessed(_tierId.sub(1), _tierId, unsold);
         }
 
         tier.soldTierTokens = tier.soldTierTokens.add(_soldTokens);

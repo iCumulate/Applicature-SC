@@ -12,7 +12,7 @@ contract ICUCrowdsale is RefundableCrowdsale {
 
     uint256 public maxSaleSupply = 2350000000e18;
 
-    uint256 public bonusAmount = 400500000e18;
+    uint256 public availableBonusAmount = 547500000e18;
 
     uint256 public usdCollected;
 
@@ -106,12 +106,12 @@ contract ICUCrowdsale is RefundableCrowdsale {
 
         usdCollected = usdCollected.add(usdAmount);
 
-        if (bonusAmount > 0) {
-            if (bonusAmount >= bonus) {
-                bonusAmount -= bonus;
+        if (availableBonusAmount > 0) {
+            if (availableBonusAmount >= bonus) {
+                availableBonusAmount -= bonus;
             } else {
-                bonus = bonusAmount;
-                bonusAmount = 0;
+                bonus = availableBonusAmount;
+                availableBonusAmount = 0;
             }
             contributorBonuses[_contributor] = contributorBonuses[_contributor].add(bonus);
         } else {

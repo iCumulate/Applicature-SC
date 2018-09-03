@@ -52,7 +52,7 @@ This folder contains contracts which are base contracts for the ICUCrowdsale.sol
 Crowdsale contracts implement such main features as:
 
 1. Crowdsale management: state updating and permissions, a state can be: Unknown, Initializing, BeforeCrowdsale, InCrowdsale, Success, Finalized or Refunding.
-2. Contributions and bonuses. It can be done through several ways: whitelist, signed transaction by allowed address and external contribution.
+2. Contributions and bonuses. Contribution can be done through several ways: whitelist, signed transaction by allowed address and external contribution.
 3. Refund functionality. It can be done by contributor or delegated address only if a crowdsale state is 'Refunding'.
 
 ### Contribution
