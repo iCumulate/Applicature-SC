@@ -290,4 +290,56 @@ contract('ICUToken', function (accounts) {
 
     });
 
+    it("deploy contract & check transferFrom", async function () {
+        const {
+            token,
+            strategy,
+            contributionForwarder,
+            allocator,
+            crowdsale,
+            agent
+        } = await deploy();
+
+        await token.setCrowdSale(crowdsale.address, {from: accounts[0]})
+            .then(Utils.receiptShouldSucceed);
+
+        await crowdsale.updateWhitelist(accounts[1], true);
+
+        await strategy.updateDates(0, icoSince, icoTill);
+        await strategy.updateDates(1, icoTill + 1600, icoTill + 2600);
+
+        await crowdsale.sendTransaction({value: new BigNumber('20').mul(precision).valueOf(), from: accounts[1]})
+            .then(Utils.receiptShouldSucceed);
+
+        await token.approve(accounts[0], new BigNumber('100').mul(precision).valueOf(), {from:accounts[1]})
+        await assert.equal((await token.allowance.call(accounts[1], accounts[0])).valueOf(), 100*precision, 'allowance is not equal')
+
+        await token.updateExcludedAddress(accounts[1], true).then(Utils.receiptShouldSucceed)
+        await assert.equal(await token.excludedAddresses.call(accounts[1]), true, 'excludedAddresses value is not equal')
+
+        await assert.equal(await token.isTransferAllowed.call(accounts[1], 0), true, 'value is not equal')
+
+        await token.transferFrom(accounts[1], accounts[2], new BigNumber('10').mul(precision).valueOf(), {from:accounts[0]})
+            .then(Utils.receiptShouldSucceed)
+
+        await token.updateExcludedAddress(accounts[1], false).then(Utils.receiptShouldSucceed)
+        await assert.equal(await token.excludedAddresses.call(accounts[1]), false, 'excludedAddresses value is not equal')
+
+        await token.transferFrom(accounts[1], accounts[2], new BigNumber('100').mul(precision).valueOf(), {from:accounts[0]})
+            .then(Utils.receiptShouldFailed)
+            .catch(Utils.catchReceiptShouldFailed);
+
+        await crowdsale.updateUsdCollected(new BigNumber('10000000').mul(usdPrecision).valueOf());
+
+        await token.transferFrom(accounts[1], accounts[2], new BigNumber('100').mul(precision).valueOf(), {from:accounts[0]})
+            .then(Utils.receiptShouldFailed)
+            .catch(Utils.catchReceiptShouldFailed);
+
+        await token.updateStateChangeAgent(accounts[0], true);
+        await token.setUnlockTime(icoSince);
+
+        await token.transferFrom(accounts[1], accounts[2], new BigNumber('10').mul(precision).valueOf(), {from:accounts[0]})
+            .then(Utils.receiptShouldSucceed);
+    });
+
 });

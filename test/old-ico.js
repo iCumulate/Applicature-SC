@@ -113,7 +113,7 @@
 //         await Utils.checkState({ico}, {
 //             ico: {
 //                 pricingStrategyImpl: pricingStrategy.address,
-//                 bonusAmount: new BigNumber('400500000').mul(precision).valueOf(),
+//                 availableBonusAmount: new BigNumber('547500000').mul(precision).valueOf(),
 //                 isBonusIncreased: false,
 //                 contributorBonuses: [
 //                     {[accounts[0]]: 0},
@@ -172,7 +172,7 @@
 //         await Utils.checkState({ico}, {
 //             ico: {
 //                 pricingStrategyImpl: pricingStrategy.address,
-//                 bonusAmount: new BigNumber('400500000').mul(precision).valueOf(),
+//                 availableBonusAmount: new BigNumber('547500000').mul(precision).valueOf(),
 //                 isBonusIncreased: false,
 //                 contributorBonuses: [
 //                     {[accounts[0]]: 0},
@@ -240,7 +240,7 @@
 //         await Utils.checkState({ico}, {
 //             ico: {
 //                 pricingStrategyImpl: pricingStrategy.address,
-//                 bonusAmount: new BigNumber('400500000').mul(precision).valueOf(),
+//                 availableBonusAmount: new BigNumber('547500000').mul(precision).valueOf(),
 //                 isBonusIncreased: false,
 //                 contributorBonuses: [
 //                     {[accounts[0]]: 0},
@@ -347,7 +347,7 @@
 //         await Utils.checkState({ico}, {
 //             ico: {
 //                 pricingStrategyImpl: pricingStrategy.address,
-//                 bonusAmount: new BigNumber('400500000').sub('36000').mul(precision).valueOf(),
+//                 availableBonusAmount: new BigNumber('547500000').sub('36000').mul(precision).valueOf(),
 //                 isBonusIncreased: false,
 //                 contributorBonuses: [
 //                     {[accounts[1]]: new BigNumber('12000').mul(precision).valueOf()},
@@ -408,8 +408,8 @@
 //         currentState = await ico.getState()//InCrowdsale
 //         assert.equal(currentState, 3, "state doesn't match");
 //
-//         let bonuses = await ico.bonusAmount.call()
-//         assert.equal(bonuses, new BigNumber('400500000').sub('12000').sub('24000').mul(precision).valueOf(), "bonuses doesn't match");
+//         let bonuses = await ico.availableBonusAmount.call()
+//         assert.equal(bonuses, new BigNumber('547500000').sub('12000').sub('24000').mul(precision).valueOf(), "bonuses doesn't match");
 //
 //         await ico.sendTransaction({value: new BigNumber('0.19').mul(precision).valueOf(), from: accounts[1]})
 //             .then(Utils.receiptShouldFailed)
@@ -418,11 +418,11 @@
 //         await ico.sendTransaction({value: new BigNumber('0.2').mul(precision).valueOf(), from: accounts[1]})
 //             .then(Utils.receiptShouldSucceed);
 //
-//         bonuses = await ico.bonusAmount.call()
+//         bonuses = await ico.availableBonusAmount.call()
 //         //preico hard cap - 10000000
 //         //sold - 40000 + 80000 = 120000
 //         //bonuses 12000 + 24000 + 1200
-//         assert.equal(bonuses, new BigNumber('400500000').sub('12000').sub('1200').sub('24000').add('10000000').sub('120000').mul(precision).valueOf(), "bonuses doesn't match");
+//         assert.equal(bonuses, new BigNumber('547500000').sub('12000').sub('1200').sub('24000').add('10000000').sub('120000').mul(precision).valueOf(), "bonuses doesn't match");
 //
 //         await pricingStrategy.updateDates(1, icoSince - 3600 * 2, icoSince - 3600);
 //         await pricingStrategy.updateDates(2, icoSince - 3600 * 2, icoSince - 3600);
@@ -468,7 +468,7 @@
 //         await Utils.checkState({ico}, {
 //             ico: {
 //                 pricingStrategyImpl: pricingStrategy.address,
-//                 bonusAmount: new BigNumber('400500000').sub('12000').sub('1200').sub('24000').add('10000000').sub('120000').mul(precision).valueOf(),
+//                 availableBonusAmount: new BigNumber('547500000').sub('12000').sub('1200').sub('24000').add('10000000').sub('120000').mul(precision).valueOf(),
 //                 isBonusIncreased: true,
 //                 contributorBonuses: [
 //                     {[accounts[1]]: new BigNumber('12000').add('1200').mul(precision).valueOf()},
@@ -533,7 +533,7 @@
 //         assert.equal(stats[2], 0, "tokensSold doesn't match");
 //         assert.equal(stats[3], new BigNumber('23500000').mul(precision).valueOf(), "hardCap doesn't match");
 //         assert.equal(stats[4], new BigNumber('5000000').mul(precision).valueOf(), "softCap doesn't match");
-//         assert.equal(stats[5], new BigNumber('400500000').mul(precision).valueOf(), "bonusAmount doesn't match");
+//         assert.equal(stats[5], new BigNumber('547500000').mul(precision).valueOf(), "availableBonusAmount doesn't match");
 //
 //         assert.equal(stats[6][0], new BigNumber('25000000000000').valueOf(), "tokenInWei doesn't match");
 //         assert.equal(stats[6][1], new BigNumber('10000000').mul(precision).valueOf(), "maxTokensCollected doesn't match");
@@ -566,7 +566,7 @@
 //         await Utils.checkState({ico}, {
 //             ico: {
 //                 pricingStrategyImpl: pricingStrategy.address,
-//                 bonusAmount: new BigNumber('400500000').mul(precision).valueOf(),
+//                 availableBonusAmount: new BigNumber('547500000').mul(precision).valueOf(),
 //                 isBonusIncreased: false,
 //                 contributorBonuses: [
 //                     {[accounts[0]]: 0},
@@ -671,7 +671,7 @@
 //         await Utils.checkState({ico}, {
 //             ico: {
 //                 pricingStrategyImpl: pricingStrategy.address,
-//                 bonusAmount: new BigNumber('400500000').sub('240000').sub('6000').add('10000000').sub('800000').mul(precision).valueOf(),
+//                 availableBonusAmount: new BigNumber('547500000').sub('240000').sub('6000').add('10000000').sub('800000').mul(precision).valueOf(),
 //                 isBonusIncreased: true,
 //                 contributorBonuses: [
 //                     {[accounts[1]]: new BigNumber('240000').mul(precision).valueOf()},
@@ -738,7 +738,7 @@
 //         await Utils.checkState({ico}, {
 //             ico: {
 //                 pricingStrategyImpl: pricingStrategy.address,
-//                 bonusAmount: new BigNumber('400500000').sub('240000').sub('6000').add('10000000').sub('800000').sub('60000').sub('6000').mul(precision).valueOf(),
+//                 availableBonusAmount: new BigNumber('547500000').sub('240000').sub('6000').add('10000000').sub('800000').sub('60000').sub('6000').mul(precision).valueOf(),
 //                 isBonusIncreased: true,
 //                 contributorBonuses: [
 //                     {[accounts[1]]: new BigNumber('240000').mul(precision).valueOf()},
@@ -798,7 +798,7 @@
 //         assert.equal(stats[2], new BigNumber('7000000').add('800000').add('40000').add('1200000').mul(precision).valueOf(), "tokensSold doesn't match");
 //         assert.equal(stats[3], new BigNumber('23500000').mul(precision).valueOf(), "hardCap doesn't match");
 //         assert.equal(stats[4], new BigNumber('5000000').mul(precision).valueOf(), "softCap doesn't match");
-//         assert.equal(stats[5], new BigNumber('400500000').sub('240000').sub('6000').add('10000000').sub('800000').sub('60000').sub('6000').mul(precision).valueOf(), "bonusAmount doesn't match");
+//         assert.equal(stats[5], new BigNumber('547500000').sub('240000').sub('6000').add('10000000').sub('800000').sub('60000').sub('6000').mul(precision).valueOf(), "availableBonusAmount doesn't match");
 //
 //         assert.equal(stats[6][0], new BigNumber('25000000000000').valueOf(), "tokenInWei doesn't match");
 //         assert.equal(stats[6][1], new BigNumber('10000000').mul(precision).valueOf(), "maxTokensCollected doesn't match");

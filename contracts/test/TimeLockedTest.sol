@@ -1,7 +1,7 @@
 pragma solidity ^0.4.0;
 
 
-import '../TimeLocked.sol';
+import '../token/erc20/TimeLocked.sol';
 
 
 contract TimeLockedTest is TimeLocked {

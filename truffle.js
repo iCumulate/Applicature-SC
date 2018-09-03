@@ -1,5 +1,5 @@
 var HDWalletProvider = require("truffle-hdwallet-provider");
-var mnemonic = "remind struggle west dentist under sauce there find scatter mention method indoor";
+var mnemonic = "mnemonic";
 
 module.exports = {
     networks: {
@@ -18,7 +18,7 @@ module.exports = {
         },
         rinkeby: {
             provider: function() {
-                return new HDWalletProvider(mnemonic, "https://rinkeby.infura.io/V3/SJNZXWlD8Ed9GGdD4pWl")
+                return new HDWalletProvider(mnemonic, "https://rinkeby.infura.io/V3/apikey")
             },
             gasPrice: 1000000000,
             network_id: 3,

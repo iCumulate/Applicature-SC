@@ -25,6 +25,8 @@ contract ICUAllocation is Ownable {
 
     bool public isBountySent;
 
+    bool public isTeamSent;
+
     event VestingCreated(
         address _vesting,
         address _beneficiary,
@@ -55,7 +57,11 @@ contract ICUAllocation is Ownable {
     }
 
     function allocateTreasury(Allocator _allocator) public onlyOwner {
-        require(icoEndTime < block.timestamp && MAX_TREASURY_TOKENS >= _allocator.tokensAvailable());
+        require(icoEndTime < block.timestamp, 'ICO is not ended');
+        require(isBountySent, 'Bounty is not sent');
+        require(isTeamSent, 'Team vesting is not created');
+        require(MAX_TREASURY_TOKENS >= _allocator.tokensAvailable(), 'Unsold tokens are not burned');
+
         _allocator.allocate(treasuryAddress, _allocator.tokensAvailable());
     }
 
@@ -71,6 +77,9 @@ contract ICUAllocation is Ownable {
         uint256 _amount
     ) public onlyOwner returns (PeriodicTokenVesting) {
         require(icoEndTime > 0 && _amount > 0);
+
+        isTeamSent = true;
+
         PeriodicTokenVesting vesting = new PeriodicTokenVesting(
             _beneficiary, _start, _cliff, _duration, _periods, _revocable, _unreleasedHolder
         );
@@ -80,8 +89,6 @@ contract ICUAllocation is Ownable {
         emit VestingCreated(vesting, _beneficiary, _start, _cliff, _duration, _periods, _revocable);
 
         _allocator.allocate(address(vesting), _amount);
-        Token token = Token(address(_allocator.token()));
-        token.log(_beneficiary, _amount, icoEndTime.add(uint256(365 days).div(2)));
 
         return vesting;
     }

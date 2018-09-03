@@ -3,11 +3,10 @@ pragma solidity 0.4.24;
 import './token/erc20/openzeppelin/OpenZeppelinERC20.sol';
 import './token/erc20/MintableBurnableToken.sol';
 import './token/erc20/TimeLockedToken.sol';
-import './LockupContract.sol';
 import './ICUCrowdsale.sol';
 
 
-contract ICUToken is OpenZeppelinERC20, MintableBurnableToken, TimeLockedToken, LockupContract {
+contract ICUToken is OpenZeppelinERC20, MintableBurnableToken, TimeLockedToken {
 
     ICUCrowdsale public crowdsale;
 
@@ -16,8 +15,7 @@ contract ICUToken is OpenZeppelinERC20, MintableBurnableToken, TimeLockedToken, 
     constructor(uint256 _unlockTokensTime) public
     OpenZeppelinERC20(0, "iCumulate", 18, "ICU", false)
     MintableBurnableToken(4700000000e18, 0, true)
-    TimeLockedToken(_unlockTokensTime)
-    LockupContract(730 days, 0, 0) {
+    TimeLockedToken(_unlockTokensTime) {
 
     }
 
@@ -34,6 +32,10 @@ contract ICUToken is OpenZeppelinERC20, MintableBurnableToken, TimeLockedToken, 
         crowdsale = ICUCrowdsale(_crowdsale);
     }
 
+    function updateExcludedAddress(address _address, bool _status) public onlyOwner {
+        excludedAddresses[_address] = _status;
+    }
+
     function transfer(address _to, uint256 _tokens) public returns (bool) {
         require(true == isTransferAllowed(msg.sender, _tokens));
         return super.transfer(_to, _tokens);
@@ -45,11 +47,15 @@ contract ICUToken is OpenZeppelinERC20, MintableBurnableToken, TimeLockedToken, 
     }
 
     function isTransferAllowed(address _address, uint256 _value) public view returns (bool) {
+        if (excludedAddresses[_address] == true) {
+            return true;
+        }
+
         if (!isSoftCapAchieved && (address(crowdsale) == address(0) || false == crowdsale.isSoftCapAchieved(0))) {
             return false;
         }
 
-        return isTransferAllowedInternal(_address, _value, block.timestamp, balanceOf(_address));
+        return true;
     }
 
     function burnUnsoldTokens(uint256 _tokensToBurn) public onlyBurnAgents() returns (uint256) {

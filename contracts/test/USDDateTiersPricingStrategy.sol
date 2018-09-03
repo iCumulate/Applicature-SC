@@ -2,8 +2,8 @@ pragma solidity ^0.4.23;
 
 
 import 'openzeppelin-solidity/contracts/math/SafeMath.sol';
-import './PricingStrategy.sol';
-import './USDExchange.sol';
+import '../pricing/PricingStrategy.sol';
+import '../pricing/USDExchange.sol';
 
 /*
     Tests:

@@ -134,8 +134,8 @@ module.exports = function (deployer, network, accounts) {
         console.log("allocator.addCrowdsales(allocation.address);");
         return allocator.addCrowdsales(allocation.address);
     }).then(async () => {
-        console.log("token.updateLockupAgent(allocation.address, true);");
-        return token.updateLockupAgent(allocation.address, true);
+        // console.log("token.updateLockupAgent(allocation.address, true);");
+        // return token.updateLockupAgent(allocation.address, true);
     }).then(async () => {
         console.log("token.updateMintingAgent(referral.address, true);");
         return token.updateMintingAgent(referral.address, true);

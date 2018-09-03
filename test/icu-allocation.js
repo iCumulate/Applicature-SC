@@ -108,7 +108,6 @@ contract('Allocation', function (accounts) {
 
         await token.updateMintingAgent(allocator.address, true);
         await allocator.addCrowdsales(allocation.address);
-        await token.updateLockupAgent(allocation.address, true);
 
         await allocation.createVesting(accounts[0], icoTill, 0, 31556926, 3, true, applicatureHolder, allocator.address, 1000)
             .then(Utils.receiptShouldSucceed)
@@ -122,7 +121,6 @@ contract('Allocation', function (accounts) {
 
         await token.updateMintingAgent(allocator.address, true);
         await allocator.addCrowdsales(allocation.address);
-        await token.updateLockupAgent(allocation.address, true);
         // await token.unpause();
         // await allocation.allocateVesting(vesting.address, allocator.address, 28, {from: accounts[1]})
         //     .then(Utils.receiptShouldFailed)
@@ -252,7 +250,6 @@ contract('Allocation', function (accounts) {
             .then(Utils.receiptShouldSucceed);
         await token.updateMintingAgent(allocator.address, true);
         await allocator.addCrowdsales(allocation.address);
-        await token.updateLockupAgent(allocation.address, true);
 
         await allocation.createVesting(accounts[2], parseInt(new Date().getTime() / 1000) - 61, 0, 60, 2, true, applicatureHolder, allocator.address, 100)
             .then(Utils.receiptShouldSucceed)

@@ -17,7 +17,6 @@ contract DistributedDirectContributionForwarder is ContributionForwarder {
         uint256 forwardedWei;
     }
 
-    // @TODO: should we use uint256 [] for receivers & proportions?
     constructor(uint256 _proportionAbsMax, address[] _receivers, uint256[] _proportions) public {
         proportionAbsMax = _proportionAbsMax;
 
