@@ -60,7 +60,7 @@ contract ICUAllocation is Ownable {
         require(icoEndTime < block.timestamp, 'ICO is not ended');
         require(isBountySent, 'Bounty is not sent');
         require(isTeamSent, 'Team vesting is not created');
-        require(MAX_TREASURY_TOKENS >= _allocator.tokensAvailable(), 'Unsold tokens is not burned');
+        require(MAX_TREASURY_TOKENS >= _allocator.tokensAvailable(), 'Unsold tokens are not burned');
 
         _allocator.allocate(treasuryAddress, _allocator.tokensAvailable());
     }
