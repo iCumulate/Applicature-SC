@@ -176,7 +176,7 @@ contract('ICUCrowdsale', function (accounts) {
                         usdCollected: new BigNumber('0').mul(usdPrecision).valueOf(),
                         // isBonusIncreased: false,
                         maxSaleSupply: new BigNumber('2350000000').mul(precision).valueOf(),
-                        availableBonusAmount: new BigNumber('547500000').mul(precision).valueOf(),
+                        availableBonusAmount: new BigNumber('447500000').mul(precision).valueOf(),
                         contributorBonuses: [
                             {[accounts[0]]: 0},
                             {[accounts[1]]: 0},
@@ -271,7 +271,7 @@ contract('ICUCrowdsale', function (accounts) {
                         usdCollected: new BigNumber('21').mul('400').mul(usdPrecision).valueOf(),
                         // isBonusIncreased: true,
                         maxSaleSupply: new BigNumber('2350000000').mul(precision).valueOf(),
-                        availableBonusAmount: new BigNumber('547500000')
+                        availableBonusAmount: new BigNumber('447500000')
                             .sub('240000')
                             .sub('6000')
                             // .add('1000000000')
@@ -356,7 +356,7 @@ contract('ICUCrowdsale', function (accounts) {
                         usdCollected: new BigNumber('21').mul('400').mul(usdPrecision).valueOf(),
                         // isBonusIncreased: true,
                         maxSaleSupply: new BigNumber('2350000000').mul(precision).valueOf(),
-                        availableBonusAmount: new BigNumber('547500000')
+                        availableBonusAmount: new BigNumber('447500000')
                             .sub('240000')
                             .sub('6000')
                             // .add('1000000000')
@@ -416,7 +416,7 @@ contract('ICUCrowdsale', function (accounts) {
                         usdCollected: new BigNumber('0').mul(usdPrecision).valueOf(),
                         // isBonusIncreased: false,
                         maxSaleSupply: new BigNumber('2350000000').mul(precision).valueOf(),
-                        availableBonusAmount: new BigNumber('547500000').mul(precision).valueOf(),
+                        availableBonusAmount: new BigNumber('447500000').mul(precision).valueOf(),
                         contributorBonuses: [
                             {[accounts[0]]: 0},
                             {[accounts[1]]: 0},
@@ -496,7 +496,7 @@ contract('ICUCrowdsale', function (accounts) {
                         usdCollected: new BigNumber('21').mul('400').mul(usdPrecision).valueOf(),
                         // isBonusIncreased: true,
                         maxSaleSupply: new BigNumber('2350000000').mul(precision).valueOf(),
-                        availableBonusAmount: new BigNumber('547500000')
+                        availableBonusAmount: new BigNumber('447500000')
                             .sub('240000')
                             .sub('6000')
                             // .add('1000000000')
@@ -589,7 +589,7 @@ contract('ICUCrowdsale', function (accounts) {
                         usdCollected: new BigNumber('5000000').mul(usdPrecision).valueOf(),
                         // isBonusIncreased: true,
                         maxSaleSupply: new BigNumber('2350000000').mul(precision).valueOf(),
-                        availableBonusAmount: new BigNumber('547500000')
+                        availableBonusAmount: new BigNumber('447500000')
                             .sub('240000')
                             .sub('6000')
                             // .add('1000000000')

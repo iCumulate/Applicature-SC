@@ -31,9 +31,9 @@ contract('ICUStrategy', function (accounts) {
             new BigNumber('1000000000').mul(precision).valueOf(), new BigNumber('30').mul(1).valueOf(),
             0, 0,
             0, 0,
-            new BigNumber('400000000').mul(precision).valueOf(), new BigNumber('15').mul(1).valueOf(),
-            new BigNumber('1200000000').mul(precision).valueOf(), new BigNumber('6').mul(1).valueOf(),
-            new BigNumber('1350000000').mul(precision).valueOf(), new BigNumber('3').mul(1).valueOf(),
+            new BigNumber('400000000').mul(precision).valueOf(), new BigNumber('20').mul(1).valueOf(),
+            new BigNumber('800000000').mul(precision).valueOf(), new BigNumber('10').mul(1).valueOf(),
+            new BigNumber('1350000000').mul(precision).valueOf(), new BigNumber('5').mul(1).valueOf(),
         ], new BigNumber('400').mul(usdPrecision));
         await strategy.updateDates(0, icoSince, icoTill);
         await strategy.updateDates(1, icoTill + 3600, icoTill + 3600 * 2);
@@ -245,11 +245,11 @@ contract('ICUStrategy', function (accounts) {
                 0
             );
             //1 * 400 / 0.01 = 40000
-            //1 * 400 / 0.01 * 115/100 = 46000
-            //1 * 400 / 0.01 * 15/100 = 6000
-            await assert.equal(new BigNumber(tokens[0]).valueOf(), new BigNumber('46000').mul(precision).valueOf(), "tokens is not equal")
+            //1 * 400 / 0.01 * 120/100 = 48000
+            //1 * 400 / 0.01 * 10/100 = 8000
+            await assert.equal(new BigNumber(tokens[0]).valueOf(), new BigNumber('48000').mul(precision).valueOf(), "tokens is not equal")
             await assert.equal(new BigNumber(tokens[1]).valueOf(), new BigNumber('40000').mul(precision).valueOf(), "tokensExcludingBonus is not equal")
-            await assert.equal(new BigNumber(tokens[2]).valueOf(), new BigNumber('6000').mul(precision).valueOf(), "bonus is not equal")
+            await assert.equal(new BigNumber(tokens[2]).valueOf(), new BigNumber('8000').mul(precision).valueOf(), "bonus is not equal")
         });
 
         it('check airdrop threshhold', async function () {
@@ -265,13 +265,13 @@ contract('ICUStrategy', function (accounts) {
                 0
             );
             //400 / 0.01 = 40000
-            //300 / 0.01 * 115/100 = 34500
-            //300 / 0.01 * 15/100 = 4500
-            //100 / 0.01 * 106/100 = 10600
-            //100 / 0.01 * 6/100 = 600
-            await assert.equal(new BigNumber(tokens[0]).valueOf(), new BigNumber('34500').add('10600').mul(precision).valueOf(), "tokens is not equal")
+            //300 / 0.01 * 120/100 = 36000
+            //300 / 0.01 * 20/100 = 6000
+            //100 / 0.01 * 110/100 = 11000
+            //100 / 0.01 * 10/100 = 1000
+            await assert.equal(new BigNumber(tokens[0]).valueOf(), new BigNumber('36000').add('11000').mul(precision).valueOf(), "tokens is not equal")
             await assert.equal(new BigNumber(tokens[1]).valueOf(), new BigNumber('40000').mul(precision).valueOf(), "tokensExcludingBonus is not equal")
-            await assert.equal(new BigNumber(tokens[2]).valueOf(), new BigNumber('5100').mul(precision).valueOf(), "bonus is not equal")
+            await assert.equal(new BigNumber(tokens[2]).valueOf(), new BigNumber('7000').mul(precision).valueOf(), "bonus is not equal")
 
             await strategy.updateSoldTokens(1, new BigNumber('400000000').sub('1000000').mul(precision).valueOf());
 
@@ -284,12 +284,12 @@ contract('ICUStrategy', function (accounts) {
             );
 
             //900000000
-            //1000000 * 15/100 = 150000 | 150000
-            //800000000 * 6/100 = 48000000 | 48000000
-            //99000000 * 3/100 = 2970000 | 2970000
-            await assert.equal(new BigNumber(tokens[0]).valueOf(), new BigNumber('900000000').add('150000').add('48000000').add('2970000').mul(precision).valueOf(), "tokens is not equal")
+            //1000000 * 20/100 = 200000 | 150000
+            //400000000 * 10/100 = 40000000 | 48000000
+            //499000000 * 5/100 = 24950000 | 2970000
+            await assert.equal(new BigNumber(tokens[0]).valueOf(), new BigNumber('900000000').add('200000').add('40000000').add('24950000').mul(precision).valueOf(), "tokens is not equal")
             await assert.equal(new BigNumber(tokens[1]).valueOf(), new BigNumber('900000000').mul(precision).valueOf(), "tokensExcludingBonus is not equal")
-            await assert.equal(new BigNumber(tokens[2]).valueOf(), new BigNumber('150000').add('48000000').add('2970000').mul(precision).valueOf(), "bonus is not equal")
+            await assert.equal(new BigNumber(tokens[2]).valueOf(), new BigNumber('200000').add('40000000').add('24950000').mul(precision).valueOf(), "bonus is not equal")
         });
 
         it('check airdrop threshhold', async function () {
@@ -305,13 +305,13 @@ contract('ICUStrategy', function (accounts) {
                 0
             );
             //400 / 0.01 = 40000
-            //300 / 0.01 * 115/100 = 34500
-            //300 / 0.01 * 15/100 = 4500
-            //100 / 0.01 * 106/100 = 10600
-            //100 / 0.01 * 6/100 = 600
-            await assert.equal(new BigNumber(tokens[0]).valueOf(), new BigNumber('34500').add('10600').mul(precision).valueOf(), "tokens is not equal")
+            //300 / 0.01 * 120/100 = 36000
+            //300 / 0.01 * 20/100 = 6000
+            //100 / 0.01 * 110/100 = 11000
+            //100 / 0.01 * 10/100 = 1000
+            await assert.equal(new BigNumber(tokens[0]).valueOf(), new BigNumber('36000').add('11000').mul(precision).valueOf(), "tokens is not equal")
             await assert.equal(new BigNumber(tokens[1]).valueOf(), new BigNumber('40000').mul(precision).valueOf(), "tokensExcludingBonus is not equal")
-            await assert.equal(new BigNumber(tokens[2]).valueOf(), new BigNumber('5100').mul(precision).valueOf(), "bonus is not equal")
+            await assert.equal(new BigNumber(tokens[2]).valueOf(), new BigNumber('7000').mul(precision).valueOf(), "bonus is not equal")
 
             await strategy.updateSoldTokens(1, new BigNumber('400000000').sub('1000000').mul(precision).valueOf());
 
@@ -324,12 +324,12 @@ contract('ICUStrategy', function (accounts) {
             );
 
             //900000000
-            //1000000 * 15/100 = 150000 | 150000
-            //800000000 * 6/100 = 48000000 | 48000000
-            //99000000 * 3/100 = 2970000 | 2970000
-            await assert.equal(new BigNumber(tokens[0]).valueOf(), new BigNumber('900000000').add('150000').add('48000000').add('2970000').mul(precision).valueOf(), "tokens is not equal")
+            //1000000 * 20/100 = 200000 | 150000
+            //400000000 * 10/100 = 40000000 | 48000000
+            //499000000 * 5/100 = 24950000 | 2970000
+            await assert.equal(new BigNumber(tokens[0]).valueOf(), new BigNumber('900000000').add('200000').add('40000000').add('24950000').mul(precision).valueOf(), "tokens is not equal")
             await assert.equal(new BigNumber(tokens[1]).valueOf(), new BigNumber('900000000').mul(precision).valueOf(), "tokensExcludingBonus is not equal")
-            await assert.equal(new BigNumber(tokens[2]).valueOf(), new BigNumber('150000').add('48000000').add('2970000').mul(precision).valueOf(), "bonus is not equal")
+            await assert.equal(new BigNumber(tokens[2]).valueOf(), new BigNumber('200000').add('40000000').add('24950000').mul(precision).valueOf(), "bonus is not equal")
         });
 
     });
@@ -391,10 +391,10 @@ contract('ICUStrategy', function (accounts) {
             await assert.equal(new BigNumber(tokens[1]).valueOf(), new BigNumber('0').mul(precision).valueOf(), "tokensBonus is not equal")
 
             await strategy.updateDates(1, icoSince, icoTill);
-
+            //40000 * 20 /100 = 8000
             tokens = await strategy.getWeis.call(0, 0, new BigNumber('40000').mul(precision).valueOf())
             await assert.equal(new BigNumber(tokens[0]).valueOf(), new BigNumber('1').mul(precision).valueOf(), "totalWeiAmount is not equal")
-            await assert.equal(new BigNumber(tokens[1]).valueOf(), new BigNumber('6000').mul(precision).valueOf(), "tokensBonus is not equal")
+            await assert.equal(new BigNumber(tokens[1]).valueOf(), new BigNumber('8000').mul(precision).valueOf(), "tokensBonus is not equal")
 
         });
 

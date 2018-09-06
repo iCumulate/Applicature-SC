@@ -12,7 +12,7 @@ contract ICUCrowdsale is RefundableCrowdsale {
 
     uint256 public maxSaleSupply = 2350000000e18;
 
-    uint256 public availableBonusAmount = 547500000e18;
+    uint256 public availableBonusAmount = 447500000e18;
 
     uint256 public usdCollected;
 
@@ -92,7 +92,7 @@ contract ICUCrowdsale is RefundableCrowdsale {
 
         allocator.allocate(_contributor, tokensExcludingBonus);
 
-        if (isSoftCapAchieved(0)) {
+        if (isSoftCapAchieved(usdAmount)) {
             if (msg.value > 0) {
                 contributionForwarder.forward.value(address(this).balance)();
             }
