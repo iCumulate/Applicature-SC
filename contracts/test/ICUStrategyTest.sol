@@ -6,10 +6,9 @@ import '../ICUStrategy.sol';
 contract ICUStrategyTest is ICUStrategy {
 
     constructor(
-        uint256[] _tiers,
-        uint256[]_capsData,
+        uint256[] _emptyArray,
         uint256 _etherPriceInUSD
-    ) public ICUStrategy(_tiers, _capsData, _etherPriceInUSD) {
+    ) public ICUStrategy(_emptyArray, _etherPriceInUSD) {
 
     }
 

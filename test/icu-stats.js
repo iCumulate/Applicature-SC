@@ -23,28 +23,7 @@ var abi = require('ethereumjs-abi'),
 
 async function deploy() {
     const token = await ICUToken.new(icoTill);
-    const strategy = await ICUStrategy.new([
-        new BigNumber('0.01').mul(usdPrecision).valueOf(),//tokenInUSD
-        new BigNumber('1000000000').mul(precision).valueOf(),//maxTokensCollected
-        new BigNumber('0').mul(precision).valueOf(),//discountPercents
-        new BigNumber('8000').mul(usdPrecision).valueOf(),//minInvestInUSD
-        new BigNumber('28').mul(1).valueOf(),//startDate
-        new BigNumber('82').mul(1).valueOf(),//endDate
-
-        new BigNumber('0.01').mul(usdPrecision).valueOf(),//tokenInUSD
-        new BigNumber('1350000000').mul(precision).valueOf(),//maxTokensCollected
-        new BigNumber('0').mul(precision).valueOf(),//discountPercents
-        new BigNumber('80').mul(usdPrecision).valueOf(),//minInvestInUSD
-        new BigNumber('28').mul(1).valueOf(),//startDate
-        new BigNumber('82').mul(1).valueOf()//endDate
-    ], [
-        new BigNumber('1000000000').mul(precision).valueOf(), new BigNumber('30').mul(1).valueOf(),
-        0, 0,
-        0, 0,
-        new BigNumber('400000000').mul(precision).valueOf(), new BigNumber('15').mul(1).valueOf(),
-        new BigNumber('1200000000').mul(precision).valueOf(), new BigNumber('6').mul(1).valueOf(),
-        new BigNumber('1350000000').mul(precision).valueOf(), new BigNumber('3').mul(1).valueOf(),
-    ], new BigNumber('400').mul(usdPrecision));
+    const strategy = await ICUStrategy.new([], new BigNumber('400').mul(usdPrecision));
 
     await strategy.updateDates(0, icoSince, icoTill);
     await strategy.updateDates(1, icoTill + 3600, icoTill + 3600 * 2);
@@ -100,13 +79,13 @@ contract('StatsContract', function (accounts) {
         await strategy.updateDates(1, icoSince, icoTill);
 
         let getTokensData = await stats.getTokens.call(0, new BigNumber('1').mul(precision));
-        assert.equal(new BigNumber(getTokensData[0]).valueOf(), new BigNumber('46000').mul(precision).valueOf(), "tokens is not equal");
+        assert.equal(new BigNumber(getTokensData[0]).valueOf(), new BigNumber('48000').mul(precision).valueOf(), "tokens is not equal");
         assert.equal(new BigNumber(getTokensData[1]).valueOf(), new BigNumber('40000').mul(precision).valueOf(), "tokensExcludingBonus is not equal");
-        assert.equal(new BigNumber(getTokensData[2]).valueOf(), new BigNumber('6000').mul(precision).valueOf(), "bonus is not equal");
+        assert.equal(new BigNumber(getTokensData[2]).valueOf(), new BigNumber('8000').mul(precision).valueOf(), "bonus is not equal");
 
         getTokensData = await stats.getWeis.call(0, new BigNumber('40000').mul(precision));
         assert.equal(new BigNumber(getTokensData[0]).valueOf(), new BigNumber('1').mul(precision).valueOf(), "totalWeiAmount is not equal");
-        assert.equal(new BigNumber(getTokensData[1]).valueOf(), new BigNumber('6000').mul(precision).valueOf(), "tokensBonus is not equal");
+        assert.equal(new BigNumber(getTokensData[1]).valueOf(), new BigNumber('8000').mul(precision).valueOf(), "tokensBonus is not equal");
 
     });
 
@@ -136,9 +115,9 @@ contract('StatsContract', function (accounts) {
         ]);
 
         console.log(statsData[2], 'currencyContr');
-        assert.equal(statsData[2][18], new BigNumber('46000').mul(precision).valueOf(), "tokens is not equal");
+        assert.equal(statsData[2][18], new BigNumber('48000').mul(precision).valueOf(), "tokens is not equal");
         assert.equal(statsData[2][19], new BigNumber('40000').mul(precision).valueOf(), "tokensExcludingBonus is not equal");
-        assert.equal(statsData[2][20], new BigNumber('6000').mul(precision).valueOf(), "bonus is not equal");
+        assert.equal(statsData[2][20], new BigNumber('8000').mul(precision).valueOf(), "bonus is not equal");
 
         console.log(statsData[0], 'stats');
         assert.equal(statsData[0][0], new BigNumber('4700000000').mul(precision).valueOf(), "maxTokenSupply is not equal");
@@ -148,7 +127,7 @@ contract('StatsContract', function (accounts) {
         assert.equal(statsData[0][4], new BigNumber('3').mul(1).valueOf(), "currentStat is not equal");
         assert.equal(statsData[0][5], new BigNumber('1').mul(1).valueOf(), "actualTier is not equal");
         assert.equal(statsData[0][6], new BigNumber('1350000000').mul(precision).valueOf(), "minEthInvest is not equal");
-        assert.equal(statsData[0][7], new BigNumber('0.2').mul(precision).valueOf(), "minEthInvest is not equal");
+        assert.equal(statsData[0][7], new BigNumber('0.1').mul(precision).valueOf(), "minEthInvest is not equal");
 
         console.log(statsData[1], 'tiersData');
 
@@ -172,7 +151,7 @@ contract('StatsContract', function (accounts) {
         assert.equal(statsData[1][16], new BigNumber('0').mul(precision).valueOf(), " soldTierTokens; is not equal");
         assert.equal(statsData[1][17], new BigNumber('0').mul(precision).valueOf(), " discountPercents; is not equal");
         assert.equal(statsData[1][18], new BigNumber('0').mul(precision).valueOf(), " bonusPercents; is not equal");
-        assert.equal(statsData[1][19], new BigNumber('80').mul(usdPrecision).valueOf(), " minInvestInUSD; is not equal");
+        assert.equal(statsData[1][19], new BigNumber('40').mul(usdPrecision).valueOf(), " minInvestInUSD; is not equal");
         assert.equal(statsData[1][20], new BigNumber('0').mul(precision).valueOf(), " minInvestInWei; is not equal");
         assert.equal(statsData[1][21], new BigNumber('0').mul(precision).valueOf(), " maxInvestInUSD; is not equal");
         assert.equal(statsData[1][22], new BigNumber('0').mul(precision).valueOf(), " maxInvestInWei; is not equal");

@@ -43,7 +43,7 @@ contract TokenDateCappedTiersPricingStrategy is PricingStrategy, USDExchange {
         require(_tiers.length % 6 == 0);
         uint256 length = _tiers.length / 6;
 
-        require(_capsData.length % length == 0);
+        require(_capsData.length % 2 == 0);
         uint256 lengthCaps = _capsData.length / 2;
 
         uint256[] memory emptyArray;

@@ -22,28 +22,7 @@ var abi = require('ethereumjs-abi'),
 
 async function deploy() {
     const token = await ICUToken.new(icoTill);
-    const strategy = await ICUStrategy.new([
-        new BigNumber('0.01').mul(usdPrecision).valueOf(),//tokenInUSD
-        new BigNumber('1000000000').mul(precision).valueOf(),//maxTokensCollected
-        new BigNumber('0').mul(precision).valueOf(),//discountPercents
-        new BigNumber('8000').mul(usdPrecision).valueOf(),//minInvestInUSD
-        new BigNumber('28').mul(1).valueOf(),//startDate
-        new BigNumber('82').mul(1).valueOf(),//endDate
-
-        new BigNumber('0.01').mul(usdPrecision).valueOf(),//tokenInUSD
-        new BigNumber('1350000000').mul(precision).valueOf(),//maxTokensCollected
-        new BigNumber('0').mul(precision).valueOf(),//discountPercents
-        new BigNumber('80').mul(usdPrecision).valueOf(),//minInvestInUSD
-        new BigNumber('28').mul(1).valueOf(),//startDate
-        new BigNumber('82').mul(1).valueOf()//endDate
-    ], [
-        new BigNumber('1000000000').mul(precision).valueOf(), new BigNumber('30').mul(1).valueOf(),
-        0, 0,
-        0, 0,
-        new BigNumber('400000000').mul(precision).valueOf(), new BigNumber('15').mul(1).valueOf(),
-        new BigNumber('1200000000').mul(precision).valueOf(), new BigNumber('6').mul(1).valueOf(),
-        new BigNumber('1350000000').mul(precision).valueOf(), new BigNumber('3').mul(1).valueOf(),
-    ], new BigNumber('400').mul(usdPrecision));
+    const strategy = await ICUStrategy.new([], new BigNumber('400').mul(usdPrecision));
 
     await strategy.updateDates(0, icoSince, icoTill);
     await strategy.updateDates(1, icoTill + 3600, icoTill + 3600 * 2);
@@ -124,28 +103,7 @@ contract('ICUCrowdsale', function (accounts) {
 
             beforeEach(async function () {
                 token = await ICUToken.new(icoTill);
-                strategy = await ICUStrategy.new([
-                    new BigNumber('0.01').mul(usdPrecision).valueOf(),//tokenInUSD
-                    new BigNumber('1000000000').mul(precision).valueOf(),//maxTokensCollected
-                    new BigNumber('0').mul(precision).valueOf(),//discountPercents
-                    new BigNumber('8000').mul(usdPrecision).valueOf(),//minInvestInUSD
-                    new BigNumber('28').mul(1).valueOf(),//startDate
-                    new BigNumber('82').mul(1).valueOf(),//endDate
-
-                    new BigNumber('0.01').mul(usdPrecision).valueOf(),//tokenInUSD
-                    new BigNumber('1350000000').mul(precision).valueOf(),//maxTokensCollected
-                    new BigNumber('0').mul(precision).valueOf(),//discountPercents
-                    new BigNumber('80').mul(usdPrecision).valueOf(),//minInvestInUSD
-                    new BigNumber('28').mul(1).valueOf(),//startDate
-                    new BigNumber('82').mul(1).valueOf()//endDate
-                ], [
-                    new BigNumber('1000000000').mul(precision).valueOf(), new BigNumber('30').mul(1).valueOf(),
-                    0, 0,
-                    0, 0,
-                    new BigNumber('400000000').mul(precision).valueOf(), new BigNumber('15').mul(1).valueOf(),
-                    new BigNumber('1200000000').mul(precision).valueOf(), new BigNumber('6').mul(1).valueOf(),
-                    new BigNumber('1350000000').mul(precision).valueOf(), new BigNumber('3').mul(1).valueOf(),
-                ], new BigNumber('400').mul(usdPrecision));
+                strategy = await ICUStrategy.new([], new BigNumber('400').mul(usdPrecision));
 
                 contributionForwarder = await DistributedDirectContributionForwarder.new(100, [etherHolder, applicatureHolder], [99,1]);
                 allocator = await MintableTokenAllocator.new(token.address);
@@ -251,7 +209,7 @@ contract('ICUCrowdsale', function (accounts) {
                 await assert.equal(tierData[3], new BigNumber('240000').mul(precision).valueOf(), "bonusTierTokens is not equal");
                 tierData = await strategy.tiers.call(1);
                 await assert.equal(tierData[2], new BigNumber('40000').mul(precision).valueOf(), "soldTierTokens is not equal");
-                await assert.equal(tierData[3], new BigNumber('6000').mul(precision).valueOf(), "bonusTierTokens is not equal");
+                await assert.equal(tierData[3], new BigNumber('8000').mul(precision).valueOf(), "bonusTierTokens is not equal");
 
                 await Utils.checkState({crowdsale, token}, {
                     token: {
@@ -273,13 +231,13 @@ contract('ICUCrowdsale', function (accounts) {
                         maxSaleSupply: new BigNumber('2350000000').mul(precision).valueOf(),
                         availableBonusAmount: new BigNumber('447500000')
                             .sub('240000')
-                            .sub('6000')
+                            .sub('8000')
                             // .add('1000000000')
                             // .sub('800000')
                             .mul(precision).valueOf(),
                         contributorBonuses: [
                             {[accounts[0]]: 0},
-                            {[accounts[1]]: new BigNumber('240000').add('6000').mul(precision)},
+                            {[accounts[1]]: new BigNumber('240000').add('8000').mul(precision)},
                         ],
                         contributorsWei: [
                             {[accounts[0]]: 0},
@@ -303,7 +261,7 @@ contract('ICUCrowdsale', function (accounts) {
                             .add('800000')
                             .add('40000')
                             .add('240000')
-                            .add('6000')
+                            .add('8000')
                             .mul(precision).valueOf(),
                         whitelisted: [
                             {[accounts[0]]: false},
@@ -358,13 +316,13 @@ contract('ICUCrowdsale', function (accounts) {
                         maxSaleSupply: new BigNumber('2350000000').mul(precision).valueOf(),
                         availableBonusAmount: new BigNumber('447500000')
                             .sub('240000')
-                            .sub('6000')
+                            .sub('8000')
                             // .add('1000000000')
                             // .sub('800000')
                             .mul(precision).valueOf(),
                         contributorBonuses: [
                             {[accounts[0]]: 0},
-                            {[accounts[1]]: new BigNumber('240000').add('6000').mul(precision)},
+                            {[accounts[1]]: new BigNumber('240000').add('8000').mul(precision)},
                         ],
                         contributorsWei: [
                             {[accounts[0]]: 0},
@@ -388,7 +346,7 @@ contract('ICUCrowdsale', function (accounts) {
                             .add('800000')
                             .add('40000')
                             .add('240000')
-                            .add('6000')
+                            .add('8000')
                             .mul(precision).valueOf(),
                         whitelisted: [
                             {[accounts[0]]: false},
@@ -476,7 +434,7 @@ contract('ICUCrowdsale', function (accounts) {
                 await assert.equal(tierData[3], new BigNumber('240000').mul(precision).valueOf(), "bonusTierTokens is not equal");
                 tierData = await strategy.tiers.call(1);
                 await assert.equal(tierData[2], new BigNumber('40000').mul(precision).valueOf(), "soldTierTokens is not equal");
-                await assert.equal(tierData[3], new BigNumber('6000').mul(precision).valueOf(), "bonusTierTokens is not equal");
+                await assert.equal(tierData[3], new BigNumber('8000').mul(precision).valueOf(), "bonusTierTokens is not equal");
 
                 await Utils.checkState({crowdsale, token}, {
                     token: {
@@ -498,13 +456,13 @@ contract('ICUCrowdsale', function (accounts) {
                         maxSaleSupply: new BigNumber('2350000000').mul(precision).valueOf(),
                         availableBonusAmount: new BigNumber('447500000')
                             .sub('240000')
-                            .sub('6000')
+                            .sub('8000')
                             // .add('1000000000')
                             // .sub('800000')
                             .mul(precision).valueOf(),
                         contributorBonuses: [
                             {[accounts[0]]: 0},
-                            {[accounts[1]]: new BigNumber('240000').add('6000').mul(precision)},
+                            {[accounts[1]]: new BigNumber('240000').add('8000').mul(precision)},
                         ],
                         contributorsWei: [
                             {[accounts[0]]: 0},
@@ -528,7 +486,7 @@ contract('ICUCrowdsale', function (accounts) {
                             .add('800000')
                             .add('40000')
                             .add('240000')
-                            .add('6000')
+                            .add('8000')
                             .mul(precision).valueOf(),
                         whitelisted: [
                             {[accounts[0]]: false},
@@ -578,7 +536,7 @@ contract('ICUCrowdsale', function (accounts) {
                                     .add('800000')
                                     .add('40000')
                                     .add('240000')
-                                    .add('6000')
+                                    .add('8000')
                                     .mul(precision).valueOf()
                             },
                         ],
@@ -591,7 +549,7 @@ contract('ICUCrowdsale', function (accounts) {
                         maxSaleSupply: new BigNumber('2350000000').mul(precision).valueOf(),
                         availableBonusAmount: new BigNumber('447500000')
                             .sub('240000')
-                            .sub('6000')
+                            .sub('8000')
                             // .add('1000000000')
                             // .sub('800000')
                             .mul(precision).valueOf(),
@@ -621,7 +579,7 @@ contract('ICUCrowdsale', function (accounts) {
                             .add('800000')
                             .add('40000')
                             .add('240000')
-                            .add('6000')
+                            .add('8000')
                             .mul(precision).valueOf(),
                         whitelisted: [
                             {[accounts[0]]: false},

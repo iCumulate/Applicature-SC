@@ -22,28 +22,7 @@ var abi = require('ethereumjs-abi'),
 
 async function deploy() {
     const token = await ICUToken.new(icoTill);
-    const strategy = await ICUStrategy.new([
-        new BigNumber('0.01').mul(usdPrecision).valueOf(),//tokenInUSD
-        new BigNumber('1000000000').mul(precision).valueOf(),//maxTokensCollected
-        new BigNumber('0').mul(precision).valueOf(),//discountPercents
-        new BigNumber('8000').mul(usdPrecision).valueOf(),//minInvestInUSD
-        new BigNumber('28').mul(1).valueOf(),//startDate
-        new BigNumber('82').mul(1).valueOf(),//endDate
-
-        new BigNumber('0.01').mul(usdPrecision).valueOf(),//tokenInUSD
-        new BigNumber('1350000000').mul(precision).valueOf(),//maxTokensCollected
-        new BigNumber('0').mul(precision).valueOf(),//discountPercents
-        new BigNumber('80').mul(usdPrecision).valueOf(),//minInvestInUSD
-        new BigNumber('28').mul(1).valueOf(),//startDate
-        new BigNumber('82').mul(1).valueOf()//endDate
-    ], [
-        new BigNumber('1000000000').mul(precision).valueOf(), new BigNumber('30').mul(1).valueOf(),
-        0, 0,
-        0, 0,
-        new BigNumber('400000000').mul(precision).valueOf(), new BigNumber('15').mul(1).valueOf(),
-        new BigNumber('1200000000').mul(precision).valueOf(), new BigNumber('6').mul(1).valueOf(),
-        new BigNumber('1350000000').mul(precision).valueOf(), new BigNumber('3').mul(1).valueOf(),
-    ], new BigNumber('400').mul(usdPrecision));
+    const strategy = await ICUStrategy.new([], new BigNumber('400').mul(usdPrecision));
 
     await strategy.updateDates(0, icoSince, icoTill);
     await strategy.updateDates(1, icoTill + 3600, icoTill + 3600 * 2);

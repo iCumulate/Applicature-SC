@@ -11,16 +11,59 @@ contract ICUStrategy is TokenDateCappedTiersPricingStrategy {
     event UnsoldTokensProcessed(uint256 fromTier, uint256 toTier, uint256 tokensAmount);
 
     constructor(
-        uint256[] _tiers,
-        uint256[]_capsData,
+        uint256[] _emptyArray,
         uint256 _etherPriceInUSD
     ) public TokenDateCappedTiersPricingStrategy(
-        _tiers,
-        _capsData,
+        _emptyArray,
+        _emptyArray,
         18,
         _etherPriceInUSD
     ) {
-        require(_tiers.length == uint256(12) && _capsData.length == uint256(12));
+        //Pre-ICO
+        tiers.push(
+            Tier(
+                0.01e5,//tokenInUSD
+                1000000000e18,//maxTokensCollected
+                0,//soldTierTokens
+                0,//bonusTierTokens
+                0,//discountPercents
+                uint256(20).mul(_etherPriceInUSD),//minInvestInUSD | 20 ethers
+                1534507200,//startDate | 2018/08/17 12:00:00 UTC
+                1535112000,//endDate | 2018/08/24 12:00:00 UTC
+                false,
+                _emptyArray
+            )
+        );
+        //ICO
+        tiers.push(
+            Tier(
+                0.01e5,//tokenInUSD
+                1350000000e18,//maxTokensCollected
+                0,//soldTierTokens
+                0,//bonusTierTokens
+                0,//discountPercents
+                uint256(_etherPriceInUSD).div(10),//minInvestInUSD | 0.1 ether
+                1535371200,//startDate | 2018/08/27	12:00:00 UTC
+                1537185600,//endDate | 2018/09/17 12:00:00 UTC
+                false,
+                _emptyArray
+            )
+        );
+
+        //Pre-ICO caps data
+        tiers[0].capsData.push(1000000000e18);//cap $10,000,000 in tokens
+        tiers[0].capsData.push(30);//bonus percents
+
+        //ICO caps data
+        tiers[1].capsData.push(400000000e18);//cap $4,000,000 in tokens
+        tiers[1].capsData.push(20);//bonus percents
+
+        tiers[1].capsData.push(800000000e18);//cap $4,000,000 in tokens
+        tiers[1].capsData.push(10);//bonus percents
+
+        tiers[1].capsData.push(1350000000e18);//cap $5,500,000 in tokens
+        tiers[1].capsData.push(5);//bonus percents
+
     }
 
     function getArrayOfTiers() public view returns (uint256[14] tiersData) {

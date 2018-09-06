@@ -13,28 +13,7 @@ contract('ICUStrategy', function (accounts) {
     let strategy, agent;
 
     beforeEach(async function () {
-        strategy = await ICUStrategy.new([
-            new BigNumber('0.01').mul(usdPrecision).valueOf(),//tokenInUSD
-            new BigNumber('1000000000').mul(precision).valueOf(),//maxTokensCollected
-            new BigNumber('0').mul(precision).valueOf(),//discountPercents
-            new BigNumber('8000').mul(usdPrecision).valueOf(),//minInvestInUSD
-            new BigNumber('28').mul(1).valueOf(),//startDate
-            new BigNumber('82').mul(1).valueOf(),//endDate
-
-            new BigNumber('0.01').mul(usdPrecision).valueOf(),//tokenInUSD
-            new BigNumber('1350000000').mul(precision).valueOf(),//maxTokensCollected
-            new BigNumber('0').mul(precision).valueOf(),//discountPercents
-            new BigNumber('80').mul(usdPrecision).valueOf(),//minInvestInUSD
-            new BigNumber('28').mul(1).valueOf(),//startDate
-            new BigNumber('82').mul(1).valueOf()//endDate
-        ], [
-            new BigNumber('1000000000').mul(precision).valueOf(), new BigNumber('30').mul(1).valueOf(),
-            0, 0,
-            0, 0,
-            new BigNumber('400000000').mul(precision).valueOf(), new BigNumber('20').mul(1).valueOf(),
-            new BigNumber('800000000').mul(precision).valueOf(), new BigNumber('10').mul(1).valueOf(),
-            new BigNumber('1350000000').mul(precision).valueOf(), new BigNumber('5').mul(1).valueOf(),
-        ], new BigNumber('400').mul(usdPrecision));
+        strategy = await ICUStrategy.new([], new BigNumber('400').mul(usdPrecision));
         await strategy.updateDates(0, icoSince, icoTill);
         await strategy.updateDates(1, icoTill + 3600, icoTill + 3600 * 2);
     });
@@ -468,7 +447,7 @@ contract('ICUStrategy', function (accounts) {
                 assert.equal(nonUsTiersData[8], new BigNumber('1350000000').mul(precision).valueOf(), "maxTokensCollected is not equal");
                 assert.equal(nonUsTiersData[9], new BigNumber('0').mul(precision).valueOf(), "soldTierTokens is not equal");
                 assert.equal(nonUsTiersData[10], new BigNumber('0').mul(1).valueOf(), "discountPercents is not equal");
-                assert.equal(nonUsTiersData[11], new BigNumber('80').mul(usdPrecision).valueOf(), "minInvestInUSD is not equal");
+                assert.equal(nonUsTiersData[11], new BigNumber('40').mul(usdPrecision).valueOf(), "minInvestInUSD is not equal");
                 assert.equal(nonUsTiersData[12], icoSince, "startDate is not equal");
                 assert.equal(nonUsTiersData[13], icoTill, "endDate is not equal");
                 assert.equal(await token.time.call(), icoTill, "time is not equal");

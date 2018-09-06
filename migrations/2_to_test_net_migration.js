@@ -65,22 +65,7 @@ module.exports = function (deployer, network, accounts) {
         return deployer.deploy(ICUToken, icoTill);
     }).then(async () => {
         token = await ICUToken.deployed();
-        return deployer.deploy(ICUStrategy, [
-            0.01 * usdPrecision,//tokenInUSD
-            1000000000 * precision,//maxTokensCollected
-            0 * precision,//discountPercents
-            8000 * usdPrecision,//minInvestInUSD
-            1532908800,//startDate // 07/30/2018 @ 12:00am (UTC)
-            1533427200,//endDate //08/05/2018 @ 12:00am (UTC)
-            0.01 * usdPrecision,//tokenInUSD
-            1350000000 * precision,//maxTokensCollected
-            0 * precision,//discountPercents
-            40 * usdPrecision,//minInvestInUSD
-            1533427200,//startDate 08/05/2018 @ 12:00am (UTC)
-            1537142400//endDate 09/17/2018 @ 12:00am (UTC)
-        ], [
-            1000000000 * precision, 40, 0, 0, 0, 0, 400000000 * precision, 20, 1200000000 * precision, 10, 1350000000 * precision, 5,
-        ], 400 * usdPrecision);
+        return deployer.deploy(ICUStrategy, [], 400 * usdPrecision);
     }).then(async () => {
         strategy = await ICUStrategy.deployed();
         return deployer.deploy(DistributedDirectContributionForwarder, 100, [etherHolder, applicatureHolder], [99, 1]);
