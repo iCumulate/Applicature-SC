@@ -541,6 +541,11 @@ contract('ICUStrategy', function (accounts) {
                 assert.equal(t, 1, "getActualTierIndex is not equal");
 
             });
+
+            it('getCapsData', async function () {
+                let t = await strategy.getCapsData.call(1);
+                assert.equal(t[0], new BigNumber('400000000').mul(precision).valueOf(), "cap is not equal");
+            });
         });
 
 });

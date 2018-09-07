@@ -108,4 +108,10 @@ contract ICUStrategy is TokenDateCappedTiersPricingStrategy {
         }
     }
 
+    function getCapsData(uint256 _tierId) public view returns (uint256[]) {
+        if (_tierId < tiers.length) {
+            return tiers[_tierId].capsData;
+        }
+    }
+
 }
