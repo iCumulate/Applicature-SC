@@ -28,7 +28,7 @@ contract MintableCrowdsaleOnSuccessAgent is CrowdsaleAgent {
 
     /// @notice Check whether contract is initialised
     /// @return true if initialized
-    function isInitialized() public constant returns (bool) {
+    function isInitialized() public view returns (bool) {
         return _isInitialized;
     }
 
@@ -38,7 +38,9 @@ contract MintableCrowdsaleOnSuccessAgent is CrowdsaleAgent {
         uint256 _weiAmount,
         uint256 _tokens,
         uint256 _bonus
-    ) public onlyCrowdsale();
+    )
+        public
+        onlyCrowdsale();
 
     /// @notice Takes actions on state change,
     /// un-pause tokens and disable minting on Crowdsale success

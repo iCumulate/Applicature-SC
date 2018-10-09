@@ -12,10 +12,12 @@ contract ICUToken is OpenZeppelinERC20, MintableBurnableToken, TimeLockedToken {
 
     bool public isSoftCapAchieved;
 
-    constructor(uint256 _unlockTokensTime) public
-    OpenZeppelinERC20(0, "iCumulate", 18, "ICU", false)
-    MintableBurnableToken(4700000000e18, 0, true)
-    TimeLockedToken(_unlockTokensTime) {
+    constructor(uint256 _unlockTokensTime)
+        public
+        OpenZeppelinERC20(0, 'iCumulate', 18, 'ICU', false)
+        MintableBurnableToken(4700000000e18, 0, true)
+        TimeLockedToken(_unlockTokensTime)
+    {
 
     }
 

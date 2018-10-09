@@ -1,7 +1,7 @@
 pragma solidity ^0.4.24;
 
-import "./PeriodicTokenVesting.sol";
-import "openzeppelin-solidity/contracts/token/ERC20/ERC20Basic.sol";
+import './PeriodicTokenVesting.sol';
+import 'openzeppelin-solidity/contracts/token/ERC20/ERC20Basic.sol';
 import {ICUCrowdsale as Crowdsale} from './ICUCrowdsale.sol';
 import {MintableTokenAllocator as Allocator} from './allocator/MintableTokenAllocator.sol';
 import {ICUToken as Token} from './ICUToken.sol';

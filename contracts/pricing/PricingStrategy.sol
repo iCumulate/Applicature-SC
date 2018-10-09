@@ -1,4 +1,4 @@
-pragma solidity ^0.4.23;
+pragma solidity 0.4.24;
 
 
 /// @title PricingStrategy
@@ -15,11 +15,17 @@ contract PricingStrategy {
         uint256 _tokensSold,
         uint256 _weiAmount,
         uint256 _collectedWei
-    ) public view returns (uint256 tokens, uint256 tokensExludingBonus, uint256 bonus);
+    )
+        public
+        view
+        returns (uint256 tokens, uint256 tokensExludingBonus, uint256 bonus);
 
     function getWeis(
         uint256 _collectedWei,
         uint256 _tokensSold,
         uint256 _tokens
-    ) public view returns (uint256 weiAmount, uint256 tokensBonus);
+    )
+        public
+        view
+        returns (uint256 weiAmount, uint256 tokensBonus);
 }

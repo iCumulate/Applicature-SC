@@ -1,4 +1,4 @@
-pragma solidity ^0.4.23;
+pragma solidity 0.4.24;
 
 import './ContributionForwarder.sol';
 
@@ -40,7 +40,7 @@ contract DistributedDirectContributionForwarder is ContributionForwarder {
 
     /// @notice Check whether contract is initialised
     /// @return true if initialized
-    function isInitialized() public constant returns (bool) {
+    function isInitialized() public view returns (bool) {
         return isInitialized_;
     }
 

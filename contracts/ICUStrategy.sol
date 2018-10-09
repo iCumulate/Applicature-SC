@@ -93,7 +93,9 @@ contract ICUStrategy is TokenDateCappedTiersPricingStrategy {
             _start != 0 &&
             _price != 0 &&
             _start < _end &&
-            _tierId < tiers.length
+            _tierId < tiers.length &&
+            _capsData.length > 0 &&
+            _capsData.length % 2 == 0
         );
 
         if (updateLockNeeded) {

@@ -26,7 +26,7 @@ contract TokenAllocator is Ownable {
         crowdsales[_address] = false;
     }
 
-    function isInitialized() public constant returns (bool) {
+    function isInitialized() public view returns (bool) {
         return false;
     }
 
@@ -34,7 +34,7 @@ contract TokenAllocator is Ownable {
         internalAllocate(_holder, _tokens);
     }
 
-    function tokensAvailable() public constant returns (uint256);
+    function tokensAvailable() public view returns (uint256);
 
     function internalAllocate(address _holder, uint256 _tokens) internal onlyCrowdsale();
 }

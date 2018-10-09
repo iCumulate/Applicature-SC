@@ -29,7 +29,7 @@ contract MintableBurnableToken is MintableToken, BurnableToken {
 
     }
 
-    /// @notice update minting agent
+    /// @notice update burn agent
     function updateBurnAgent(address _agent, bool _status) public onlyOwner {
         burnAgents[_agent] = _status;
     }

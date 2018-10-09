@@ -38,7 +38,6 @@ contract TokenDateCappedTiersPricingStrategy is PricingStrategy, USDExchange {
         uint256 _etherPriceInUSD
     ) public USDExchange(_etherPriceInUSD) {
         decimals = _decimals;
-        trustedAddresses[msg.sender] = true;
 
         require(_tiers.length % 6 == 0);
         uint256 length = _tiers.length / 6;
@@ -140,9 +139,7 @@ contract TokenDateCappedTiersPricingStrategy is PricingStrategy, USDExchange {
             return (0, 0, 0);
         }
 
-        uint256 usdAmount = _weiAmount.mul(etherPriceInUSD).div(1e18);
-
-        tokensExcludingBonus = usdAmount.mul(1e18).div(getTokensInUSD(tierIndex));
+        tokensExcludingBonus = _weiAmount.mul(etherPriceInUSD).div(getTokensInUSD(tierIndex));
 
         if (tiers[tierIndex].maxTokensCollected < tiers[tierIndex].soldTierTokens.add(tokensExcludingBonus)) {
             return (0, 0, 0);

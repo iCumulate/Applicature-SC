@@ -8,8 +8,6 @@ import './ICUStrategy.sol';
 
 contract ICUCrowdsale is RefundableCrowdsale {
 
-    uint256 public constant PRE_ICO_TIER = 0;
-
     uint256 public maxSaleSupply = 2350000000e18;
 
     uint256 public availableBonusAmount = 447500000e18;

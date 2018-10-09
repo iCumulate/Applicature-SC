@@ -1,4 +1,4 @@
-pragma solidity ^0.4.23;
+pragma solidity 0.4.24;
 
 import '../Ownable.sol';
 import 'openzeppelin-solidity/contracts/math/SafeMath.sol';
@@ -22,7 +22,7 @@ contract USDExchange is Ownable {
 
     event NewPriceTicker(string _price);
 
-    modifier onlyTursted() {
+    modifier onlyTrusted() {
         require(trustedAddresses[msg.sender] == true);
         _;
     }
@@ -40,7 +40,7 @@ contract USDExchange is Ownable {
     // set ether price in USD with 5 digits after the decimal point
     //ex. 308.75000
     //for updating the price through  multivest
-    function setEtherInUSD(string _price) public onlyTursted {
+    function setEtherInUSD(string _price) public onlyTrusted {
         bytes memory bytePrice = bytes(_price);
         uint256 dot = bytePrice.length.sub(uint256(6));
 

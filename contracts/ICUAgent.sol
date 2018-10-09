@@ -1,4 +1,4 @@
-pragma solidity ^0.4.18;
+pragma solidity 0.4.24;
 
 import './agent/MintableCrowdsaleOnSuccessAgent.sol';
 import './crowdsale/CrowdsaleImpl.sol';
@@ -19,6 +19,7 @@ contract ICUAgent is MintableCrowdsaleOnSuccessAgent {
         ICUToken _token,
         ICUStrategy _strategy
     ) public MintableCrowdsaleOnSuccessAgent(_crowdsale, _token) {
+        require(address(_strategy) != address(0) && address(_crowdsale) != address(0));
         strategy = _strategy;
         crowdsale = _crowdsale;
     }
@@ -26,11 +27,11 @@ contract ICUAgent is MintableCrowdsaleOnSuccessAgent {
     /// @notice Takes actions on contribution
     function onContribution(
         address,
-        uint256 _weiAmount,
+        uint256 _tierIndex,
         uint256 _tokens,
         uint256 _bonus
     ) public onlyCrowdsale() {
-        strategy.updateTierState(_weiAmount, _tokens, _bonus);
+        strategy.updateTierState(_tierIndex, _tokens, _bonus);
     }
 
     function onStateChange(Crowdsale.State _state) public onlyCrowdsale() {

@@ -1,4 +1,4 @@
-pragma solidity ^0.4.23;
+pragma solidity 0.4.24;
 
 import 'openzeppelin-solidity/contracts/math/SafeMath.sol';
 import './allocator/MintableTokenAllocator.sol';
@@ -39,9 +39,8 @@ contract Referral is Ownable {
     }
 
     function setAllocator(address _allocator) public onlyOwner {
-        if (_allocator != address(0)) {
-            allocator = MintableTokenAllocator(_allocator);
-        }
+        require(_allocator != address(0));
+        allocator = MintableTokenAllocator(_allocator);
     }
 
     function setCrowdsale(address _crowdsale) public onlyOwner {

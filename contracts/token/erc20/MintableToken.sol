@@ -48,6 +48,7 @@ contract MintableToken is BasicToken, Ownable {
         if (totalSupply_ == maxSupply) {
             allowedMinting = false;
         }
+        emit Transfer(address(0), _holder, _tokens);
         emit Mint(_holder, _tokens);
     }
 

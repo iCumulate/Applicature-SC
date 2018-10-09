@@ -1,4 +1,4 @@
-pragma solidity ^0.4.23;
+pragma solidity 0.4.24;
 
 
 import 'openzeppelin-solidity/contracts/math/SafeMath.sol';
@@ -44,7 +44,7 @@ contract RefundableCrowdsale is HardCappedCrowdsale {
     }
 
     /// @return Crowdsale state
-    function getState() public constant returns (State) {
+    function getState() public view returns (State) {
         State state = super.getState();
 
         if (state == State.Success) {

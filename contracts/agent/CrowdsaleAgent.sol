@@ -29,7 +29,7 @@ contract CrowdsaleAgent is Agent {
         }
     }
 
-    function isInitialized() public constant returns (bool) {
+    function isInitialized() public view returns (bool) {
         return _isInitialized;
     }
 
