@@ -159,7 +159,6 @@ contract TokenDateCappedTiersPricingStrategy is PricingStrategy, USDExchange {
         uint256,
         uint256 _tokens
     ) public view returns (uint256 totalWeiAmount, uint256 tokensBonus) {
-        // disable compilation warnings because of unused variables
         if (_tokens == 0) {
             return (0, 0);
         }

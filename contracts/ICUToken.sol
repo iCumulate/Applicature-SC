@@ -17,9 +17,7 @@ contract ICUToken is OpenZeppelinERC20, MintableBurnableToken, TimeLockedToken {
         OpenZeppelinERC20(0, 'iCumulate', 18, 'ICU', false)
         MintableBurnableToken(4700000000e18, 0, true)
         TimeLockedToken(_unlockTokensTime)
-    {
-
-    }
+    {}
 
     function setUnlockTime(uint256 _unlockTokensTime) public onlyStateChangeAgents {
         time = _unlockTokensTime;
@@ -39,16 +37,16 @@ contract ICUToken is OpenZeppelinERC20, MintableBurnableToken, TimeLockedToken {
     }
 
     function transfer(address _to, uint256 _tokens) public returns (bool) {
-        require(true == isTransferAllowed(msg.sender, _tokens));
+        require(true == isTransferAllowed(msg.sender));
         return super.transfer(_to, _tokens);
     }
 
     function transferFrom(address _holder, address _to, uint256 _tokens) public returns (bool) {
-        require(true == isTransferAllowed(_holder, _tokens));
+        require(true == isTransferAllowed(_holder));
         return super.transferFrom(_holder, _to, _tokens);
     }
 
-    function isTransferAllowed(address _address, uint256 _value) public view returns (bool) {
+    function isTransferAllowed(address _address) public view returns (bool) {
         if (excludedAddresses[_address] == true) {
             return true;
         }
