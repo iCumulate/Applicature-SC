@@ -132,7 +132,7 @@ module.exports = function (deployer, network, accounts) {
         return allocator.addCrowdsales(referral.address);
     }).then(async () => {
         await crowdsale.addSigner(signAddress);
-        await crowdsale.addExternalContributor(signAddress)
+        // await crowdsale.addExternalContributor(signAddress)
         await allocation.transferOwnership(owner)
         await token.transferOwnership(owner)
         await allocator.transferOwnership(owner)

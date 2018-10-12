@@ -115,6 +115,10 @@ contract ICUStrategy is TokenDateCappedTiersPricingStrategy {
         agent = _crowdsaleAgent;
     }
 
+    function setEtherInUSD(string) public onlyTrusted {
+        require(false);
+    }
+
     function updateTierState(uint256 _tierId, uint256 _soldTokens, uint256 _bonusTokens) public {
         require(
             msg.sender == address(agent) &&

@@ -48,6 +48,10 @@ contract ICUCrowdsale is RefundableCrowdsale {
         allocator.allocate(msg.sender, bonus);
     }
 
+    function addExternalContributor(address) public onlyOwner {
+        require(false);
+    }
+
     function isHardCapAchieved(uint256 _value) public view returns (bool) {
         if (hardCap <= usdCollected.add(_value)) {
             return true;
