@@ -2,16 +2,18 @@ pragma solidity ^0.4.23;
 
 import 'openzeppelin-solidity/contracts/math/SafeMath.sol';
 import './PricingStrategy.sol';
-import './USDExchange.sol';
+import '../Ownable.sol';
 
 
 /// @title TokenDateCappedTiersPricingStrategy
 /// @author Applicature
 /// @notice Contract is responsible for calculating tokens amount depending on price in USD
 /// @dev implementation
-contract TokenDateCappedTiersPricingStrategy is PricingStrategy, USDExchange {
+contract TokenDateCappedTiersPricingStrategy is PricingStrategy, Ownable {
 
     using SafeMath for uint256;
+
+    uint256 public etherPriceInUSD;
 
     uint256 public capsAmount;
 
@@ -36,8 +38,12 @@ contract TokenDateCappedTiersPricingStrategy is PricingStrategy, USDExchange {
         uint256[] _capsData,
         uint256 _decimals,
         uint256 _etherPriceInUSD
-    ) public USDExchange(_etherPriceInUSD) {
+    )
+        public
+    {
         decimals = _decimals;
+        require(_etherPriceInUSD > 0);
+        etherPriceInUSD = _etherPriceInUSD;
 
         require(_tiers.length % 6 == 0);
         uint256 length = _tiers.length / 6;
