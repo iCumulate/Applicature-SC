@@ -73,6 +73,7 @@ contract CrowdsaleImpl is Crowdsale, Ownable {
 
     /// @notice update crowdsale agent
     function setCrowdsaleAgent(CrowdsaleAgent _crowdsaleAgent) public onlyOwner {
+        require(address(_crowdsaleAgent) != address(0));
         crowdsaleAgent = _crowdsaleAgent;
     }
 
@@ -115,7 +116,7 @@ contract CrowdsaleImpl is Crowdsale, Ownable {
     }
 
     /// @notice check sign
-    function verify(address _sender, uint8 _v, bytes32 _r, bytes32 _s) public constant returns (address) {
+    function verify(address _sender, uint8 _v, bytes32 _r, bytes32 _s) public view returns (address) {
         bytes32 hash = keccak256(abi.encodePacked(this, _sender));
 
         bytes memory prefix = '\x19Ethereum Signed Message:\n32';
@@ -124,7 +125,7 @@ contract CrowdsaleImpl is Crowdsale, Ownable {
     }
 
     /// @return Crowdsale state
-    function getState() public constant returns (State) {
+    function getState() public view returns (State) {
         if (finalized) {
             return State.Finalized;
         } else if (allocator.isInitialized() == false) {

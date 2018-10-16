@@ -1,4 +1,4 @@
-pragma solidity ^0.4.0;
+pragma solidity 0.4.24;
 
 contract Crowdsale {
 
@@ -10,7 +10,7 @@ contract Crowdsale {
 
     function contribute(uint8 _v, bytes32 _r, bytes32 _s) public payable;
 
-    function getState() public constant returns (State);
+    function getState() public view returns (State);
 
     function updateState() public;
 

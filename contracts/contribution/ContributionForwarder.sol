@@ -1,4 +1,4 @@
-pragma solidity ^0.4.23;
+pragma solidity 0.4.24;
 
 
 import 'openzeppelin-solidity/contracts/math/SafeMath.sol';
@@ -17,7 +17,7 @@ contract ContributionForwarder {
 
     event ContributionForwarded(address receiver, uint256 weiAmount);
 
-    function isInitialized() public constant returns (bool) {
+    function isInitialized() public view returns (bool) {
         return false;
     }
 

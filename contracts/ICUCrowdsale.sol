@@ -8,8 +8,6 @@ import './ICUStrategy.sol';
 
 contract ICUCrowdsale is RefundableCrowdsale {
 
-    uint256 public constant PRE_ICO_TIER = 0;
-
     uint256 public maxSaleSupply = 2350000000e18;
 
     uint256 public availableBonusAmount = 447500000e18;
@@ -48,6 +46,10 @@ contract ICUCrowdsale is RefundableCrowdsale {
         uint256 bonus = contributorBonuses[msg.sender];
         contributorBonuses[msg.sender] = 0;
         allocator.allocate(msg.sender, bonus);
+    }
+
+    function addExternalContributor(address) public onlyOwner {
+        require(false);
     }
 
     function isHardCapAchieved(uint256 _value) public view returns (bool) {

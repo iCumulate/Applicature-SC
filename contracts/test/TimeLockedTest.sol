@@ -7,7 +7,7 @@ import '../token/erc20/TimeLocked.sol';
 contract TimeLockedTest is TimeLocked {
 
 
-    function TimeLockedTest(uint256 _time) public TimeLocked(_time) {
+    constructor(uint256 _time) public TimeLocked(_time) {
 
     }
 
@@ -18,6 +18,7 @@ contract TimeLockedTest is TimeLocked {
     function shouldBeUnLocked() public isTimeLocked(msg.sender, false) returns (bool) {
         return true;
     }
+
     function updateExcludedAddress(address, bool) public {}
 
 }

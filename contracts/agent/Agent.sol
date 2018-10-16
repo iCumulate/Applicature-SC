@@ -11,7 +11,7 @@ import 'openzeppelin-solidity/contracts/math/SafeMath.sol';
 contract Agent {
     using SafeMath for uint256;
 
-    function isInitialized() public constant returns (bool) {
+    function isInitialized() public view returns (bool) {
         return false;
     }
 }

@@ -1,4 +1,4 @@
-pragma solidity ^0.4.23;
+pragma solidity 0.4.24;
 
 
 import 'openzeppelin-solidity/contracts/math/SafeMath.sol';
@@ -22,7 +22,7 @@ contract MintableTokenAllocator is TokenAllocator {
     }
 
     /// @return available tokens
-    function tokensAvailable() public constant returns (uint256) {
+    function tokensAvailable() public view returns (uint256) {
         return token.availableTokens();
     }
 
@@ -33,7 +33,7 @@ contract MintableTokenAllocator is TokenAllocator {
 
     /// @notice Check whether contract is initialised
     /// @return true if initialized
-    function isInitialized() public constant returns (bool) {
+    function isInitialized() public view returns (bool) {
         return token.mintingAgents(this);
     }
 

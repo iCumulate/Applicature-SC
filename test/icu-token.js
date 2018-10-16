@@ -296,7 +296,7 @@ contract('ICUToken', function (accounts) {
         await token.updateExcludedAddress(accounts[1], true).then(Utils.receiptShouldSucceed)
         await assert.equal(await token.excludedAddresses.call(accounts[1]), true, 'excludedAddresses value is not equal')
 
-        await assert.equal(await token.isTransferAllowed.call(accounts[1], 0), true, 'value is not equal')
+        await assert.equal(await token.isTransferAllowed.call(accounts[1]), true, 'value is not equal')
 
         await token.transferFrom(accounts[1], accounts[2], new BigNumber('10').mul(precision).valueOf(), {from:accounts[0]})
             .then(Utils.receiptShouldSucceed)
