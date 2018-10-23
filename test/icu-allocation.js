@@ -8,7 +8,7 @@ var ICUToken = artifacts.require("./ICUToken.sol"),
     PeriodicTokenVesting = artifacts.require("./PeriodicTokenVesting.sol"),
 
     Utils = require("./utils"),
-    BigNumber = require('BigNumber.js'),
+    BigNumber = require('bignumber.js'),
 
     precision = new BigNumber("1000000000000000000"),
     usdPrecision = new BigNumber("100000"),
