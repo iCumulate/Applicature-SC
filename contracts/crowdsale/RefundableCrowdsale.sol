@@ -86,7 +86,7 @@ contract RefundableCrowdsale is HardCappedCrowdsale {
         (tokens, tokensExcludingBonus, bonus) = pricingStrategy.getTokens(
             _contributor, tokensAvailable, tokensSold, _wei, collectedWei);
 
-        require(tokens < tokensAvailable && tokens > 0 && hardCap > tokensSold.add(tokens));
+        require(tokens <= tokensAvailable && tokens > 0 && hardCap > tokensSold.add(tokens));
 
         tokensSold = tokensSold.add(tokens);
 

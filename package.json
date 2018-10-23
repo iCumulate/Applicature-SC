@@ -19,17 +19,17 @@
     "node": ">=8.0.0"
   },
   "scripts": {
-    "lint": "npm run solhint",
+    "solhint": "node ./node_modules/solhint/solhint.js contracts/*.sol",
+    "solium": "solium -d contracts/",
     "ganache": "ganache-cli > /dev/null 2>&1 &",
     "test": "truffle test",
     "develop": "truffle develop",
     "compile": "truffle compile",
     "coverage": "./node_modules/.bin/solidity-coverage",
     "migrate": "truffle migrate --network development",
-    "solhint": "solhint 'contracts/**/*.sol'",
-    "solium": "solium -d contracts/",
-    "precommit": "npm run solhint && npm run coverage && npm run solium",
-    "test:ci": "npm run solhint && npm run coverage && npm run ganache && npm run test && npm run solium"
+    "migrate:testnet": "truffle migrate --network rinkeby",
+    "migrate:mainnet": "truffle migrate --network rinkeby",
+    "test:ci": "npm run ganache && npm run test && npm run solium && npm run solhint"
   },
   "directories": {
     "test": "test"

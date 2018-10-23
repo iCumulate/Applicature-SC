@@ -68,13 +68,10 @@ contract ICUCrowdsale is RefundableCrowdsale {
 
     function internalContribution(address _contributor, uint256 _wei) internal {
         updateState();
-
         require(currentState == State.InCrowdsale);
 
         ICUStrategy pricing = ICUStrategy(pricingStrategy);
-
         uint256 usdAmount = pricing.getUSDAmount(_wei);
-
         require(!isHardCapAchieved(usdAmount.sub(1)));
 
         uint256 tokensAvailable = allocator.tokensAvailable();
@@ -89,9 +86,7 @@ contract ICUCrowdsale is RefundableCrowdsale {
         );
 
         require(tokens > 0);
-
         tokensSold = tokensSold.add(tokens);
-
         allocator.allocate(_contributor, tokensExcludingBonus);
 
         if (isSoftCapAchieved(usdAmount)) {
@@ -121,7 +116,6 @@ contract ICUCrowdsale is RefundableCrowdsale {
         }
 
         crowdsaleAgent.onContribution(pricing, tierIndex, tokensExcludingBonus, bonus);
-
         emit Contribution(_contributor, _wei, tokensExcludingBonus, bonus);
     }
 

@@ -75,10 +75,7 @@ contract HardCappedCrowdsale is CrowdsaleImpl {
         (tokens, tokensExcludingBonus, bonus) = pricingStrategy.getTokens(
             _contributor, tokensAvailable, tokensSold, _wei, collectedWei);
 
-        require(
-            tokens != 0
-            && false == isHardCapAchieved(tokens.sub(1))//sub(1) to allow last contribution
-        );
+        require(tokens <= tokensAvailable && tokens > 0 && false == isHardCapAchieved(tokens.sub(1)));
 
         tokensSold = tokensSold.add(tokens);
 

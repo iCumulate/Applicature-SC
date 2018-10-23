@@ -238,4 +238,74 @@ contract('Allocation', function (accounts) {
 
     });
 
+    it("check allocateTreasury", async function () {
+        const {
+            token,
+            strategy,
+            contributionForwarder,
+            allocator,
+            crowdsale,
+            agent,
+            allocation
+        } = await deploy();
+
+        await allocation.allocateTreasury(allocator.address, {from: accounts[1]})
+            .then(Utils.receiptShouldFailed)
+            .catch(Utils.catchReceiptShouldFailed);
+
+        await allocation.allocateTreasury(allocator.address, {from: accounts[0]})
+            .then(Utils.receiptShouldFailed)
+            .catch(Utils.catchReceiptShouldFailed);
+
+        await token.updateMintingAgent(allocator.address, true);
+        await allocator.addCrowdsales(allocation.address);
+
+        await allocation.setICOEndTime(icoTill);
+
+        await allocation.allocateTreasury(allocator.address, {from: accounts[0]})
+            .then(Utils.receiptShouldFailed)
+            .catch(Utils.catchReceiptShouldFailed);
+
+        await crowdsale.updateUsdCollected(new BigNumber('5000000').mul(usdPrecision).valueOf());
+
+        await allocation.setICOEndTime(icoSince);
+        await allocation.allocateBounty(allocator.address, crowdsale.address)
+            .then(Utils.receiptShouldSucceed);
+        await allocation.setICOEndTime(icoTill);
+
+        await allocation.allocateTreasury(allocator.address, {from: accounts[0]})
+            .then(Utils.receiptShouldFailed)
+            .catch(Utils.catchReceiptShouldFailed);
+
+        await token.updateStateChangeAgent(accounts[0], true);
+        await token.setUnlockTime(icoSince);
+        await token.setIsSoftCapAchieved();
+        await allocation.setICOEndTime(yearAgo, {from: accounts[0]})
+            .then(Utils.receiptShouldSucceed);
+        await token.updateMintingAgent(allocator.address, true);
+        await allocation.createVesting(accounts[2], parseInt(new Date().getTime() / 1000) - 61, 0, 60, 2, true, applicatureHolder, allocator.address, 100)
+            .then(Utils.receiptShouldSucceed)
+
+        await allocation.allocateTreasury(allocator.address, {from: accounts[0]})
+            .then(Utils.receiptShouldFailed)
+            .catch(Utils.catchReceiptShouldFailed);
+
+        await allocator.addCrowdsales(crowdsale.address);
+        await token.updateMintingAgent(allocator.address, true);
+        await token.updateBurnAgent(agent.address, true);
+        await token.updateStateChangeAgent(agent.address, true);
+        await crowdsale.setCrowdsaleAgent(agent.address);
+        await strategy.setCrowdsaleAgent(agent.address);
+        await crowdsale.updateUsdCollected(new BigNumber('5000000').mul(usdPrecision).valueOf());
+        await strategy.updateDates(0, icoSince - 8600, icoSince - 7600);
+        await strategy.updateDates(1, icoSince - 6600, icoSince - 5600);
+        await crowdsale.updateState();
+
+        await allocation.allocateTreasury(allocator.address, {from: accounts[0]})
+            .then(Utils.receiptShouldSucceed);
+
+        Utils.balanceShouldEqualTo(token, treasuryAddress, new BigNumber('2350000000').sub('47000000').mul(precision).sub('100').valueOf());
+
+    });
+
 });

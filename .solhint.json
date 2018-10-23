@@ -16,6 +16,7 @@
     "no-simple-event-func-name": false,
     "avoid-low-level-calls": false,
     "no-inline-assembly": false,
-    "max-line-length": 170
+    "max-line-length": 170,
+    "bracket-align": false
   }
 }
