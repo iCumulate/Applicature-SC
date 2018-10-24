@@ -4,6 +4,7 @@ const TimeLocked = artifacts.require('test/TimeLockedTest')
 
 contract('TimeLocked', accounts => {
 
+
   it('should be locked', async () => {
       const time = 1577750400; ///  12/31/2019
       const instance = await TimeLocked.new(time, { from: accounts[0]})

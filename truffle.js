@@ -1,5 +1,5 @@
 var HDWalletProvider = require("truffle-hdwallet-provider");
-var mnemonic = "mnemonic";
+var mnemonic = "six burger smooth agent melt cliff margin thumb right fork cannon also";
 
 module.exports = {
     networks: {
@@ -18,7 +18,7 @@ module.exports = {
         },
         rinkeby: {
             provider: function() {
-                return new HDWalletProvider(mnemonic, "https://rinkeby.infura.io/V3/apikey")
+                return new HDWalletProvider(mnemonic, "https://rinkeby.infura.io/v3/017979832fdd4436b9716c8c25b8cc09")
             },
             gasPrice: 1000000000,
             network_id: 3,

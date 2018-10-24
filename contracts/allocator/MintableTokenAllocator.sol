@@ -21,22 +21,6 @@ contract MintableTokenAllocator is TokenAllocator {
         token = _token;
     }
 
-    /// @return available tokens
-    function tokensAvailable() public view returns (uint256) {
-        return token.availableTokens();
-    }
-
-    /// @notice transfer tokens on holder account
-    function allocate(address _holder, uint256 _tokens) public onlyCrowdsale() {
-        internalAllocate(_holder, _tokens);
-    }
-
-    /// @notice Check whether contract is initialised
-    /// @return true if initialized
-    function isInitialized() public view returns (bool) {
-        return token.mintingAgents(this);
-    }
-
     /// @notice update instance of MintableToken
     function setToken(MintableToken _token) public onlyOwner {
         token = _token;
@@ -45,5 +29,16 @@ contract MintableTokenAllocator is TokenAllocator {
     function internalAllocate(address _holder, uint256 _tokens) internal {
         token.mint(_holder, _tokens);
     }
-}
 
+    /// @notice Check whether contract is initialised
+    /// @return true if initialized
+    function isInitialized() public view returns (bool) {
+        return token.mintingAgents(this);
+    }
+
+    /// @return available tokens
+    function tokensAvailable() public view returns (uint256) {
+        return token.availableTokens();
+    }
+
+}

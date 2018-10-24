@@ -1,32 +1,8 @@
 pragma solidity ^0.4.23;
 
-
 import 'openzeppelin-solidity/contracts/math/SafeMath.sol';
 import '../pricing/PricingStrategy.sol';
 import './USDExchange.sol';
-
-/*
-    Tests:
-    - check getTierIndex returns  properly index
-    - check getActualDates
-    - check getTokens
-        - zero weis  should return zero tokens
-        - less than  min purchase
-        - outdated
-        - before sale period
-        - tokens less than available
-        - success for each  tier
-    - check getWeis
-        - zero tokens should return zero weis
-        - less than  min purchase
-        - outdated
-        - before sale period
-        - tokens less than available
-        - success for each  tier
-    - updateDates - changes the start and end dates
-    - check that METHODS could be called only by owner
-        - updateDates
-*/
 
 
 /// @title USDDateTiersPricingStrategy
@@ -40,14 +16,14 @@ contract USDDateTiersPricingStrategy is PricingStrategy, USDExchange {
     struct Tier {
         uint256 tokenInUSD;
         uint256 maxTokensCollected;
-        uint256 airdropCap;
         uint256 soldTierTokens;
-        uint256 bonusTierTokens;
         uint256 discountPercents;
         uint256 bonusPercents;
         uint256 minInvestInUSD;
+        uint256 maxInvestInUSD;
         uint256 startDate;
         uint256 endDate;
+        bool unsoldProcessed;
     }
 
     Tier[] public tiers;
@@ -56,23 +32,23 @@ contract USDDateTiersPricingStrategy is PricingStrategy, USDExchange {
     constructor(uint256[] _tiers, uint256 _decimals, uint256 _etherPriceInUSD) public USDExchange(_etherPriceInUSD) {
         decimals = _decimals;
         trustedAddresses[msg.sender] = true;
-        require(_tiers.length % 10 == 0);
+        require(_tiers.length % 8 == 0);
 
-        uint256 length = _tiers.length / 10;
+        uint256 length = _tiers.length / 8;
 
         for (uint256 i = 0; i < length; i++) {
             tiers.push(
                 Tier(
-                    _tiers[i * 10],
-                    _tiers[i * 10 + 1],
-                    _tiers[i * 10 + 2],
-                    _tiers[i * 10 + 3],
-                    _tiers[i * 10 + 4],
-                    _tiers[i * 10 + 5],
-                    _tiers[i * 10 + 6],
-                    _tiers[i * 10 + 7],
-                    _tiers[i * 10 + 8],
-                    _tiers[i * 10 + 9]
+                    _tiers[i * 8], // tokenInUSD
+                    _tiers[i * 8 + 1], // maxTokensCollected
+                    0, //soldTierTokens
+                    _tiers[i * 8 + 2], // discountPercents
+                    _tiers[i * 8 + 3], // bonusPercents
+                    _tiers[i * 8 + 4], // minInvestInUSD
+                    _tiers[i * 8 + 5], // maxInvestInUSD
+                    _tiers[i * 8 + 6], // startDate
+                    _tiers[i * 8 + 7], // endDate
+                    false
                 )
             );
         }
@@ -84,7 +60,7 @@ contract USDDateTiersPricingStrategy is PricingStrategy, USDExchange {
             if (
                 block.timestamp >= tiers[i].startDate &&
                 block.timestamp < tiers[i].endDate &&
-                tiers[i].maxTokensCollected > tiers[i].soldTierTokens
+                 (tiers[i].maxTokensCollected==0 || tiers[i].maxTokensCollected > tiers[i].soldTierTokens)
             ) {
                 return i;
             }
@@ -93,29 +69,26 @@ contract USDDateTiersPricingStrategy is PricingStrategy, USDExchange {
         return tiers.length;
     }
 
-    /// @return actual dates
-    function getActualDates() public view returns (uint256 startDate, uint256 endDate) {
-        uint256 tierIndex = getTierIndex();
-
-        if (tierIndex < tiers.length) {
-            startDate = tiers[tierIndex].startDate;
-            endDate = tiers[tierIndex].endDate;
-        } else {
-            for (uint256 i = 0; i < tiers.length; i++) {
-                if (
-                    block.timestamp < tiers[i].startDate
-                ) {
-                    startDate = tiers[i].startDate;
-                    endDate = tiers[i].endDate;
-                    break;
-                }
+    function getActualTierIndex() public view returns (uint256) {
+        for (uint256 i = 0; i < tiers.length; i++) {
+            if (
+                block.timestamp >= tiers[i].startDate
+                && block.timestamp < tiers[i].endDate
+                && (tiers[i].maxTokensCollected == 0 || tiers[i].maxTokensCollected > tiers[i].soldTierTokens)
+                || block.timestamp < tiers[i].startDate
+            ) {
+                return i;
             }
         }
 
-        if (startDate == 0) {
-            startDate = tiers[tiers.length.sub(1)].startDate;
-            endDate = tiers[tiers.length.sub(1)].endDate;
-        }
+        return tiers.length.sub(1);
+    }
+
+    /// @return actual dates
+    function getActualDates() public view returns (uint256 startDate, uint256 endDate) {
+        uint256 tierIndex = getActualTierIndex();
+        startDate = tiers[tierIndex].startDate;
+        endDate = tiers[tierIndex].endDate;
     }
 
     /// @return tokens based on sold tokens and wei amount
@@ -137,21 +110,28 @@ contract USDDateTiersPricingStrategy is PricingStrategy, USDExchange {
 
         uint256 tierIndex = getTierIndex();
 
-        uint256 usdAmount = _weiAmount.mul(etherPriceInUSD).div(1e18);
-        if (tierIndex < tiers.length && usdAmount < tiers[tierIndex].minInvestInUSD) {
+        uint256 usdAmount = _weiAmount.mul(etherPriceInUSD);
+        if (tierIndex < tiers.length
+        && (usdAmount < tiers[tierIndex].minInvestInUSD.mul(1e18) && tiers[tierIndex].minInvestInUSD > 0)) {
             return (0, 0, 0);
         }
+
+        if (tierIndex < tiers.length
+        && (usdAmount > tiers[tierIndex].maxInvestInUSD.mul(1e18) && tiers[tierIndex].maxInvestInUSD > 0)) {
+            return (0, 0, 0);
+        }
+
         if (tierIndex == tiers.length) {
             return (0, 0, 0);
         }
-        tokensExcludingBonus = usdAmount.mul(1e18).div(getTokensInUSD(tierIndex));
-        if (tiers[tierIndex].maxTokensCollected < tiers[tierIndex].soldTierTokens.add(tokensExcludingBonus)) {
+        tokensExcludingBonus = usdAmount.div((getTokensInUSD(tierIndex))
+            .mul(uint256(100).sub(getDiscount(tierIndex))).div(100));
+        bonus = calculateBonusAmount(tierIndex, tokensExcludingBonus);
+        tokens = tokensExcludingBonus.add(bonus);
+        if (tiers[tierIndex].maxTokensCollected != 0
+        && tiers[tierIndex].maxTokensCollected < tiers[tierIndex].soldTierTokens.add(tokens)) {
             return (0, 0, 0);
         }
-
-        bonus = calculateBonusAmount(tierIndex, tokensExcludingBonus);
-
-        tokens = tokensExcludingBonus.add(bonus);
 
         if (tokens > _tokensAvailable) {
             return (0, 0, 0);
@@ -175,28 +155,25 @@ contract USDDateTiersPricingStrategy is PricingStrategy, USDExchange {
         if (tierIndex == tiers.length) {
             return (0, 0);
         }
-        if (tiers[tierIndex].maxTokensCollected < tiers[tierIndex].soldTierTokens.add(_tokens)) {
+        if (tiers[tierIndex].maxTokensCollected != 0
+        && tiers[tierIndex].maxTokensCollected < tiers[tierIndex].soldTierTokens.add(_tokens)) {
             return (0, 0);
         }
-        uint256 usdAmount = _tokens.mul(getTokensInUSD(tierIndex)).div(1e18);
-        totalWeiAmount = usdAmount.mul(1e18).div(etherPriceInUSD);
+        uint256 usdAmount = _tokens.mul((getTokensInUSD(tierIndex))
+        .mul(uint256(100).sub(getDiscount(tierIndex))).div(100));
+        totalWeiAmount = usdAmount.div(etherPriceInUSD);
 
-        if (totalWeiAmount < uint256(1 ether).mul(tiers[tierIndex].minInvestInUSD).div(etherPriceInUSD)) {
+        if (tiers[tierIndex].minInvestInUSD > 0
+        && totalWeiAmount < uint256(1 ether).mul(tiers[tierIndex].minInvestInUSD).div(etherPriceInUSD)) {
+            return (0, 0);
+        }
+        if (tiers[tierIndex].maxInvestInUSD > 0
+        && totalWeiAmount > uint256(1 ether).mul(tiers[tierIndex].maxInvestInUSD).div(etherPriceInUSD)) {
             return (0, 0);
         }
 
         tokensBonus = calculateBonusAmount(tierIndex, _tokens);
-    }
 
-    function calculateBonusAmount(uint256 _tierIndex, uint256 _tokens) public view returns (uint256 bonus) {
-        if (tiers[_tierIndex].soldTierTokens < tiers[_tierIndex].airdropCap) {
-            if (tiers[_tierIndex].soldTierTokens.add(_tokens) <= tiers[_tierIndex].airdropCap) {
-                bonus = _tokens.mul(tiers[_tierIndex].bonusPercents).div(100);
-            } else {
-                bonus = (tiers[_tierIndex].airdropCap.sub(tiers[_tierIndex].soldTierTokens))
-                    .mul(tiers[_tierIndex].bonusPercents).div(100);
-            }
-        }
     }
 
     function getTokensInUSD(uint256 _tierIndex) public view returns (uint256) {
@@ -208,6 +185,12 @@ contract USDDateTiersPricingStrategy is PricingStrategy, USDExchange {
     function getDiscount(uint256 _tierIndex) public view returns (uint256) {
         if (_tierIndex < uint256(tiers.length)) {
             return tiers[_tierIndex].discountPercents;
+        }
+    }
+
+    function getBonusPercents(uint256 _tierIndex) public view returns (uint256) {
+        if (_tierIndex < uint256(tiers.length)) {
+            return tiers[_tierIndex].bonusPercents;
         }
     }
 
@@ -235,5 +218,10 @@ contract USDDateTiersPricingStrategy is PricingStrategy, USDExchange {
             tier.endDate = _end;
         }
     }
+
+    function calculateBonusAmount(uint256 _tierIndex, uint256 _tokens) public view returns (uint256 bonus) {
+        return bonus = _tokens.mul(tiers[_tierIndex].bonusPercents).div(100);
+    }
+
 }
 

@@ -1,5 +1,6 @@
 var
     USDExchange = artifacts.require("./pricing/USDExchange.sol"),
+    USDExchangeTest = artifacts.require("./test/USDExchangeTest.sol"),
     Utils = require("./utils"),
     BigNumber = require('bignumber.js');
 
@@ -37,5 +38,15 @@ contract('USDExchange', function (accounts) {
             .then(Utils.receiptShouldFailed)
             .catch(Utils.catchReceiptShouldFailed)
 
+    });
+
+    it('check parseInt without decimals', async function () {
+        let token = await USDExchangeTest.new(
+            new BigNumber(30800000)// _etherPriceInUSD,
+        )
+        let result = await token.etherPriceInUSD.call()
+        await assert.equal(await result.valueOf(), 30800000, "etherPriceInUSD is not equal")
+        let intResult = await token.parseIntTest.call('307.6500', 0)
+        await assert.equal(intResult.valueOf(), 307, 'int is not equal')
     });
 });

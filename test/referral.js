@@ -60,7 +60,7 @@ contract('Referral', function (accounts) {
             new BigNumber('1000').mul(precision).valueOf(),
             allocator.address,
             crowdsale.address,
-           false
+            false
         )
         await token.updateMintingAgent(referral.address, true);
         await token.updateMintingAgent(allocator.address, true);
@@ -118,12 +118,12 @@ contract('Referral', function (accounts) {
         // await makeTransaction(referral, wrongSigner, accounts[1], new BigNumber('100').valueOf())
         //     .then(Utils.receiptShouldFailed)
         //     .catch(Utils.catchReceiptShouldFailed);
-console.log(signAddress);
-console.log(accounts[1]);
+        console.log(signAddress);
+        console.log(accounts[1]);
         await makeTransaction(referral, signAddress, accounts[1], new BigNumber('1000').valueOf())
             .then(Utils.receiptShouldSucceed);
-            // .then(Utils.receiptShouldFailed);
-       Utils.balanceShouldEqualTo(token.address, accounts[1],new BigNumber('1000').mul(precision).valueOf())
+        // .then(Utils.receiptShouldFailed);
+        Utils.balanceShouldEqualTo(token.address, accounts[1],new BigNumber('1000').mul(precision).valueOf())
 
     })
     it("only  crowdsale signers  can run it", async function () {
