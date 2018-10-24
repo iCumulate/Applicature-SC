@@ -33,20 +33,11 @@ contract MintableCrowdsaleOnSuccessAgent is CrowdsaleAgent {
     }
 
     /// @notice Takes actions on contribution
-    function onContribution(
-        address _contributor,
-        uint256 _weiAmount,
-        uint256 _tokens,
-        uint256 _bonus
-    )
-        public
-        onlyCrowdsale;
+    function onContribution(address _contributor, uint256 _weiAmount, uint256 _tokens, uint256 _bonus) public onlyCrowdsale;
 
     /// @notice Takes actions on state change,
     /// un-pause tokens and disable minting on Crowdsale success
     /// @param _state Crowdsale.State
-    function onStateChange(Crowdsale.State _state)
-        public
-        onlyCrowdsale;
+    function onStateChange(Crowdsale.State _state) public onlyCrowdsale;
 }
 
