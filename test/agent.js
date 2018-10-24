@@ -57,14 +57,13 @@ contract('Agent', accounts => {
         it('should return false because Agent has not been initialized', async () => {
 
             const instance = await Agent.new({ from: accounts[0]})
-            const res = await instance.isInitialized()
+            const res = await instance.isInitialized.call()
             assert.equal(res, false, "isInitialized doesn't match");
         });
 
-
         it('should return false because MintableCrowdsaleOnSuccessAgent has not been initialized', async () => {
             const instance = await MintableCrowdsaleOnSuccessAgent.new(0x0,0x0)
-            const res = await instance.isInitialized()
+            const res = await instance.isInitialized.call()
             assert.equal(res, false, "isInitialized doesn't match");
         });
 
@@ -73,7 +72,7 @@ contract('Agent', accounts => {
             const mintableToken = await MintableToken.new(10000, 100, true, { from: accounts[0]})
 
             const instance = await MintableCrowdsaleOnSuccessAgent.new(crowdsale.address, mintableToken.address)
-            const res = await instance.isInitialized()
+            const res = await instance.isInitialized.call()
             assert.equal(res, true, "isInitialized doesn't match");
         });
 
@@ -82,13 +81,13 @@ contract('Agent', accounts => {
     describe('checking initializating of crowdsale agents', () => {
         it('should return true because agent has been initialized', async () => {
             const instance = await CrowdsaleAgent.new(crowdsale.address)
-            const res = await instance.isInitialized()
+            const res = await instance.isInitialized.call()
             assert.equal(res, true, "isInitialized doesn't match");
         });
 
         it('should return false because Crowdsale has not been initialized', async () => {
             const instance = await CrowdsaleAgent.new(0x0)
-            const res = await instance.isInitialized()
+            const res = await instance.isInitialized.call()
             assert.equal(res, false, "isInitialized doesn't match");
         });
     });

@@ -25,6 +25,7 @@ contract('Crowdsale', accounts => {
     let contributionForwarder = null
     let pricingStrategy = null
     let crowdsale = null
+    let agent = null
     let precision = new BigNumber(1000000000000000000).valueOf(),
         usdPrecision = new BigNumber(100000).valueOf(),
         icoSince = parseInt(new Date().getTime() / 1000 - 3600),
@@ -71,7 +72,7 @@ contract('Crowdsale', accounts => {
             // get current state
             // check state dependencies
             await erc20.updateMintingAgent(allocator.address, true)
-            const currentState1 = await allocator.isInitialized()
+            const currentState1 = await allocator.isInitialized.call()
             assert.equal(currentState1, true, "state doesn't match");
 
             const currentState2 = await contributionForwarder.isInitialized()

@@ -25,4 +25,8 @@ contract ICUCrowdsaleTest is ICUCrowdsale {
         usdCollected = _usdCollected;
     }
 
+    function updateAvailableBonusAmount(uint256 _availableBonusAmount) public {
+        availableBonusAmount = _availableBonusAmount;
+    }
+
 }
