@@ -45,6 +45,8 @@ contract MintableCrowdsaleOnSuccessAgent is CrowdsaleAgent {
     /// @notice Takes actions on state change,
     /// un-pause tokens and disable minting on Crowdsale success
     /// @param _state Crowdsale.State
-    function onStateChange(Crowdsale.State _state) public onlyCrowdsale;
+    function onStateChange(Crowdsale.State _state)
+        public
+        onlyCrowdsale;
 }
 
