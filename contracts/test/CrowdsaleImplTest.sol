@@ -39,4 +39,8 @@ contract CrowdsaleImplTest is CrowdsaleImpl {
         internalContribution(_contributor, _wei);
     }
 
+    function setFinalized() public {
+        finalized = true;
+    }
+
 }
