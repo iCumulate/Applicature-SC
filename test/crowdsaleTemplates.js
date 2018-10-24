@@ -7,6 +7,7 @@ const MintableTokenAllocator = artifacts.require('allocator/MintableTokenAllocat
 const USDDateTiersPricingStrategy = artifacts.require('test/USDDateTiersPricingStrategy')
 const DistributedDirectContributionForwarder = artifacts.require('test/DistributedDirectContributionForwarder')
 const MintableCrowdsaleOnSuccessAgent = artifacts.require('./test/MintableCrowdsaleOnSuccessAgentTest.sol')
+const TokenAllocatorTest = artifacts.require('./test/TokenAllocatorTest.sol')
 const MintableToken = artifacts.require('token/erc20/MintableToken')
 const OpenZeppelinERC20 = artifacts.require('token/erc20/openzeppelin/OpenZeppelinERC20')
 
@@ -284,6 +285,7 @@ contract('Crowdsale', accounts => {
 
         });
     })
+
     describe('check internalContribution', () => {
         let token, strategy;
         beforeEach(async() => {
@@ -404,6 +406,24 @@ contract('Crowdsale', accounts => {
                 .then(utils.receiptShouldSucceed);
             await assert.equal(new BigNumber(await token.balanceOf.call(accounts[1])).valueOf(),
                 new BigNumber('0.1').mul(precision).valueOf(), 'balance is not equal');
+        });
+
+        it('check state', async () => {
+            const test = await TokenAllocatorTest.new();
+            let crowdsaleTest = await Crowdsale.new(
+                allocator.address,
+                test.address,
+                strategy.address, startDate, endDate, true, true, true, {from: owner})
+
+            assert.equal(await crowdsaleTest.getState.call(), 1, 'tokens is not equal');
+
+            crowdsaleTest = await Crowdsale.new(
+                allocator.address,
+                contributionForwarder.address,
+                test.address, startDate, endDate, true, true, true, {from: owner})
+
+            assert.equal(await crowdsaleTest.getState.call(), 1, 'tokens is not equal');
+
         });
 
     });

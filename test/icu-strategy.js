@@ -1,5 +1,6 @@
 var
     ICUStrategy = artifacts.require("./test/ICUStrategyTest.sol"),
+    TokenDateCappedTiersPricingStrategy = artifacts.require("./pricing/TokenDateCappedTiersPricingStrategy.sol"),
     ICUAgent = artifacts.require("./ICUAgent.sol"),
     ICUToken = artifacts.require("./ICUToken.sol"),
     Utils = require("./utils"),
@@ -16,6 +17,36 @@ contract('ICUStrategy', function (accounts) {
         strategy = await ICUStrategy.new([], new BigNumber('400').mul(usdPrecision));
         await strategy.updateDates(0, icoSince, icoTill);
         await strategy.updateDates(1, icoTill + 3600, icoTill + 3600 * 2);
+    });
+
+    it('check', async function () {
+        let strategyTest = await TokenDateCappedTiersPricingStrategy.new([///privateSale
+            new BigNumber('1').mul(usdPrecision).valueOf(), //     uint256 tokenInUSD;
+            0,// uint256 maxTokensCollected;
+            0,// uint256 discountPercents;
+            0,// uint256 minInvestInUSD;
+            icoSince,// uint256 startDate;
+            icoTill// uint256 endDate;
+        ], [new BigNumber('1000000000').mul(precision).valueOf(), 10], 18, new BigNumber('400').mul(usdPrecision));
+
+        strategyTest = await TokenDateCappedTiersPricingStrategy.new([///privateSale
+            new BigNumber('1').mul(usdPrecision).valueOf(), //     uint256 tokenInUSD;
+            0,// uint256 maxTokensCollected;
+            0,// uint256 discountPercents;
+            0,// uint256 minInvestInUSD;
+            icoSince,// uint256 startDate;
+            icoTill// uint256 endDate;
+        ], [], 18, new BigNumber('400').mul(usdPrecision));
+
+        // await strategy.updateDates(0, icoSince, icoTill);
+        let tokens = await strategyTest.getTokensWithoutRestrictions.call(0);
+
+        assert.equal(tokens[0], 0, "getTokensWithoutRestrictions is not equal");
+        assert.equal(tokens[1], 0, "getTokensWithoutRestrictions is not equal");
+        assert.equal(tokens[2], 0, "getTokensWithoutRestrictions is not equal");
+
+        assert.equal(await strategyTest.calculateBonusAmount(0, 100500), 0, "calculateBonusAmount is not equal");
+
     });
 
     it('check getTierIndex returns  properly index', async function () {
