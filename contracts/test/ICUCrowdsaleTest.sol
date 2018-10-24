@@ -29,4 +29,8 @@ contract ICUCrowdsaleTest is ICUCrowdsale {
         availableBonusAmount = _availableBonusAmount;
     }
 
+    function setFinalized() public {
+        finalized = true;
+    }
+
 }

@@ -424,6 +424,17 @@ contract('Crowdsale', accounts => {
 
             assert.equal(await crowdsaleTest.getState.call(), 1, 'tokens is not equal');
 
+            crowdsaleTest = await Crowdsale.new(
+                test.address,
+                contributionForwarder.address,
+                strategy.address, startDate, endDate, true, true, true, {from: owner})
+
+            assert.equal(await crowdsaleTest.getState.call(), 1, 'tokens is not equal');
+
+            await crowdsaleTest.setFinalized();
+
+            assert.equal(await crowdsaleTest.getState.call(), 5, 'tokens is not equal');
+
         });
 
     });

@@ -45,7 +45,7 @@ contract('ICUStrategy', function (accounts) {
         assert.equal(tokens[1], 0, "getTokensWithoutRestrictions is not equal");
         assert.equal(tokens[2], 0, "getTokensWithoutRestrictions is not equal");
 
-        assert.equal(await strategyTest.calculateBonusAmount(0, 100500), 0, "calculateBonusAmount is not equal");
+        assert.equal(await strategyTest.calculateBonusAmount.call(0, 100500), 0, "calculateBonusAmount is not equal");
 
     });
 
