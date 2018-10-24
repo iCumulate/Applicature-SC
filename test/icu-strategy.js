@@ -36,7 +36,7 @@ contract('ICUStrategy', function (accounts) {
             0,// uint256 minInvestInUSD;
             icoSince,// uint256 startDate;
             icoTill// uint256 endDate;
-        ], [], 18, new BigNumber('400').mul(usdPrecision));
+        ], [0, 5], 18, new BigNumber('400').mul(usdPrecision));
 
         // await strategy.updateDates(0, icoSince, icoTill);
         let tokens = await strategyTest.getTokensWithoutRestrictions.call(0);
