@@ -11,6 +11,8 @@ module.exports = {
         'test/USDDateTiersPricingStrategy.sol',
         'test/USDExchange.sol',
         'test/USDExchangeTest.sol',
+        'test/TokenAllocatorTest.sol',
+        'test/ContributionForwarderTest.sol',
     ],
     // need for dependencies
     copyNodeModules: true,

@@ -75,21 +75,21 @@ contract('Crowdsale', accounts => {
             const currentState1 = await allocator.isInitialized.call()
             assert.equal(currentState1, true, "state doesn't match");
 
-            const currentState2 = await contributionForwarder.isInitialized()
+            const currentState2 = await contributionForwarder.isInitialized.call()
             assert.equal(currentState2, true, "state doesn't match");
 
-            const currentState3 = await pricingStrategy.isInitialized()
+            const currentState3 = await pricingStrategy.isInitialized.call()
             assert.equal(currentState3, true, "state doesn't match");
 
 
             // check state the crowdsale
             // 3 == InCrowdsale
-            const currentState = await crowdsale.getState()
+            const currentState = await crowdsale.getState.call()
             assert.equal(currentState, 3, "state doesn't match");
 
             // try to call update state
             await crowdsale.updateState()
-            const updatedState = await crowdsale.getState()
+            const updatedState = await crowdsale.getState.call()
 
             // it shouldn't be changed because nothing changed
             assert.equal(updatedState, 3, "state doesn't match");

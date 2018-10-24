@@ -232,6 +232,9 @@ contract('ICUStrategy', function (accounts) {
         });
 
         it('check airdrop threshhold', async function () {
+            assert.equal(await strategy.getDiscount.call(0), 0, "getDiscount is not equal");
+            assert.equal(await strategy.getDiscount.call(28), 0, "getDiscount is not equal");
+
             await strategy.updateDates(0, icoSince - 28, icoSince);
             await strategy.updateDates(1, icoSince, icoTill);
 

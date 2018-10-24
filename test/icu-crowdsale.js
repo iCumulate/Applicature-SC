@@ -4,6 +4,8 @@ var ICUToken = artifacts.require("./ICUToken.sol"),
     MintableTokenAllocator = artifacts.require("./allocator/MintableTokenAllocator.sol"),
     DistributedDirectContributionForwarder = artifacts.require("./contribution/DistributedDirectContributionForwarder.sol"),
     ICUAgent = artifacts.require("./ICUAgent.sol"),
+    TokenAllocatorTest = artifacts.require("./test/TokenAllocatorTest.sol"),
+    ContributionForwarderTest = artifacts.require("./test/ContributionForwarderTest.sol"),
 
     Utils = require("./utils"),
     BigNumber = require('bignumber.js'),
@@ -292,7 +294,7 @@ contract('ICUCrowdsale', function (accounts) {
             await strategy.updateDates(1, icoSince - 6600, icoSince - 5600);
             await token.updateBurnAgent(agent.address, true);
 
-            await crowdsale.refund({from: accounts[1]})
+            await crowdsale.delegatedRefund(accounts[1], {from: accounts[0]})
             // .then(Utils.receiptShouldFailed);
                 .then(Utils.receiptShouldSucceed);
 
@@ -364,7 +366,7 @@ contract('ICUCrowdsale', function (accounts) {
                     newOwner: 0x0,
                 }
             });
-        })
+        });
 
         it('check bonuses', async function () {
             await Utils.checkState({crowdsale}, {
@@ -599,7 +601,7 @@ contract('ICUCrowdsale', function (accounts) {
                 }
             });
 
-        })
+        });
 
         it('check bonuses > available bonus', async function () {
             await Utils.checkState({crowdsale}, {
@@ -742,7 +744,37 @@ contract('ICUCrowdsale', function (accounts) {
                 }
             });
 
-        })
+        });
+
+        it('check addExternalContributor | isHardCapAchieved', async function () {
+            await crowdsale.addExternalContributor(accounts[5], {from: accounts[1]})
+                .then(Utils.receiptShouldFailed)
+                .catch(Utils.catchReceiptShouldFailed);
+
+            await crowdsale.addExternalContributor(accounts[5], {from: accounts[0]})
+                .then(Utils.receiptShouldFailed)
+                .catch(Utils.catchReceiptShouldFailed);
+
+
+            await assert.equal(await crowdsale.isHardCapAchieved.call(new BigNumber('23500000').mul(usdPrecision).sub('1').valueOf()), false, "isHardCapAchieved is not equal");
+            await assert.equal(await crowdsale.isHardCapAchieved.call(new BigNumber('23500000').mul(precision).valueOf()), true, "isHardCapAchieved is not equal");
+
+            await crowdsale.updateWhitelist(accounts[1], true);
+
+            await strategy.updateDates(0, icoSince, icoTill);
+            await strategy.updateDates(1, icoTill + 1600, icoTill + 2600);
+
+            await crowdsale.updateUsdCollected(new BigNumber('5000000').sub('10').mul(usdPrecision).valueOf());
+
+            await crowdsale.sendTransaction({value: new BigNumber('20').mul(precision).valueOf(), from: accounts[1]})
+                .then(Utils.receiptShouldSucceed);
+
+            const allocatorTest = await TokenAllocatorTest.new();
+            assert.equal(await allocatorTest.isInitialized.call(), false, "isInitialized is not equal");
+            const forwarderTest = await ContributionForwarderTest.new();
+            assert.equal(await forwarderTest.isInitialized.call(), false, "isInitialized is not equal");
+
+        });
 
     })
 });
