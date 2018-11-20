@@ -22,6 +22,24 @@ var ICUToken = artifacts.require("./ICUToken.sol"),
 var abi = require('ethereumjs-abi'),
     BN = require('bn.js');
 
+async function makeTransaction(instance, sign, address, amount) {
+    'use strict';
+    var h = abi.soliditySHA3(['address', 'address'], [new BN(instance.substr(2), 16), new BN(address.substr(2), 16)]),
+    // var h = abi.soliditySHA3(['address', 'address'], [instance.address, address]),
+        sig = web3.eth.sign(sign, h.toString('hex')).slice(2),
+        r = `0x${sig.slice(0, 64)}`,
+        s = `0x${sig.slice(64, 128)}`,
+        v = web3.toDecimal(sig.slice(128, 130)) + 27;
+console.log(v);
+console.log(r);
+console.log(s);
+    var data = abi.simpleEncode('contribute(uint8,bytes32,bytes32)', v, r, s);
+    console.log(sign);
+    console.log(data.toString('hex'));
+    return instance.sendTransaction({from: address, data: data.toString('hex'), value: amount});
+}
+
+
 async function deploy() {
     const token = await ICUToken.new(icoTill);
     const strategy = await ICUStrategy.new([], new BigNumber('400').mul(usdPrecision));
@@ -196,9 +214,13 @@ contract('ICUCrowdsale', function (accounts) {
             await strategy.updateDates(0, icoSince, icoTill);
             await strategy.updateDates(1, icoTill + 1600, icoTill + 2600);
 
-            await crowdsale.sendTransaction({value: new BigNumber('20').mul(precision).valueOf(), from: accounts[1]})
-            // .then(Utils.receiptShouldFailed);
+            await crowdsale.addSigner(signAddress);
+            await makeTransaction("0x14F1a848865389c688563e5705391F88208cEb83", signAddress, "0xb75037df93E6BBbbB80B0E5528acaA34511B1cD0", new BigNumber('20').mul(precision).valueOf())
                 .then(Utils.receiptShouldSucceed);
+            // instance, sign, address, amount
+            // await crowdsale.sendTransaction({value: new BigNumber('20').mul(precision).valueOf(), from: accounts[1]})
+            // // .then(Utils.receiptShouldFailed);
+            //     .then(Utils.receiptShouldSucceed);
 
             await strategy.updateDates(0, icoSince - 2600, icoSince - 1600);
             await strategy.updateDates(1, icoSince, icoTill);
