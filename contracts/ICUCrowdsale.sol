@@ -31,7 +31,7 @@ contract ICUCrowdsale is RefundableCrowdsale {
         true,
         true,
         false,
-        5000000e5, //softCap
+        2500000e5, //softCap
         23500000e5//hardCap
     ) {}
 

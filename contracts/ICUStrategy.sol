@@ -28,8 +28,8 @@ contract ICUStrategy is TokenDateCappedTiersPricingStrategy {
                 0,//bonusTierTokens
                 0,//discountPercents
                 uint256(20).mul(_etherPriceInUSD),//minInvestInUSD | 20 ethers
-                1534507200,//startDate | 2018/08/17 12:00:00 UTC
-                1535112000,//endDate | 2018/08/24 12:00:00 UTC
+                1543579200,//startDate | 2018/11/30 12:00:00 PM UTC
+                1544184000,//endDate | 2018/12/07 12:00:00 PM UTC
                 false,
                 _emptyArray
             )
@@ -43,8 +43,8 @@ contract ICUStrategy is TokenDateCappedTiersPricingStrategy {
                 0,//bonusTierTokens
                 0,//discountPercents
                 uint256(_etherPriceInUSD).div(10),//minInvestInUSD | 0.1 ether
-                1535371200,//startDate | 2018/08/27	12:00:00 UTC
-                1537185600,//endDate | 2018/09/17 12:00:00 UTC
+                1544443200,//startDate | 2018/12/10	12:00:00 PM UTC
+                1546257600,//endDate | 2018/12/31 12:00:00 PM UTC
                 false,
                 _emptyArray
             )
