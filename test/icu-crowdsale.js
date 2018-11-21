@@ -149,7 +149,7 @@ contract('ICUCrowdsale', function (accounts) {
         it('check flow | updateState & internalContribution & refund', async function () {
             await Utils.checkState({crowdsale}, {
                 crowdsale: {
-                    softCap: new BigNumber('5000000').mul(usdPrecision).valueOf(),
+                    softCap: new BigNumber('2500000').mul(usdPrecision).valueOf(),
                     hardCap: new BigNumber('23500000').mul(usdPrecision).valueOf(),
                     usdCollected: new BigNumber('0').mul(usdPrecision).valueOf(),
                     // isBonusIncreased: false,
@@ -214,13 +214,13 @@ contract('ICUCrowdsale', function (accounts) {
             await strategy.updateDates(0, icoSince, icoTill);
             await strategy.updateDates(1, icoTill + 1600, icoTill + 2600);
 
-            await crowdsale.addSigner(signAddress);
-            await makeTransaction("0x14F1a848865389c688563e5705391F88208cEb83", signAddress, "0xb75037df93E6BBbbB80B0E5528acaA34511B1cD0", new BigNumber('20').mul(precision).valueOf())
-                .then(Utils.receiptShouldSucceed);
-            // instance, sign, address, amount
-            // await crowdsale.sendTransaction({value: new BigNumber('20').mul(precision).valueOf(), from: accounts[1]})
-            // // .then(Utils.receiptShouldFailed);
+            // await crowdsale.addSigner(signAddress);
+            // await makeTransaction("0x14F1a848865389c688563e5705391F88208cEb83", signAddress, "0xb75037df93E6BBbbB80B0E5528acaA34511B1cD0", new BigNumber('20').mul(precision).valueOf())
             //     .then(Utils.receiptShouldSucceed);
+            // instance, sign, address, amount
+            await crowdsale.sendTransaction({value: new BigNumber('20').mul(precision).valueOf(), from: accounts[1]})
+            // .then(Utils.receiptShouldFailed);
+                .then(Utils.receiptShouldSucceed);
 
             await strategy.updateDates(0, icoSince - 2600, icoSince - 1600);
             await strategy.updateDates(1, icoSince, icoTill);
@@ -248,7 +248,7 @@ contract('ICUCrowdsale', function (accounts) {
                     ],
                 },
                 crowdsale: {
-                    softCap: new BigNumber('5000000').mul(usdPrecision).valueOf(),
+                    softCap: new BigNumber('2500000').mul(usdPrecision).valueOf(),
                     hardCap: new BigNumber('23500000').mul(usdPrecision).valueOf(),
                     usdCollected: new BigNumber('21').mul('400').mul(usdPrecision).valueOf(),
                     // isBonusIncreased: true,
@@ -333,7 +333,7 @@ contract('ICUCrowdsale', function (accounts) {
                     ],
                 },
                 crowdsale: {
-                    softCap: new BigNumber('5000000').mul(usdPrecision).valueOf(),
+                    softCap: new BigNumber('2500000').mul(usdPrecision).valueOf(),
                     hardCap: new BigNumber('23500000').mul(usdPrecision).valueOf(),
                     usdCollected: new BigNumber('21').mul('400').mul(usdPrecision).valueOf(),
                     // isBonusIncreased: true,
@@ -393,7 +393,7 @@ contract('ICUCrowdsale', function (accounts) {
         it('check bonuses', async function () {
             await Utils.checkState({crowdsale}, {
                 crowdsale: {
-                    softCap: new BigNumber('5000000').mul(usdPrecision).valueOf(),
+                    softCap: new BigNumber('2500000').mul(usdPrecision).valueOf(),
                     hardCap: new BigNumber('23500000').mul(usdPrecision).valueOf(),
                     usdCollected: new BigNumber('0').mul(usdPrecision).valueOf(),
                     // isBonusIncreased: false,
@@ -474,7 +474,7 @@ contract('ICUCrowdsale', function (accounts) {
                     ],
                 },
                 crowdsale: {
-                    softCap: new BigNumber('5000000').mul(usdPrecision).valueOf(),
+                    softCap: new BigNumber('2500000').mul(usdPrecision).valueOf(),
                     hardCap: new BigNumber('23500000').mul(usdPrecision).valueOf(),
                     usdCollected: new BigNumber('21').mul('400').mul(usdPrecision).valueOf(),
                     // isBonusIncreased: true,
@@ -541,7 +541,7 @@ contract('ICUCrowdsale', function (accounts) {
                 .then(Utils.receiptShouldFailed)
                 .catch(Utils.catchReceiptShouldFailed);
 
-            await crowdsale.updateUsdCollected(new BigNumber('5000000').mul(usdPrecision).valueOf());
+            await crowdsale.updateUsdCollected(new BigNumber('2500000').mul(usdPrecision).valueOf());
 
             await crowdsale.claimBonuses({from: accounts[0]})
                 .then(Utils.receiptShouldFailed)
@@ -567,9 +567,9 @@ contract('ICUCrowdsale', function (accounts) {
                     ],
                 },
                 crowdsale: {
-                    softCap: new BigNumber('5000000').mul(usdPrecision).valueOf(),
+                    softCap: new BigNumber('2500000').mul(usdPrecision).valueOf(),
                     hardCap: new BigNumber('23500000').mul(usdPrecision).valueOf(),
-                    usdCollected: new BigNumber('5000000').mul(usdPrecision).valueOf(),
+                    usdCollected: new BigNumber('2500000').mul(usdPrecision).valueOf(),
                     // isBonusIncreased: true,
                     maxSaleSupply: new BigNumber('2350000000').mul(precision).valueOf(),
                     availableBonusAmount: new BigNumber('447500000')
@@ -628,7 +628,7 @@ contract('ICUCrowdsale', function (accounts) {
         it('check bonuses > available bonus', async function () {
             await Utils.checkState({crowdsale}, {
                 crowdsale: {
-                    softCap: new BigNumber('5000000').mul(usdPrecision).valueOf(),
+                    softCap: new BigNumber('2500000').mul(usdPrecision).valueOf(),
                     hardCap: new BigNumber('23500000').mul(usdPrecision).valueOf(),
                     usdCollected: new BigNumber('0').mul(usdPrecision).valueOf(),
                     // isBonusIncreased: false,
@@ -710,7 +710,7 @@ contract('ICUCrowdsale', function (accounts) {
                     ],
                 },
                 crowdsale: {
-                    softCap: new BigNumber('5000000').mul(usdPrecision).valueOf(),
+                    softCap: new BigNumber('2500000').mul(usdPrecision).valueOf(),
                     hardCap: new BigNumber('23500000').mul(usdPrecision).valueOf(),
                     usdCollected: new BigNumber('21').mul('400').mul(usdPrecision).valueOf(),
                     // isBonusIncreased: true,
@@ -786,7 +786,7 @@ contract('ICUCrowdsale', function (accounts) {
             await strategy.updateDates(0, icoSince, icoTill);
             await strategy.updateDates(1, icoTill + 1600, icoTill + 2600);
 
-            await crowdsale.updateUsdCollected(new BigNumber('5000000').sub('10').mul(usdPrecision).valueOf());
+            await crowdsale.updateUsdCollected(new BigNumber('2500000').sub('10').mul(usdPrecision).valueOf());
 
             await crowdsale.sendTransaction({value: new BigNumber('20').mul(precision).valueOf(), from: accounts[1]})
                 .then(Utils.receiptShouldSucceed);
